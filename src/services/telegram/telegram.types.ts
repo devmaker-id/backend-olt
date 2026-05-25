@@ -1,5 +1,5 @@
 export interface TelegramMessage {
-    chatId: string
+    chatId: number | string,
     text: string
-    parseMode?: 'Markdown'
+    replyToMessageId?: number
 }

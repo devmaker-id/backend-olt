@@ -6,7 +6,7 @@ import {
   validateUnauthorizedOnu,
   validateExistingOnu
  } from './onu.validation'
-import { normalizeOnuName } from '../../utils/normalize-onu-name'
+import { normalizeOnuName } from '../../utils/normalize-onu'
 import { generateInternetNo } from '../../utils/generate-internet-no'
 
 export async function authorizeOnu(

@@ -14,3 +14,11 @@ export function normalizeOnuName(
 
     .replace(/^_+|_+$/g, '')
 }
+export function normalizeMac(
+  mac: string
+) {
+
+  return mac
+    .trim()
+    .toUpperCase()
+}

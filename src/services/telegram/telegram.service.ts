@@ -1,51 +1,35 @@
-import { env }
-  from '../../config/env'
+import { env } from '../../config/env'
+import { TelegramMessage } from './telegram.types'
 
 export class TelegramService {
-
-  static async sendMessage(
-    text: string
-  ) {
-
+  static async sendMessage( message: TelegramMessage ) {
     try {
-
-      const response =
-        await fetch(
-          `https://api.telegram.org/bot${env.telegramBotToken}/sendMessage`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type':
-                'application/json'
-            },
-
-            body: JSON.stringify({
-              chat_id: env.telegramChatId,
-              text,
-              parse_mode: "HTML",
-            })
-          }
-        )
-
+      const response = await fetch(`https://api.telegram.org/bot${env.telegramBotToken}/sendMessage`, {
+        method: 'POST',
+        headers: {
+          'Content-Type':
+          'application/json'
+        },
+        body: JSON.stringify({
+          chat_id: message.chatId,
+          text: message.text,
+          parse_mode: 'HTML',
+          reply_to_message_id: message.replyToMessageId
+        })
+      })
       if (!response.ok) {
         const error = await response.text()
-        console.log('TELEGRAM SEND FAILED')
+        console.log( 'TELEGRAM SEND FAILED' )
         console.log(error)
-        return
+        return null
       }
-
-      const result = await response.json()
-      console.log('TELEGRAM SENT')
-
-
+      console.log( 'TELEGRAM SENT' )
+      return await response.json()
     }
-
-    catch (error) {
-
-      console.error(
-        'TELEGRAM ERROR',
-        error
-      )
+    catch(error) { 
+      console.log( 'TELEGRAM ERROR' )
+      console.log(error)
+      return null
     }
   }
 }

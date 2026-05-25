@@ -3,11 +3,13 @@ import { ParsedSyslog } from '../../core/syslog.types'
 import { env } from '../../../../config/env'
 import { TelegramService } from '../../../telegram/telegram.service'
 import { EventCooldown } from '../../../cache/event.cooldown'
+import { normalizeMac } from '../../../../utils/normalize-onu'
 
 export class HisfocusSyslogService {
   static async process(
     parsed: ParsedSyslog
   ) {
+    const normalizedMac = normalizeMac( parsed.onuMac )
     const cooldownKey = `${parsed.onuMac}-${parsed.status}`
     if ( EventCooldown.isBlocked(cooldownKey)) {
       console.log('ALERT COOLDOWN')
@@ -32,12 +34,13 @@ export class HisfocusSyslogService {
     
     const onu = await prisma.onu.findUnique({
         where: {
-          onuMac: parsed.onuMac
+          onuMac: normalizedMac
         },
         include: {
           endpoint: true
         }
       })
+    console.log('ONU_MAC', parsed.onuMac)
 
     if (onu) {
 
@@ -61,17 +64,20 @@ export class HisfocusSyslogService {
           rawLog: parsed.raw
         }
       })
-      await TelegramService.sendMessage(
-      `
-<pre>${parsed.status === 'linkup' ? '🟢 ONU ONLINE' : '🔴 ONU OFFLINE'}
-
-SITE      : ${onu.endpoint?.name ?? '-'}
-INTERNET  : ${onu.endpoint?.internetNo}
-OLT       : ${parsed.oltName}
-PORT      : ${parsed.eponPort}:${parsed.onuId}
-ONU       : ${onu.onuName}
-TYPE      : ${onu.endpoint?.type}
-LOKASI    : ${onu.endpoint?.address}</pre>`)
+      await TelegramService.sendMessage({
+        chatId: env.telegramChatId,
+        text:
+`
+${parsed.status === 'linkup' ? '🟢 <b>ONU ONLINE</b>' : '🔴 <b>ONU OFFLINE</b>'}
+👤 SITE: ${onu.endpoint?.name ?? '-'}
+🆔 INTERNET: <code>${onu.endpoint?.internetNo ?? '-'}</code>
+🛰 OLT: ${parsed.oltName}
+🔌 PORT: ${parsed.eponPort}:${parsed.onuId}
+📶 ONU: ${onu.onuName}
+📍 TYPE: ${onu.endpoint?.type ?? '-'}
+🏠 LOKASI: ${onu.endpoint?.address ?? '-'}
+`
+      })
 
       return
     }
@@ -79,7 +85,7 @@ LOKASI    : ${onu.endpoint?.address}</pre>`)
     await prisma.unauthorizedOnu.upsert({
 
       where: {
-        macAddress: parsed.onuMac
+        macAddress: normalizeMac( parsed.onuMac )
       },
 
       update: {
@@ -90,20 +96,24 @@ LOKASI    : ${onu.endpoint?.address}</pre>`)
 
       create: {
         oltId: olt.id,
-        macAddress: parsed.onuMac,
+        macAddress: normalizeMac( parsed.onuMac ),
         eponPort: parsed.eponPort,
         onuId: parsed.onuId
       }
     })
 
-    await TelegramService.sendMessage(
-      `<pre>🚨 ONU UNREGISTERED
+    await TelegramService.sendMessage({
+      chatId: env.telegramChatId,
+      text:
+`
+🚨 <b>ONU UNREGISTERED</b>
+======================
+🛰 OLT: ${parsed.oltName}
+🔌 PORT: ${parsed.eponPort}:${parsed.onuId}
+📶 MAC: <code>${normalizeMac( parsed.onuMac )}</code>
 
-      OLT    : ${parsed.oltName}
-      MAC    : ${parsed.onuMac}
-      PORT   : ${parsed.eponPort}:${parsed.onuId}
-
-      ONU baru terdeteksi dan belum di-authorize.</pre>`
-    )
+⚠️ ONU baru terdeteksi dan belum di-authorize.
+`
+    })
   }
 }

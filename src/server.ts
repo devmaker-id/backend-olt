@@ -1,6 +1,7 @@
 import app from './app'
 import { env } from './config/env'
 import { SyslogServer } from './services/syslog/core/syslog.server'
+import { telegramRouter } from './services/telegram/telegram.router'
 
 async function bootstrap() {
   try {
@@ -11,6 +12,10 @@ async function bootstrap() {
 
     syslogServer.start(
       SYSLOG_PORT
+    )
+
+    app.register(
+      telegramRouter
     )
 
     console.log(
