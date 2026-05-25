@@ -19,6 +19,11 @@ Cek detail internet pelanggan
 Contoh:
 <code>/inet 1998250526001</code>
 ━━━━━━━━━━━━━━
+📡 <b>/signal [nomor]</b>
+Cek cepat redaman
+Contoh:
+<code>/signal 1998250526001</code>
+━━━━━━━━━━━━━━
 🚨 <b>/onu-offline</b>
 Lihat daftar ONU offline
 ━━━━━━━━━━━━━━

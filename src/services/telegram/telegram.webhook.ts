@@ -18,6 +18,9 @@ import {
 import {
   handleOnuOfflineCommand
 } from './commands/onu-offline.command'
+import {
+  handleSignalCommand
+} from './commands/signal.command'
 
 export async function telegramWebhook(
 
@@ -80,6 +83,13 @@ export async function telegramWebhook(
       case TelegramCommands.inet:
 
         await handleInetCommand(
+          body
+        )
+
+        break
+      case TelegramCommands.signal:
+
+        await handleSignalCommand(
           body
         )
 
