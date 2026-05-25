@@ -105,7 +105,6 @@ export async function getEndpointByInet(
       )
     const signalStatus = classifyRxPower( realtime.optical?.rxpower )
 
-    console.log("ONU", onu)
     return {
       success: true,
       data: {

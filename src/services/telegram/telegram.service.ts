@@ -21,7 +21,8 @@ export class TelegramService {
 
             body: JSON.stringify({
               chat_id: env.telegramChatId,
-              text
+              text,
+              parse_mode: "HTML",
             })
           }
         )

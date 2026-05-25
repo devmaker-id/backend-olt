@@ -61,20 +61,17 @@ export class HisfocusSyslogService {
           rawLog: parsed.raw
         }
       })
-
-      console.log(
-        `ONU REGISTERED ${parsed.onuMac}`
-      )
       await TelegramService.sendMessage(
       `
-${parsed.status === 'linkup' ? '🟢 ONU ONLINE' : '🔴 ONU OFFLINE'}
+<pre>${parsed.status === 'linkup' ? '🟢 ONU ONLINE' : '🔴 ONU OFFLINE'}
 
-SITE    : ${onu.endpoint?.name ?? '-'}
-OLT     : ${parsed.oltName}
-PORT    : ${parsed.eponPort}:${parsed.onuId}
-ONU     : ${onu.onuName}
-TYPE    : ${onu.endpoint?.type}
-LOK     : ${onu.endpoint?.address}`)
+SITE      : ${onu.endpoint?.name ?? '-'}
+INTERNET  : ${onu.endpoint?.internetNo}
+OLT       : ${parsed.oltName}
+PORT      : ${parsed.eponPort}:${parsed.onuId}
+ONU       : ${onu.onuName}
+TYPE      : ${onu.endpoint?.type}
+LOKASI    : ${onu.endpoint?.address}</pre>`)
 
       return
     }
@@ -100,17 +97,13 @@ LOK     : ${onu.endpoint?.address}`)
     })
 
     await TelegramService.sendMessage(
-      `🚨 ONU UNREGISTERED
+      `<pre>🚨 ONU UNREGISTERED
 
       OLT    : ${parsed.oltName}
       MAC    : ${parsed.onuMac}
       PORT   : ${parsed.eponPort}:${parsed.onuId}
 
-      ONU baru terdeteksi dan belum di-authorize.`
-    )
-
-    console.log(
-      `ONU UNREGISTERED ${parsed.onuMac}`
+      ONU baru terdeteksi dan belum di-authorize.</pre>`
     )
   }
 }

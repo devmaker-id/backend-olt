@@ -17,6 +17,7 @@ import {
   UpdateEndpointDto,
   EndpointParams
 } from './endpoint.types'
+import { TelegramService } from '../../services/telegram/telegram.service'
 
 export async function createEndpointController(
   req: FastifyRequest,
@@ -62,6 +63,35 @@ export async function getEndpointByInetController(
 ) {
 
   const result = await getEndpointByInet( request.params.internetNo )
+  if (
+  result.success &&
+  result.data
+) {
+
+  const data =
+    result.data
+
+  await TelegramService.sendMessage(
+
+`<pre>📡 INTERNET DETAIL
+
+ID      : ${data.internetNo}
+SITE    : ${data.name}
+TYPE    : ${data.type}
+
+OLT     : ${data.olt.name}
+ONU     : ${data.onu.name}
+STATUS  : ${data.onu.status}
+SIGNAL  : ${data.onu.signalStatus}
+
+RX      : ${data.onu.rxPower}
+TX      : ${data.onu.txPower}
+TEMP    : ${data.onu.temperature}
+
+PORT    : ${data.onu.port}
+MODEL   : ${data.onu.model}</pre>`
+  )
+}
   return reply.send({result})
 }
 
