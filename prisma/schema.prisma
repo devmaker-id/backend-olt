@@ -75,45 +75,25 @@ model Olt {
 
 model Onu {
   id String @id @default(cuid())
-
   oltId String
-
   olt Olt @relation(fields: [oltId], references: [id], onDelete: Cascade)
-
   endpointId String?
-
   endpoint Endpoint? @relation(fields: [endpointId], references: [id])
-
   packageId String?
-
   package Package? @relation(fields: [packageId], references: [id])
-
   onuId String
-
   eponPort String
-
   onuMac String @unique
-
   onuName String?
-
   onuType String?
-
   model String?
-
   firmware String?
-
   status OnuStatus?
-
   connectionState ConnectionState?
-
   isActive Boolean @default(true)
-
   alarmLogs AlarmLog[]
-
   createdAt DateTime @default(now())
-
   updatedAt DateTime @updatedAt
-
   @@unique([oltId, eponPort, onuId])
   @@index([oltId])
   @@index([endpointId])
@@ -123,25 +103,16 @@ model Onu {
 
 model Endpoint {
   id String @id @default(cuid())
-
   type EndpointType
-
+  internetNo  String? @unique
   name String
-
   code String? @unique
-
   address String?
-
   latitude Float?
-
   longitude Float?
-
   description String?
-
   onus Onu[]
-
   createdAt DateTime @default(now())
-
   updatedAt DateTime @updatedAt
 }
 

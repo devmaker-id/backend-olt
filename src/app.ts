@@ -4,7 +4,7 @@ import { authRoutes } from './modules/auth/auth.routes'
 import { userRoutes } from './modules/users/users.routes'
 import { oltRoutes } from './modules/olt/olt.routes'
 import { onuRoutes } from './modules/onu/onu.routes'
-import { endpointRoutes } from './modules/enpoint/endpoint.routes'
+import { endpointRoutes } from './modules/endpoint/endpoint.routes'
 
 const app = Fastify({
   logger: true

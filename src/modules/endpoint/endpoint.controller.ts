@@ -6,6 +6,7 @@ import {
 import {
   createEndpoint,
   getEndpoints,
+  getEndpointByInet,
   getEndpointById,
   updateEndpoint,
   deleteEndpoint
@@ -49,6 +50,19 @@ export async function createEndpointController(
 export async function getEndpointsController() {
 
   return getEndpoints()
+}
+
+export async function getEndpointByInetController(
+  request: FastifyRequest<{
+    Params: {
+      internetNo: string
+    }
+  }>,
+  reply: FastifyReply
+) {
+
+  const result = await getEndpointByInet( request.params.internetNo )
+  return reply.send({result})
 }
 
 export async function getEndpointByIdController(

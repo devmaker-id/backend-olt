@@ -6,40 +6,37 @@ export async function validateUnauthorizedOnu(
 ) {
 
   const onu =
-    await prisma.unauthorizedOnu
-      .findUnique({
-        where: {
-          macAddress
-        }
-      })
+    await prisma.unauthorizedOnu.findUnique({
+      where: { macAddress }
+    })
 
   if (!onu) {
-
-    throw new Error(
-      'UNAUTHORIZED_ONU_NOT_FOUND'
-    )
+    throw new Error( 'UNAUTHORIZED_ONU_NOT_FOUND' )
   }
 
   return onu
 }
 
-export async function validateEndpoint(
-  endpointId: string
+export async function validateExistingOnu(
+  oltId: string,
+  eponPort: string,
+  onuId: string
 ) {
 
-  const endpoint =
-    await prisma.endpoint.findUnique({
+  const onu =
+    await prisma.onu.findFirst({
+
       where: {
-        id: endpointId
+        oltId,
+        eponPort,
+        onuId
       }
     })
 
-  if (!endpoint) {
+  if (onu) {
 
     throw new Error(
-      'ENDPOINT_NOT_FOUND'
+      'ONU_ALREADY_REGISTERED'
     )
   }
-
-  return endpoint
 }

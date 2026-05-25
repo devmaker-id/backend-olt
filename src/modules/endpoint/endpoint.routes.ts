@@ -9,6 +9,7 @@ import {
 import {
   createEndpointController,
   getEndpointsController,
+  getEndpointByInetController,
   getEndpointByIdController,
   updateEndpointController,
   deleteEndpointController
@@ -31,6 +32,11 @@ export async function endpointRoutes(
   app.get(
     '/',
     getEndpointsController
+  )
+
+  app.get(
+    '/internet/:internetNo',
+    getEndpointByInetController
   )
 
   app.get(

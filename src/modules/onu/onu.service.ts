@@ -1,27 +1,19 @@
 import { prisma } from '../../config/prisma'
-
-import {
-  TelnetTransport
-} from '../../services/network/transport/telnet.transport'
-
-import {
-  HisfocusAdapter
-} from '../../services/network/vendors/hisfocus/hisfocus.adapter'
-
+import { TelnetTransport } from '../../services/network/transport/telnet.transport'
+import { HisfocusAdapter } from '../../services/network/vendors/hisfocus/hisfocus.adapter'
 import { AuthorizeOnuDto } from './onu.types'
-
-import { validateUnauthorizedOnu } from './onu.validation'
-
+import {
+  validateUnauthorizedOnu,
+  validateExistingOnu
+ } from './onu.validation'
 import { normalizeOnuName } from '../../utils/normalize-onu-name'
+import { generateInternetNo } from '../../utils/generate-internet-no'
 
 export async function authorizeOnu(
   data: AuthorizeOnuDto
 ) {
 
-  const unauthorized =
-    await validateUnauthorizedOnu(
-      data.macAddress
-    )
+  const unauthorized = await validateUnauthorizedOnu( data.macAddress )
 
   const olt =
     await prisma.olt.findUnique({
@@ -38,30 +30,24 @@ export async function authorizeOnu(
     )
   }
 
-  const transport =
-    new TelnetTransport()
+  await validateExistingOnu(
+    unauthorized.oltId,
+    unauthorized.eponPort,
+    unauthorized.onuId
+  )
+
+  const transport = new TelnetTransport()
 
   await transport.connect({
-    host:
-      olt.ipAddress,
-
-    port:
-      olt.telnetPort,
-
-    username:
-      olt.username,
-
-    password:
-      olt.password
+    host: olt.ipAddress,
+    port: olt.telnetPort,
+    username: olt.username,
+    password: olt.password
   })
 
-  const adapter =
-    new HisfocusAdapter(
-      transport
-    )
+  const adapter = new HisfocusAdapter( transport )
 
   try {
-
     const normalizedName =
       normalizeOnuName(
         data.endpoint.name
@@ -93,30 +79,18 @@ export async function authorizeOnu(
       await prisma.$transaction(
 
         async tx => {
-
+          const internetNo = await generateInternetNo()
           const endpoint =
             await tx.endpoint.create({
               data: {
-
+                internetNo,
                 type: data.endpoint.type,
-
-                name:
-                  data.endpoint.name,
-
-                code:
-                  data.endpoint.code,
-
-                address:
-                  data.endpoint.address,
-
-                description:
-                  data.endpoint.description,
-
-                latitude:
-                  data.endpoint.latitude,
-
-                longitude:
-                  data.endpoint.longitude
+                name: data.endpoint.name,
+                code: data.endpoint.code,
+                address: data.endpoint.address,
+                description: data.endpoint.description,
+                latitude: data.endpoint.latitude,
+                longitude: data.endpoint.longitude
               }
             })
 
