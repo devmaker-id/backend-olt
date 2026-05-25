@@ -1,0 +1,191 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  TEKNISI
+}
+
+enum OpticStatus {
+  LINKUP
+  LINKDOWN
+}
+
+enum OnuStatus {
+  UNVERIFIED
+  ACTIVE
+  SUSPEND
+}
+
+enum ConnectionState {
+  ONLINE
+  OFFLINE
+  ONU_POWER_OFF
+  FIBER_LOS
+  ONU_AUTH_FAILED
+  UNKNOWN
+}
+
+enum EndpointType {
+  CUSTOMER
+  RESELLER
+  POP
+  BACKHAUL
+}
+
+enum AlarmType {
+  ONU_LINKUP
+  ONU_LINKDOWN
+  ONU_UNREGISTERED
+  ONU_LOS
+  ONU_DYING_GASP
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  role      Role     @default(TEKNISI)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Olt {
+  id               String            @id @default(cuid())
+  name             String            @unique
+  syslogName       String            @unique
+  ipAddress        String            @unique
+  telnetPort       Int               @default(23)
+  username         String
+  password         String
+  vendor           String
+  location         String?
+  onus             Onu[]
+  alarmLogs        AlarmLog[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  unauthorizedOnus UnauthorizedOnu[]
+}
+
+model Onu {
+  id String @id @default(cuid())
+
+  oltId String
+
+  olt Olt @relation(fields: [oltId], references: [id], onDelete: Cascade)
+
+  endpointId String?
+
+  endpoint Endpoint? @relation(fields: [endpointId], references: [id])
+
+  packageId String?
+
+  package Package? @relation(fields: [packageId], references: [id])
+
+  onuId String
+
+  eponPort String
+
+  onuMac String @unique
+
+  onuName String?
+
+  onuType String?
+
+  model String?
+
+  firmware String?
+
+  status OnuStatus?
+
+  connectionState ConnectionState?
+
+  isActive Boolean @default(true)
+
+  alarmLogs AlarmLog[]
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@unique([oltId, eponPort, onuId])
+  @@index([oltId])
+  @@index([endpointId])
+  @@index([onuMac])
+  @@index([connectionState])
+}
+
+model Endpoint {
+  id String @id @default(cuid())
+
+  type EndpointType
+
+  name String
+
+  code String? @unique
+
+  address String?
+
+  latitude Float?
+
+  longitude Float?
+
+  description String?
+
+  onus Onu[]
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+model Package {
+  id           String   @id @default(cuid())
+  name         String
+  speed        String
+  price        Int
+  normalDevice String?
+  onus         Onu[]
+  createdAt    DateTime @default(now())
+}
+
+model UnauthorizedOnu {
+  id           String   @id @default(cuid())
+  oltId        String
+  olt          Olt      @relation(fields: [oltId], references: [id], onDelete: Cascade)
+  macAddress   String   @unique
+  eponPort     String
+  onuId        String
+  discoveredAt DateTime @default(now())
+  createdAt    DateTime @default(now())
+}
+
+model AlarmLog {
+  id        String    @id @default(cuid())
+  oltId     String
+  olt       Olt       @relation(fields: [oltId], references: [id])
+  onuIdRef  String?
+  onu       Onu?      @relation(fields: [onuIdRef], references: [id])
+  type      AlarmType
+  message   String    @db.Text
+  rawLog    String    @db.Text
+  sourceIp  String
+  createdAt DateTime  @default(now())
+
+  @@index([type])
+  @@index([createdAt])
+}
+
+model TelegramLog {
+  id        String   @id @default(cuid())
+  chatId    String
+  command   String
+  response  String?  @db.Text
+  createdAt DateTime @default(now())
+}
