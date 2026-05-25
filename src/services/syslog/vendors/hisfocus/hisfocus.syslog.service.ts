@@ -4,6 +4,7 @@ import { env } from '../../../../config/env'
 import { TelegramService } from '../../../telegram/telegram.service'
 import { EventCooldown } from '../../../cache/event.cooldown'
 import { normalizeMac } from '../../../../utils/normalize-onu'
+import { buildOnuAlertMessage } from '../../../telegram/messages/build-onu-alert'
 
 export class HisfocusSyslogService {
   static async process(
@@ -64,21 +65,22 @@ export class HisfocusSyslogService {
           rawLog: parsed.raw
         }
       })
+      const message =
+        buildOnuAlertMessage(
+          parsed.status === 'linkup' ? 'ONLINE' : 'OFFLINE',
+          {
+            name: onu.endpoint?.name,
+            internetNo: onu.endpoint?.internetNo!,
+            address: onu.endpoint?.address!,
+            oltName: parsed.oltName,
+            port: `${parsed.eponPort}:${parsed.onuId}`
+          }
+        )
+
       await TelegramService.sendMessage({
         chatId: env.telegramChatId,
-        text:
-`
-${parsed.status === 'linkup' ? '🟢 <b>ONU ONLINE</b>' : '🔴 <b>ONU OFFLINE</b>'}
-👤 SITE: ${onu.endpoint?.name ?? '-'}
-🆔 INTERNET: <code>${onu.endpoint?.internetNo ?? '-'}</code>
-🛰 OLT: ${parsed.oltName}
-🔌 PORT: ${parsed.eponPort}:${parsed.onuId}
-📶 ONU: ${onu.onuName}
-📍 TYPE: ${onu.endpoint?.type ?? '-'}
-🏠 LOKASI: ${onu.endpoint?.address ?? '-'}
-`
+        text: message
       })
-
       return
     }
 
