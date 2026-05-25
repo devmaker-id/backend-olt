@@ -36,7 +36,6 @@ export class TelegramService {
 
       const result = await response.json()
       console.log('TELEGRAM SENT')
-      console.log(result)
 
 
     }
