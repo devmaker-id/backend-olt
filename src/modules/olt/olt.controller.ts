@@ -8,7 +8,8 @@ import {
   getOlts,
   getOltById,
   updateOlt,
-  deleteOlt
+  deleteOlt,
+  testOnuList
 } from './olt.service'
 
 import {
@@ -223,6 +224,52 @@ export async function getOnuInfoController(
         'FAILED_GET_ONU_INFO',
 
       error: error.message
+    })
+  }
+}
+
+export async function
+getOnuListController(
+
+  request: FastifyRequest<{
+    Params: {
+      id: string
+    }
+
+    Querystring: {
+      port: string
+    }
+  }>,
+
+  reply: FastifyReply
+) {
+
+  try {
+
+    const result =
+      await testOnuList(
+
+        request.params.id,
+
+        request.query.port
+      )
+
+    return reply.send({
+
+      success: true,
+
+      ...result
+    })
+  }
+
+  catch (error: any) {
+
+    return reply.status(500).send({
+
+      success: false,
+
+      message:
+        error.message
     })
   }
 }

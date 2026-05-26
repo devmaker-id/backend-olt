@@ -10,7 +10,8 @@ import {
   deleteOltController,
   connectOltController,
   getSystemInfoController,
-  getOnuInfoController
+  getOnuInfoController,
+  getOnuListController
 } from './olt.controller'
 
 export async function oltRoutes(
@@ -59,5 +60,10 @@ export async function oltRoutes(
   app.get(
     '/:id/onu',
     getOnuInfoController
+  )
+
+  app.get(
+    '/:id/onus',
+    getOnuListController
   )
 }

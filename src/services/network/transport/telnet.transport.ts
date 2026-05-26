@@ -8,8 +8,8 @@ export interface TelnetConnectOptions {
 }
 
 export class TelnetTransport {
-  private socket: net.Socket | null =
-    null
+  private socket: net.Socket | null = null
+  private paginationMode = false
   private buffer = ''
   private connected = false
   private usernameSent = false
@@ -25,13 +25,10 @@ export class TelnetTransport {
     ) => void
   }> = []
   private commandRunning = false
-  private responseResolver:
-    ((response: string) => void)
-      | null = null
-  private rejectConnect:
-    ((error: Error) => void)
-      | null = null
+  private responseResolver: ((response: string) => void) | null = null
+  private rejectConnect: ((error: Error) => void) | null = null
   private host = ''
+
   async connect(
     options: TelnetConnectOptions
   ) {
@@ -55,6 +52,31 @@ export class TelnetTransport {
       this.socket!.setEncoding(
         'ascii'
       )
+      this.socket!.setKeepAlive(
+        false
+      )
+      this.socket!.setTimeout(
+        10000
+      )
+
+      this.socket!.on(
+        'timeout',
+        () => {
+
+          console.log(
+            `TELNET TIMEOUT ${options.host}`
+          )
+
+          this.disconnect()
+
+          reject(
+            new Error(
+              'TELNET_CONNECTION_TIMEOUT'
+            )
+          )
+        }
+      )
+
       this.socket!.on(
         'data',
         (data) => {
@@ -67,9 +89,14 @@ export class TelnetTransport {
       this.socket!.on(
         'error',
         (error) => {
-        this.connected = false
-        reject(error)
-      })
+
+          this.connected = false
+
+          this.disconnect()
+
+          reject(error)
+        }
+      )
       this.socket!.on(
         'close',
         () => {
@@ -130,6 +157,33 @@ export class TelnetTransport {
       this.disconnect()
       return
     }
+
+    // HANDLE PAGINATION DULU
+
+    if (
+      this.paginationMode &&
+      this.buffer.includes(
+        '--- Enter Key To Continue ----'
+      )
+    ) {
+
+      // console.log(
+      //   'BUFFER',
+      //   this.buffer
+      // )
+      // console.log(
+      //   'TELNET AUTO ENTER'
+      // )
+
+      this.buffer =
+        this.buffer.replace(
+          '--- Enter Key To Continue ----',
+          ''
+        )
+      this.socket?.write( '\r\n' )
+      return true
+    }
+
     if (
       /OLT_.*[>#]/i
       .test(this.buffer)
@@ -147,23 +201,19 @@ export class TelnetTransport {
         this.commandRunning &&
         this.responseResolver
       ) {
-        if (
-          !this.buffer.includes(
-            '--- Enter Key To Continue ----'
-          )
-        ) {
-          this.responseResolver(
-            this.buffer
-          )
-          this.responseResolver =
-            null
-          this.commandRunning =
-            false
-          this.buffer = ''
-          this.executeNextCommand()
-        }
+        // BARU RESOLVE FINAL OUTPUT
+
+        this.responseResolver(
+          this.buffer
+        )
+        this.responseResolver = null
+        this.commandRunning = false
+        this.paginationMode = false
+        this.buffer = ''
+        this.executeNextCommand()
       }
     }
+
   }
 
   async writeFile() {
@@ -278,8 +328,8 @@ export class TelnetTransport {
       task.command + '\r\n'
     )
 
-    this.responseResolver =
-      task.resolve
+    this.responseResolver = task.resolve
+    this.paginationMode = task.command.includes(' all')
 
     setTimeout(() => {
 
@@ -316,17 +366,22 @@ export class TelnetTransport {
     return this.connected
   }
 
-  async disconnect() {
+async disconnect() {
 
-    if (!this.socket) {
-      return
-    }
-
-    this.socket.write(
-      'quit\r\n'
-    )
-
-    this.socket.end()
-    this.connected = false
+  if (!this.socket) {
+    return
   }
+
+  this.socket.destroy()
+
+  this.socket = null
+
+  this.resetState()
+
+  console.log(
+    `TELNET CLOSED ${this.host}`
+  )
+}
+
+
 }
