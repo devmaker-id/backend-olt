@@ -21,6 +21,7 @@ import {
 import {
   handleSignalCommand
 } from './commands/signal.command'
+import { validateTelegramUser } from '../../modules/telegram/telegram.auth'
 
 export async function telegramWebhook(
 
@@ -33,8 +34,28 @@ export async function telegramWebhook(
 
   try {
 
-    const body: any =
-      request.body
+    const body: any = request.body
+
+    const telegramId = body?.message?.from?.id ?.toString()
+
+    const telegramUser =
+      await validateTelegramUser(
+        telegramId
+      )
+
+    if (!telegramUser) {
+
+      console.log(
+
+        '[UNAUTHORIZED TELEGRAM USER]',
+
+        telegramId
+      )
+
+      return reply.send({
+        ok: true
+      })
+    }
 
     console.log(
 
