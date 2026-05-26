@@ -160,3 +160,13 @@ model TelegramLog {
   response  String?  @db.Text
   createdAt DateTime @default(now())
 }
+
+model TelegramUser {
+  id          String   @id @default(cuid())
+  telegramId  String   @unique
+  username    String?
+  fullName    String?
+  role        String   @default("STAFF")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}

@@ -13,6 +13,7 @@ import {
 } from './olt.service'
 
 import {
+  CreateOltDto,
   OltParams,
 } from './olt.types'
 
@@ -22,11 +23,10 @@ import { prisma }
 import { NetworkFactory }
   from '../../services/network/core/network.factory'
 
-import { connectionManager }
-  from '../../services/network/core/connection.manager'
-
 export async function createOltController(
-  req: FastifyRequest,
+  req: FastifyRequest<{
+    Body: CreateOltDto
+  }>,
   reply: FastifyReply
 ) {
   const body = req.body
