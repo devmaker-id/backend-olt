@@ -3,6 +3,7 @@ export interface ParsedOnu {
   onuId: string
   macAddress: string
   status: string
+  name?: string
 }
 
 export function parseOnuList(

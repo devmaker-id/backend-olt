@@ -11,7 +11,8 @@ import {
   connectOltController,
   getSystemInfoController,
   getOnuInfoController,
-  getOnuListController
+  getOnuListController,
+  syncOltInventoryController
 } from './olt.controller'
 
 export async function oltRoutes(
@@ -65,5 +66,10 @@ export async function oltRoutes(
   app.get(
     '/:id/onus',
     getOnuListController
+  )
+
+  app.post(
+    '/sync',
+    syncOltInventoryController
   )
 }

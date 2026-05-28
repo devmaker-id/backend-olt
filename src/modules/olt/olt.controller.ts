@@ -11,6 +11,9 @@ import {
   deleteOlt,
   testOnuList
 } from './olt.service'
+import {
+  syncOltInventory
+} from './olt.sync.service'
 
 import {
   CreateOltDto,
@@ -252,6 +255,52 @@ getOnuListController(
         request.params.id,
 
         request.query.port
+      )
+
+    return reply.send({
+
+      success: true,
+
+      ...result
+    })
+  }
+
+  catch (error: any) {
+
+    return reply.status(500).send({
+
+      success: false,
+
+      message:
+        error.message
+    })
+  }
+}
+
+export async function
+syncOltInventoryController(
+
+  request: FastifyRequest<{
+
+    Body: {
+
+      oltId: string
+
+      port: string
+    }
+  }>,
+
+  reply: FastifyReply
+) {
+
+  try {
+
+    const result =
+      await syncOltInventory(
+
+        request.body.oltId,
+
+        request.body.port
       )
 
     return reply.send({
