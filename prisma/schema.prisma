@@ -135,6 +135,8 @@ model UnauthorizedOnu {
   id           String   @id @default(cuid())
   oltId        String
   olt          Olt      @relation(fields: [oltId], references: [id], onDelete: Cascade)
+  onuName      String?
+  status       String?
   macAddress   String   @unique
   eponPort     String
   onuId        String
