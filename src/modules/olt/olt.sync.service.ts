@@ -63,6 +63,9 @@ export async function syncOltInventory(
 
         where: {
           onuMac: mac
+        },
+        include: {
+          endpoint: true
         }
       })
 
@@ -79,13 +82,16 @@ export async function syncOltInventory(
         data: {
           eponPort: item.port,
           onuId: item.onuId,
-          connectionState: item.status === 'Up' ? 'ONLINE' : 'OFFLINE'
+          connectionState: item.status === 'Up' ? 'ONLINE' : 'OFFLINE',
         }
       })
 
       registeredOnu.push({
         ...item,
-        macAddmacAddress: mac,
+        name: onu.endpoint?.name,
+        type: onu.endpoint?.type,
+        internetNo: onu.endpoint?.internetNo,
+        macAddress: mac,
         endPointId: onu.endpointId,
         dbId: onu.id
       })

@@ -73,8 +73,7 @@ export async function getEndpointByInet(
     }
   }
 
-  const onu =
-    endpoint.onus[0]
+  const onu = endpoint.onus[0]
 
   if (!onu) {
 
@@ -98,11 +97,11 @@ export async function getEndpointByInet(
 
   try {
 
-    const realtime =
-      await adapter.getCompleteOnuInfo(
+    const realtime = await adapter.getCompleteOnuInfo(
         onu.eponPort,
         onu.onuId
       )
+
     const signalStatus = classifyRxPower( realtime.optical?.rxpower )
 
     return {

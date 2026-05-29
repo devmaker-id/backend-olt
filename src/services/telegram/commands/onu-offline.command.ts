@@ -12,28 +12,30 @@ handleOnuOfflineCommand(
 
   const onus =
     await prisma.onu.findMany({
-
       where: {
-
         connectionState: 'OFFLINE',
-
         isActive: true
       },
-
       include: {
-
-        endpoint: true,
-
-        olt: true
+        endpoint: {
+          select: {
+            name: true,
+            address: true,
+            internetNo: true,
+          }
+        },
+        olt: {
+          select: {
+            name: true
+          }
+        }
       },
-
       orderBy: {
         updatedAt: 'desc'
       }
     })
 
   if (!onus.length) {
-
     await TelegramService.sendMessage({
       chatId,
       text: '✅ Semua ONU online',

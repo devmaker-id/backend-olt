@@ -128,12 +128,20 @@ export class HisfocusAdapter {
       onu.connectionState ===
       'ONLINE'
     ) {
-
-      optical =
-        await this.getOpticalInfo(
+      try {
+        optical = await this.getOpticalInfo(
           epon,
           onuId
         )
+      } catch (error) {
+        optical = {
+          temperature: null,
+          voltage: null,
+          txbias: null,
+          txpower: null,
+          rxpower: null
+        }
+      }
     }
 
     return {

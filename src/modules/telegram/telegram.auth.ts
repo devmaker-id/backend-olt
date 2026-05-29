@@ -16,8 +16,7 @@ validateTelegramUser(
       })
 
   if (
-    !user ||
-    !user.isActive
+    !user || !user.isActive
   ) {
     return null
   }
