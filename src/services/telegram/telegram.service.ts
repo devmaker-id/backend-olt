@@ -32,4 +32,45 @@ export class TelegramService {
       return null
     }
   }
+
+  static async editMessage(
+    data: {
+      chatId: string | number
+      messageId: number
+      text: string
+    }
+  ) {
+
+    try {
+      const response =
+      await fetch(
+        `https://api.telegram.org/bot${env.telegramBotToken}/editMessageText`, {
+          method: 'POST',
+          headers: {
+            'Content-Type':
+              'application/json'
+          },
+          body:
+            JSON.stringify({
+              chat_id: data.chatId,
+              message_id: data.messageId,
+              text: data.text,
+              parse_mode: 'HTML'
+            })
+        }
+      )
+      if(!response.ok) {
+        console.log(
+          await response.text()
+        )
+        return null
+      }
+      return await response.json()
+    } catch (error) {
+      console.log( 'TELEGRAM EDIT ERROR' )
+      console.log(error)
+      return null
+    }
+  }
+
 }

@@ -4,13 +4,20 @@ export async function validateUnauthorizedOnu(
   macAddress: string
 ) {
   const registered = await prisma.onu.findUnique({
-    where: { onuMac: macAddress }
+    where: { onuMac: macAddress },
+    include: {
+      endpoint: {
+        select: {
+          internetNo: true
+        }
+      }
+    }
   })
 
   if(registered) {
     return {
       success: false,
-      message: 'ONU_ALREADY_REGISTERED_tested',
+      message: 'ONU_ALREADY_REGISTERED',
       data: registered
     }
   }

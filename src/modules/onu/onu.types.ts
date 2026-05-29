@@ -20,3 +20,17 @@ export interface AuthorizeOnuDto {
   }
   packageId?: string,
 }
+
+// RESPONSE AUTHORIZE
+
+export interface AuthorizeOnuResult {
+  success: boolean
+  message: string
+  data: {
+    internetNo: string |null
+    name: string | null
+    type: EndpointType
+    macAddress: string
+    port: string
+  } | null
+}

@@ -1,7 +1,10 @@
 import { prisma } from '../../config/prisma'
 import { TelnetTransport } from '../../services/network/transport/telnet.transport'
 import { HisfocusAdapter } from '../../services/network/vendors/hisfocus/hisfocus.adapter'
-import { AuthorizeOnuDto } from './onu.types'
+import {
+  AuthorizeOnuDto,
+  AuthorizeOnuResult
+} from './onu.types'
 import {
   validateUnauthorizedOnu,
   validateExistingOnu
@@ -11,11 +14,15 @@ import { generateInternetNo } from '../../utils/generate-internet-no'
 
 export async function authorizeOnu(
   data: AuthorizeOnuDto
-) {
+): Promise<AuthorizeOnuResult> {
 
   const unauthorized = await validateUnauthorizedOnu( data.macAddress )
   if(!unauthorized.success) {
-    return unauthorized
+    return {
+      success: false,
+      message: unauthorized.message,
+      data: null
+    }
   }
 
   const olt = await prisma.olt.findUnique({
@@ -27,7 +34,8 @@ export async function authorizeOnu(
   if (!olt) {
     return {
       success: false,
-      message: 'OLT_NOT_FOUND'
+      message: 'OLT_NOT_FOUND',
+      data: null
     }
   }
 
@@ -66,7 +74,6 @@ export async function authorizeOnu(
     
     const result =
       await prisma.$transaction(
-
         async tx => {
           const internetNo = await generateInternetNo()
           const endpoint =
@@ -116,15 +123,19 @@ export async function authorizeOnu(
 
           return {
             success: true,
-            data: onu
+            message: 'ONU BERHAIL DI REGISTRASI',
+            data: {
+              internetNo: endpoint.internetNo,
+              name: endpoint.name,
+              type: endpoint.type,
+              macAddress: onu.onuMac,
+              port: `${onu.eponPort}:${onu.onuId}`
+            }
           }
         }
       )
 
-    return {
-      success: true,
-      data: result
-    }
+    return result
   }
 
   finally {
