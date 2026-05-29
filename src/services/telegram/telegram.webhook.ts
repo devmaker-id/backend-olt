@@ -57,16 +57,16 @@ export async function telegramWebhook(
       })
     }
 
-    console.log(
+    // console.log(
 
-      '[TELEGRAM UPDATE]',
+    //   '[TELEGRAM UPDATE]',
 
-      JSON.stringify(
-        body,
-        null,
-        2
-      )
-    )
+    //   JSON.stringify(
+    //     body,
+    //     null,
+    //     2
+    //   )
+    // )
 
     const text =
       body?.message?.text

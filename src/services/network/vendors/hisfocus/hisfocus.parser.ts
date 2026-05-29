@@ -1,4 +1,5 @@
 import { ConnectionState } from '@prisma/client'
+import { HisfocusOpticalInfo } from './hisfocus.types'
 
 export class HisfocusParser {
   static parseNetworkInfo(raw: string) {
@@ -34,7 +35,7 @@ export class HisfocusParser {
 
   static parseOpticalInfo(
     response: string
-  ) {
+  ): HisfocusOpticalInfo {
 
     const lines = response
       .split('\n')
@@ -62,20 +63,12 @@ export class HisfocusParser {
     }
 
     return {
-      temperature:
-        opticalData.temperature,
-
-      voltage:
-        opticalData.voltage,
-
-      txbias:
-        opticalData.txbias,
-
-      txpower:
-        opticalData.txpower,
-
-      rxpower:
-        opticalData.rxpower
+      status: 'OK',
+      temperature: opticalData.temperature,
+      voltage: opticalData.voltage,
+      txbias: opticalData.txbias,
+      txpower: opticalData.txpower,
+      rxpower: opticalData.rxpower
     }
   }
 

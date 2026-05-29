@@ -1,11 +1,10 @@
-import { TelnetTransport }
-  from '../../transport/telnet.transport'
-
-import { HisfocusCommands }
-  from './hisfocus.commands'
-
-import { HisfocusParser }
-  from './hisfocus.parser'
+import { TelnetTransport } from '../../transport/telnet.transport'
+import { HisfocusCommands } from './hisfocus.commands'
+import { HisfocusParser } from './hisfocus.parser'
+import {
+  HisfocusOpticalInfo,
+  UNKNOWN_OPTICAL
+} from './hisfocus.types'
 
 export class HisfocusAdapter {
 
@@ -122,7 +121,8 @@ export class HisfocusAdapter {
         onuId
       )
 
-    let optical = null
+    // let optical = null
+    let optical: HisfocusOpticalInfo = UNKNOWN_OPTICAL
 
     if (
       onu.connectionState ===
@@ -134,13 +134,7 @@ export class HisfocusAdapter {
           onuId
         )
       } catch (error) {
-        optical = {
-          temperature: null,
-          voltage: null,
-          txbias: null,
-          txpower: null,
-          rxpower: null
-        }
+        optical = UNKNOWN_OPTICAL
       }
     }
 
