@@ -90,11 +90,17 @@ model Onu {
   eponPort String
   onuMac String @unique
   onuName String?
+  onuComtName String?
   onuType String?
   model String?
   firmware String?
   status OnuStatus?
   connectionState ConnectionState?
+  temperature String?
+  voltage String?
+  txBias  String?
+  txPower String?
+  rxPower String?
   isActive Boolean @default(true)
   alarmLogs AlarmLog[]
   createdAt DateTime @default(now())
@@ -135,6 +141,7 @@ model UnauthorizedOnu {
   id           String   @id @default(cuid())
   oltId        String
   olt          Olt      @relation(fields: [oltId], references: [id], onDelete: Cascade)
+  onuComtName  String?
   onuName      String?
   status       String?
   macAddress   String   @unique

@@ -1,8 +1,11 @@
+import { generateNameOnu } from "../../../utils/normalize-onu"
+
 export interface ParsedOnu {
   port: string
   onuId: string
   macAddress: string
   status: string
+  onuComtName?: String
   name?: string
 }
 
@@ -43,6 +46,7 @@ export function parseOnuList(
     }
 
     const onu = parts[0]
+    const onuName = parts.slice(12).join(' ')
 
     const [
       port,
@@ -53,7 +57,9 @@ export function parseOnuList(
       port,
       onuId,
       macAddress: parts[1],
-      status: parts[2]
+      status: parts[2],
+      onuComtName: generateNameOnu(onuName),
+      name: onuName
     })
   }
 

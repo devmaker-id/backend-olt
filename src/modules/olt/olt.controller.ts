@@ -231,8 +231,7 @@ export async function getOnuInfoController(
   }
 }
 
-export async function
-getOnuListController(
+export async function getOnuListController(
 
   request: FastifyRequest<{
     Params: {
@@ -277,8 +276,7 @@ getOnuListController(
   }
 }
 
-export async function
-syncOltInventoryController(
+export async function syncOltInventoryController(
 
   request: FastifyRequest<{
 
@@ -295,18 +293,13 @@ syncOltInventoryController(
 
   try {
 
-    const result =
-      await syncOltInventory(
-
+    const result = await syncOltInventory(
         request.body.oltId,
-
         request.body.port
       )
 
     return reply.send({
-
       success: true,
-
       ...result
     })
   }

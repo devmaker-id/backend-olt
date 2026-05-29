@@ -9,16 +9,16 @@ export async function authorizeOnuController(
 
   try {
 
-    const body =
-      req.body as AuthorizeOnuDto
+    const body = req.body as AuthorizeOnuDto
+    const result = await authorizeOnu(body)
 
-    const onu =
-      await authorizeOnu(body)
+    if(!result.success) {
+      return reply.status(400).send(result)
+    }
 
-    return reply.send({
-      success: true,
-      data: onu
-    })
+    return reply.send(
+      result
+    )
 
   }
 

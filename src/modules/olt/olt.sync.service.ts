@@ -1,19 +1,12 @@
-import { prisma }
-  from '../../config/prisma'
-
-import { TelnetTransport }
-  from '../../services/network/transport/telnet.transport'
-
+import { prisma } from '../../config/prisma'
+import { TelnetTransport } from '../../services/network/transport/telnet.transport'
+import { parseOnuList } from './parsers/onu-list.parser'
 import {
-  parseOnuList
-} from './parsers/onu-list.parser'
-
-import {
-  normalizeMac
+  normalizeMac,
+  generateNameOnu,
 } from '../../utils/normalize-onu'
 
-export async function
-syncOltInventory(
+export async function syncOltInventory(
   oltId: string,
   port: string
 ) {
@@ -33,22 +26,13 @@ syncOltInventory(
     )
   }
 
-  const telnet =
-    new TelnetTransport()
+  const telnet = new TelnetTransport()
 
   await telnet.connect({
-
-    host:
-      olt.ipAddress,
-
-    port:
-      olt.telnetPort,
-
-    username:
-      olt.username,
-
-    password:
-      olt.password
+    host: olt.ipAddress,
+    port: olt.telnetPort,
+    username: olt.username,
+    password: olt.password
   })
 
   await telnet.sendCommand(
@@ -61,13 +45,13 @@ syncOltInventory(
       30000,
     )
 
-  const parsed =
-    parseOnuList(output)
+  const parsed = parseOnuList(output)
 
-  let registered = 0
-  let unauthorized = 0
+  let registeredOnu: any[] = []
+  let unauthorizedOnu: any[] = []
 
   for (const item of parsed) {
+    const comntName = generateNameOnu(item.name!)
 
     const mac =
       normalizeMac(
@@ -86,8 +70,6 @@ syncOltInventory(
 
     if (onu) {
 
-      registered++
-
       await prisma.onu.update({
 
         where: {
@@ -95,71 +77,53 @@ syncOltInventory(
         },
 
         data: {
-
-          eponPort:
-            item.port,
-
-          onuId:
-            item.onuId,
-
-          connectionState:
-            item.status === 'Up'
-              ? 'ONLINE'
-              : 'OFFLINE'
+          eponPort: item.port,
+          onuId: item.onuId,
+          connectionState: item.status === 'Up' ? 'ONLINE' : 'OFFLINE'
         }
+      })
+
+      registeredOnu.push({
+        ...item,
+        macAddmacAddress: mac,
+        endPointId: onu.endpointId,
+        dbId: onu.id
       })
 
       continue
     }
 
     // ONU BELUM TERDAFTAR
-
-    unauthorized++
-
-    await prisma.unauthorizedOnu.upsert({
+    const unauthorizeData =  await prisma.unauthorizedOnu.upsert({
 
       where: {
         macAddress: mac
       },
 
       update: {
-
-        eponPort:
-          item.port,
-
-        onuId:
-          item.onuId,
-
-        onuName:
-          item.name,
-
-        status:
-          item.status,
-
-        discoveredAt:
-          new Date()
+        eponPort: item.port,
+        onuId: item.onuId,
+        onuComtName: comntName,
+        onuName: item.name,
+        status: item.status,
+        discoveredAt: new Date()
       },
 
       create: {
-
-        oltId:
-          olt.id,
-
-        macAddress:
-          mac,
-
-        eponPort:
-          item.port,
-
-        onuId:
-          item.onuId,
-
-        onuName:
-          item.name,
-
-        status:
-          item.status
+        oltId: olt.id,
+        macAddress: mac,
+        eponPort: item.port,
+        onuId: item.onuId,
+        onuComtName: comntName,
+        onuName: item.name,
+        status: item.status
       }
+    })
+    unauthorizedOnu.push({
+      ...item,
+      macAddress: mac,
+      id: unauthorizeData.id,
+      onuComtName: comntName
     })
   }
 
@@ -168,15 +132,11 @@ syncOltInventory(
   return {
 
     summary: {
-
-      total:
-        parsed.length,
-
-      registered,
-
-      unauthorized
+      total: parsed.length,
+      registered: registeredOnu.length,
+      unauthorized: unauthorizedOnu.length
     },
-
-    data: parsed
+    registered: registeredOnu,
+    unauthorize: unauthorizedOnu
   }
 }

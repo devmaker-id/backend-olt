@@ -14,26 +14,27 @@ export async function authorizeOnu(
 ) {
 
   const unauthorized = await validateUnauthorizedOnu( data.macAddress )
+  if(!unauthorized.success) {
+    return unauthorized
+  }
 
-  const olt =
-    await prisma.olt.findUnique({
+  const olt = await prisma.olt.findUnique({
       where: {
-        id:
-          unauthorized.oltId
+        id: unauthorized.data?.oltId
       }
     })
 
   if (!olt) {
-
-    throw new Error(
-      'OLT_NOT_FOUND'
-    )
+    return {
+      success: false,
+      message: 'OLT_NOT_FOUND'
+    }
   }
 
   await validateExistingOnu(
-    unauthorized.oltId,
-    unauthorized.eponPort,
-    unauthorized.onuId
+    unauthorized.data?.oltId!,
+    unauthorized.data?.eponPort!,
+    unauthorized.data?.onuId!
   )
 
   const transport = new TelnetTransport()
@@ -52,28 +53,16 @@ export async function authorizeOnu(
       normalizeOnuName(
         data.endpoint.name
       )
-
     await adapter.renameOnu(
-
-      unauthorized.eponPort,
-
-      unauthorized.onuId,
-
+      unauthorized.data?.eponPort!,
+      unauthorized.data?.onuId!,
       normalizedName
     )
 
-    const profile =
-      await adapter.getCompleteOnuInfo(
-
-        unauthorized.eponPort,
-
-        unauthorized.onuId
+    const profile = await adapter.getCompleteOnuInfo(
+        unauthorized.data?.eponPort!,
+        unauthorized.data?.onuId!
       )
-
-    console.log(
-      'ONU PROFILE',
-      profile.onu
-    )
     
     const result =
       await prisma.$transaction(
@@ -97,58 +86,45 @@ export async function authorizeOnu(
           const onu =
             await tx.onu.create({
               data: {
-
-                oltId:
-                  unauthorized.oltId,
-
-                endpointId:
-                  endpoint.id,
-
-                packageId:
-                  data.packageId,
-
-                onuMac:
-                  unauthorized.macAddress,
-
-                eponPort:
-                  unauthorized.eponPort,
-
-                onuId:
-                  unauthorized.onuId,
-
-                onuName:
-                  profile.onu.onu_name,
-
-                onuType:
-                  profile.onu.onu_type,
-
-                model:
-                  profile.onu.model_string,
-
-                firmware:
-                  profile.onu.firmware_version,
-
-                status:
-                  'ACTIVE',
-
-                connectionState:
-                  profile.onu.connectionState
+                oltId: olt.id,
+                endpointId: endpoint.id,
+                packageId: data.packageId,
+                onuMac: data.macAddress,
+                eponPort: unauthorized.data?.eponPort!,
+                onuId: unauthorized.data?.onuId!,
+                onuName: data.endpoint.name,
+                onuComtName: unauthorized.data?.onuComtName,
+                onuType: profile.onu.onu_type,
+                model: profile.onu.model_string,
+                firmware: profile.onu.firmware_version,
+                status: 'ACTIVE',
+                connectionState: profile.onu.connectionState,
+                temperature: profile.optical?.temperature,
+                voltage: profile.optical?.voltage,
+                txBias: profile.optical?.txbias,
+                txPower: profile.optical?.txpower,
+                rxPower: profile.optical?.rxpower
               }
             })
 
           await tx.unauthorizedOnu
             .delete({
               where: {
-                macAddress:
-                  data.macAddress
+                macAddress: data.macAddress
               }
             })
 
-          return onu
+          return {
+            success: true,
+            data: onu
+          }
         }
       )
 
-    return result
+    return {
+      success: true,
+      data: result
+    }
   }
 
   finally {

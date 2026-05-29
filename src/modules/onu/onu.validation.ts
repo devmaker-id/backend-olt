@@ -1,20 +1,37 @@
-import { prisma }
-  from '../../config/prisma'
+import { prisma } from '../../config/prisma'
 
 export async function validateUnauthorizedOnu(
   macAddress: string
 ) {
+  const registered = await prisma.onu.findUnique({
+    where: { onuMac: macAddress }
+  })
 
-  const onu =
-    await prisma.unauthorizedOnu.findUnique({
+  if(registered) {
+    return {
+      success: false,
+      message: 'ONU_ALREADY_REGISTERED_tested',
+      data: registered
+    }
+  }
+
+  const unauthorize = await prisma.unauthorizedOnu.findUnique({
       where: { macAddress }
     })
 
-  if (!onu) {
-    throw new Error( 'UNAUTHORIZED_ONU_NOT_FOUND' )
+  if (!unauthorize) {
+    return {
+      success: false,
+      message: 'UNAUTHORIZED_ONU_NOT_FOUND',
+      data: null
+    }
   }
 
-  return onu
+  return {
+    success: true,
+    message: 'ONU_AVAILABLE_REGISTERD',
+    data: unauthorize
+  }
 }
 
 export async function validateExistingOnu(
@@ -35,8 +52,9 @@ export async function validateExistingOnu(
 
   if (onu) {
 
-    throw new Error(
-      'ONU_ALREADY_REGISTERED'
-    )
+    return {
+      success: false,
+      message: 'ONU_ALREADY_REGISTERD'
+    }
   }
 }
