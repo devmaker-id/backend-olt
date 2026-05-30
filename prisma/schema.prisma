@@ -79,32 +79,33 @@ model Olt {
 }
 
 model Onu {
-  id String @id @default(cuid())
-  oltId String
-  olt Olt @relation(fields: [oltId], references: [id], onDelete: Cascade)
-  endpointId String?
-  endpoint Endpoint? @relation(fields: [endpointId], references: [id])
-  packageId String?
-  package Package? @relation(fields: [packageId], references: [id])
-  onuId String
-  eponPort String
-  onuMac String @unique
-  onuName String?
-  onuComtName String?
-  onuType String?
-  model String?
-  firmware String?
-  status OnuStatus?
-  connectionState ConnectionState?
-  temperature String?
-  voltage String?
-  txBias  String?
-  txPower String?
-  rxPower String?
-  isActive Boolean @default(true)
-  alarmLogs AlarmLog[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String          @id @default(cuid())
+  oltId             String
+  olt               Olt             @relation(fields: [oltId], references: [id], onDelete: Cascade)
+  endpointId        String?
+  endpoint          Endpoint?       @relation(fields: [endpointId], references: [id])
+  packageId         String?
+  package           Package?        @relation(fields: [packageId], references: [id])
+  onuId             String
+  eponPort          String
+  onuMac            String          @unique
+  onuName           String?
+  onuComtName       String?
+  onuType           String?
+  model             String?
+  firmware          String?
+  status            OnuStatus?
+  connectionState   ConnectionState?
+  temperature       String?
+  voltage           String?
+  txBias            String?
+  txPower           String?
+  rxPower           String?
+  isActive          Boolean         @default(true)
+  alarmLogs         AlarmLog[]
+  event             OnuEvent[]
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
   @@unique([oltId, eponPort, onuId])
   @@index([oltId])
   @@index([endpointId])
@@ -113,18 +114,18 @@ model Onu {
 }
 
 model Endpoint {
-  id String @id @default(cuid())
-  type EndpointType
-  internetNo  String? @unique
-  name String
-  code String? @unique
-  address String?
-  latitude Float?
-  longitude Float?
+  id          String    @id   @default(cuid())
+  type        EndpointType
+  internetNo  String?   @unique
+  name        String
+  code        String?   @unique
+  address     String?
+  latitude    Float?
+  longitude   Float?
   description String?
-  onus Onu[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  onus        Onu[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Package {
@@ -183,4 +184,19 @@ model TelegramUser {
   role        TelegramRole   @default(TEKNISI)
   isActive    Boolean        @default(true)
   createdAt   DateTime       @default(now())
+}
+
+model OnuEvent {
+  id          String   @id @default(cuid())
+  onuId       String
+  onu         Onu      @relation( fields: [onuId], references: [id], onDelete: Cascade )
+  event       String
+  oldState    String?
+  newState    String?
+  source      String?
+  description String?
+  createdAt   DateTime @default(now())
+  @@index([onuId])
+  @@index([event])
+  @@index([createdAt])
 }

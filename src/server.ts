@@ -8,7 +8,7 @@ async function bootstrap() {
 
     const syslogServer = new SyslogServer()
 
-    const SYSLOG_PORT = 5140
+    const SYSLOG_PORT = 514
 
     syslogServer.start(
       SYSLOG_PORT
