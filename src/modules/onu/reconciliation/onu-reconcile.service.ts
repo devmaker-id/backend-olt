@@ -40,7 +40,7 @@ export async function reconcileOltWithSession(oltId:string){
         results.push(
           reconcileResult
         )
-        if(reconcileResult){
+        if(reconcileResult.changed){
           changed++
         } else {
           unchanged++
