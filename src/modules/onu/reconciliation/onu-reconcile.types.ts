@@ -16,3 +16,11 @@ export interface ReconcileResult {
   oldState?: ConnectionState | null
   newState?: ConnectionState | null
 }
+
+export interface ReconcileSummary {
+  total: number
+  changed: number
+  unchanged: number
+  failed: number
+  results: ReconcileResult[]
+}
