@@ -5,6 +5,7 @@ import { TelegramService } from '../../../telegram/telegram.service'
 import { EventCooldown } from '../../../cache/event.cooldown'
 import { normalizeMac } from '../../../../utils/normalize-onu'
 import { buildOnuAlertMessage } from '../../../telegram/messages/build-onu-alert'
+import { createOnuEvent } from '../../../../modules/onu/reconciliation/onu-event.service'
 
 export class HisfocusSyslogService {
   static async process(
@@ -45,15 +46,30 @@ export class HisfocusSyslogService {
 
     if (onu) {
 
+      const oldState = onu.connectionState
+      const newState = parsed.status === 'linkup' ? 'ONLINE' : 'OFFLINE'
+
       await prisma.onu.update({
         where: {
           id: onu.id
         },
 
         data: {
-          connectionState: parsed.status === 'linkup' ? 'ONLINE' : 'OFFLINE'
+          connectionState: newState
         }
       })
+
+      //buat event hanya jika berubah
+      if (oldState !== newState) {
+        await createOnuEvent({
+          onuId: onu.id,
+          event: parsed.status === 'linkup' ? 'LINK_UP' : 'LINK_DOWN',
+          oldState: oldState ?? undefined,
+          newState,
+          source: 'SYSLOG',
+          description: parsed.raw
+        })
+      }
 
       await prisma.alarmLog.create({
         data: {

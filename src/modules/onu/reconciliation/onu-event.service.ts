@@ -15,21 +15,3 @@ export async function createOnuEvent(
     }
   })
 }
-
-export async function getOnuEvents(
-  onuId: string
-) {
-  return prisma.onuEvent.findMany({
-    where: { onuId },
-    orderBy: { createdAt: 'desc' }
-  })
-}
-
-export async function getLatestOnuEvent(
-  onuId: string
-) {
-  return prisma.onuEvent.findFirst({
-    where: { onuId },
-    orderBy: { createdAt: 'desc' }
-  })
-}

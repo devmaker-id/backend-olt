@@ -6,6 +6,7 @@ export const env = {
   port: Number(process.env.PORT),
   jwtSecret: process.env.JWT_SECRET!,
   syslogStrictMode: process.env.SYSLOG_STRICT_MODE === 'true',
+  syslogPort: Number(process.env.SYSLOG_PORT),
   telegramBotToken: process.env.TELEGRAM_BOT_TOKEN!,
   telegramChatId: process.env.TELEGRAM_CHAT_ID!,
 }

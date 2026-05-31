@@ -190,9 +190,8 @@ export class TelnetTransport {
     ) {
       if (!this.connected) {
         this.connected = true
-        console.log(
-          `TELNET READY ${this.host}`
-        )
+        this.socket?.setTimeout(0)
+        console.log(`TELNET READY ${this.host}`)
         resolve()
         this.buffer = ''
         return
@@ -367,20 +366,11 @@ export class TelnetTransport {
   }
 
 async disconnect() {
-
-  if (!this.socket) {
-    return
-  }
-
+  if(!this.socket){return}
+  this.socket.removeAllListeners()
   this.socket.destroy()
-
   this.socket = null
-
   this.resetState()
-
-  console.log(
-    `TELNET CLOSED ${this.host}`
-  )
 }
 
 

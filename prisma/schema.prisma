@@ -103,7 +103,7 @@ model Onu {
   rxPower           String?
   isActive          Boolean         @default(true)
   alarmLogs         AlarmLog[]
-  event             OnuEvent[]
+  events            OnuEvent[]
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   @@unique([oltId, eponPort, onuId])
@@ -116,7 +116,7 @@ model Onu {
 model Endpoint {
   id          String    @id   @default(cuid())
   type        EndpointType
-  internetNo  String?   @unique
+  internetNo  String   @unique
   name        String
   code        String?   @unique
   address     String?
