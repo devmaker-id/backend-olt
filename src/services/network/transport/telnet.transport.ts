@@ -113,6 +113,11 @@ export class TelnetTransport {
     options: TelnetConnectOptions,
     resolve: () => void
   ) {
+    console.log(
+      'RAW:',
+      JSON.stringify(data)
+    )
+
     this.buffer += data
     if (
       !this.usernameSent &&
@@ -184,10 +189,7 @@ export class TelnetTransport {
       return true
     }
 
-    if (
-      /OLT_.*[>#]/i
-      .test(this.buffer)
-    ) {
+    if (/\r?\n?[^\r\n]+[>#]\s*$/.test(this.buffer)) {
       if (!this.connected) {
         this.connected = true
         this.socket?.setTimeout(0)
@@ -321,6 +323,16 @@ export class TelnetTransport {
 
     console.log(
       `TELNET CMD ${task.command}`
+    )
+
+    console.log(
+      'SOCKET EXISTS',
+      !!this.socket
+    )
+
+    console.log(
+      'CONNECTED',
+      this.connected
     )
 
     this.socket?.write(

@@ -22,12 +22,15 @@ export class HisfocusAdapter {
       return 'ALREADY_ENABLED'
     }
 
-    const result =
-      await this.transport.sendCommand(
+    console.log('ENABLE_START')
+
+    const result = await this.transport.sendCommand(
         HisfocusCommands.enable
       )
 
     this.enabled = true
+
+    console.log('ENABLE_DONE')
 
     return result
   }
