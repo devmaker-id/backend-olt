@@ -1,16 +1,9 @@
-import {
-  Onu,
-  ConnectionState
-} from '@prisma/client'
 import { prisma } from '../../../config/prisma'
-import { TelnetTransport } from '../../../services/network/transport/telnet.transport'
-import { HisfocusAdapter } from '../../../services/network/vendors/hisfocus/hisfocus.adapter'
-import { createOnuEvent } from './onu-event.service'
-import { ReconcileResult } from './onu-reconcile.types'
+import { TelnetTransport } from '../../../services/network/hisfocus/telnet.transport'
+import { HisfocusAdapter } from '../../../services/network/hisfocus/hisfocus.adapter'
+import { TelnetSession } from '../../../services/network/hisfocus/telnet.session'
 
-export async function reconcileOnu(
-  onuId: string
-) {
+export async function reconcileOnu(onuId: string) {
   const onu = await prisma.onu.findUnique({
       where: { id: onuId },
       include: { olt: true }
@@ -18,22 +11,28 @@ export async function reconcileOnu(
   if (!onu) {
     throw new Error( 'ONU_NOT_FOUND' )
   }
+
   const transport = new TelnetTransport()
   try {
     await transport.connect({
         host: onu.olt.ipAddress,
-        port: onu.olt.telnetPort,
+        port: onu.olt.telnetPort
+      })
+
+      const session = new TelnetSession(transport)
+
+      await session.login({
         username: onu.olt.username,
         password: onu.olt.password
       })
-      const adapter = new HisfocusAdapter(
-        transport
-      )
 
-      return reconcileOnuWithAdapter(
-        onu,
-        adapter
+      const adapter = new HisfocusAdapter(session)
+      const result =  await adapter.getCompleteOnuInfo(
+        onu.eponPort,
+        onu.onuId
       )
+      return result
+
   } finally {
     await transport.disconnect()
   }
@@ -54,7 +53,7 @@ export async function reconcileOlt(
           onu.id
         )
       results.push(
-        result
+        result.onu.onu_name
       )
     }
     catch(error) {
@@ -62,73 +61,4 @@ export async function reconcileOlt(
     }
   }
   return results
-}
-
-
-async function reconcileOnuWithAdapter(
-  onu: Onu,
-  adapter: HisfocusAdapter
-): Promise<ReconcileResult> {
-
-  const profile =
-    await adapter.getCompleteOnuInfo(
-      onu.eponPort,
-      onu.onuId
-    )
-
-  const dbState = onu.connectionState
-
-  const oltState = profile.onu.connectionState
-
-  if(dbState === oltState) {
-        return {
-          success: true,
-          changed: false,
-          message: 'ONU_ALREADY_SYNC',
-          oldState: dbState,
-          newState: oltState
-        }
-      }
-
-      const updateData: any = {
-        connectionState: oltState
-      }
-
-      if(oltState === 'ONLINE') {
-        updateData.temperature = profile.optical.temperature,
-        updateData.voltage = profile.optical.voltage,
-        updateData.txBias = profile.optical.txbias,
-        updateData.txPower = profile.optical.txpower,
-        updateData.rxPower = profile.optical.rxpower 
-      } else {
-        updateData.temperature = null,
-        updateData.voltage = null,
-        updateData.txBias = null,
-        updateData.txPower = null,
-        updateData.rxPower = null
-      }
-
-      await prisma.onu.update({
-        where: {
-          id: onu.id
-        },
-        data: updateData
-      })
-
-      await createOnuEvent({
-        onuId: onu.id,
-        event: 'RECONCILE_STATE_CHANGE',
-        oldState: dbState ?? undefined,
-        newState: oltState,
-        source: 'RECONCILE',
-        description: `DB=${dbState} OLT=${oltState}`
-      })
-
-      return {
-        success: true,
-        changed: true,
-        message: 'ONU_RECONCILED',
-        oldState: dbState,
-        newState: oltState
-      }
 }

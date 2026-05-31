@@ -1,5 +1,15 @@
 export type OpticalStatus = | 'OK' | 'UNKNOWN'
 
+export interface HisfocusOnuInfo {
+    onu_id: string,
+    onu_mac: string,
+    onu_name: string,
+    connectionState: string,
+    frimware_version: string,
+    model_string: string,
+    onu_type: string
+}
+
 export interface HisfocusOpticalInfo {
   status: OpticalStatus
   temperature: string | null
