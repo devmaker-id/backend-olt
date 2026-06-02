@@ -2,6 +2,8 @@ import app from './app'
 import { env } from './config/env'
 import { SyslogServer } from './services/syslog/core/syslog.server'
 import { telegramRouter } from './services/telegram/telegram.router'
+import { startSchedulers } from './bootstrap/start-schedulers'
+
 
 async function bootstrap() {
   try {
@@ -17,6 +19,8 @@ async function bootstrap() {
     app.register(
       telegramRouter
     )
+
+    startSchedulers()
 
     console.log(
       `SYSLOG RUNNING : ${SYSLOG_PORT}`
