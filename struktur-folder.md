@@ -1,0 +1,219 @@
+cd backend-olt
+tree -L 6 -I 'node_modules|dist|build' > struktur-folder.md
+
+.
+├── README.md
+├── docs
+│   ├── episode_1_backend_olt_documentation.md
+│   ├── folder_structure.md
+│   ├── syslog.md
+│   └── telegram.modules.doc.md
+├── package-lock.json
+├── package.json
+├── prisma
+│   ├── migrations
+│   │   ├── 20260524125034_network
+│   │   │   └── migration.sql
+│   │   ├── 20260525061456_add_no_internet_endpoint
+│   │   │   └── migration.sql
+│   │   ├── 20260526045041_add_telegram_users
+│   │   │   └── migration.sql
+│   │   ├── 20260526050843_fixed_role_telegram
+│   │   │   └── migration.sql
+│   │   ├── 20260526051118_fixed_role_telegram
+│   │   │   └── migration.sql
+│   │   ├── 20260526055516_fix_telegramrole
+│   │   │   └── migration.sql
+│   │   ├── 20260528144240_add
+│   │   │   └── migration.sql
+│   │   ├── 20260529053431_add_name_comm_olt
+│   │   │   └── migration.sql
+│   │   ├── 20260529060038_fix_commentname_onu
+│   │   │   └── migration.sql
+│   │   ├── 20260529071834_add_optik_info
+│   │   │   └── migration.sql
+│   │   ├── 20260530040542_add_onu_event
+│   │   │   └── migration.sql
+│   │   ├── 20260531040144_fix_internet_no
+│   │   │   └── migration.sql
+│   │   └── migration_lock.toml
+│   ├── schema.prisma
+│   └── seed.ts
+├── src
+│   ├── app.ts
+│   ├── bootstrap
+│   │   └── start-schedulers.ts
+│   ├── config
+│   │   ├── env.ts
+│   │   └── prisma.ts
+│   ├── middleware
+│   │   ├── auth.middleware.ts
+│   │   └── role.middleware.ts
+│   ├── modules
+│   │   ├── auth
+│   │   │   ├── auth.controller.ts
+│   │   │   ├── auth.routes.ts
+│   │   │   └── auth.service.ts
+│   │   ├── endpoint
+│   │   │   ├── endpoint.controller.ts
+│   │   │   ├── endpoint.routes.ts
+│   │   │   ├── endpoint.service.ts
+│   │   │   ├── endpoint.types.ts
+│   │   │   └── endpoint.validation.ts
+│   │   ├── logs
+│   │   │   ├── logs.controller.ts
+│   │   │   ├── logs.routes.ts
+│   │   │   └── logs.service.ts
+│   │   ├── olt
+│   │   │   ├── olt.controller.ts
+│   │   │   ├── olt.routes.ts
+│   │   │   ├── olt.service.ts
+│   │   │   ├── olt.sync.service.ts
+│   │   │   ├── olt.types.ts
+│   │   │   ├── olt.validation.ts
+│   │   │   └── parsers
+│   │   │       └── onu-list.parser.ts
+│   │   ├── onu
+│   │   │   ├── inventory
+│   │   │   │   └── onu-inventory.service.ts
+│   │   │   ├── onu.controller.ts
+│   │   │   ├── onu.routes.ts
+│   │   │   ├── onu.service.ts
+│   │   │   ├── onu.types.ts
+│   │   │   ├── onu.validation.ts
+│   │   │   └── reconciliation
+│   │   │       ├── onu-event.service.ts
+│   │   │       ├── onu-reconcile.scheduler.ts
+│   │   │       ├── onu-reconcile.service.ts
+│   │   │       └── onu-reconcile.types.ts
+│   │   ├── telegram
+│   │   │   ├── telegram.auth.ts
+│   │   │   ├── telegram.controller.ts
+│   │   │   ├── telegram.routes.ts
+│   │   │   ├── telegram.service.ts
+│   │   │   ├── telegram.types.ts
+│   │   │   └── telegram.validation.ts
+│   │   └── users
+│   │       ├── users.controller.ts
+│   │       ├── users.routes.ts
+│   │       └── users.service.ts
+│   ├── plugins
+│   │   └── jwt.ts
+│   ├── scripts
+│   │   ├── hisfocus
+│   │   │   ├── test-adapter.ts
+│   │   │   ├── test-connect.ts
+│   │   │   ├── test-enable.ts
+│   │   │   ├── test-login.ts
+│   │   │   ├── test-onu-info.ts
+│   │   │   ├── test-onu-list.ts
+│   │   │   ├── test-reconcile-olt-v2.ts
+│   │   │   ├── test-reconcile-olt.ts
+│   │   │   └── test-reconcile.ts
+│   │   ├── test-reconcile-olt.ts
+│   │   └── test-reconcile.ts
+│   ├── server.ts
+│   ├── services
+│   │   ├── cache
+│   │   │   └── event.cooldown.ts
+│   │   ├── network
+│   │   │   ├── core
+│   │   │   │   ├── connection.manager.ts
+│   │   │   │   └── network.factory.ts
+│   │   │   ├── hisfocus
+│   │   │   │   ├── hisfocus.adapter.ts
+│   │   │   │   ├── hisfocus.commands.ts
+│   │   │   │   ├── hisfocus.parser.ts
+│   │   │   │   ├── hisfocus.types.ts
+│   │   │   │   ├── telnet.session.ts
+│   │   │   │   └── telnet.transport.ts
+│   │   │   ├── transport
+│   │   │   │   └── telnet.transport.ts
+│   │   │   └── vendors
+│   │   │       └── hisfocus
+│   │   │           ├── hisfocus.adapter.ts
+│   │   │           ├── hisfocus.commands.ts
+│   │   │           ├── hisfocus.parser.ts
+│   │   │           └── hisfocus.types.ts
+│   │   ├── syslog
+│   │   │   ├── core
+│   │   │   │   ├── syslog.server.ts
+│   │   │   │   └── syslog.types.ts
+│   │   │   └── vendors
+│   │   │       └── hisfocus
+│   │   │           ├── hisfocus.syslog.parser.ts
+│   │   │           └── hisfocus.syslog.service.ts
+│   │   └── telegram
+│   │       ├── commands
+│   │       │   ├── authorize.command.ts
+│   │       │   ├── help.command.ts
+│   │       │   ├── inet.command.ts
+│   │       │   ├── onu-offline.command.ts
+│   │       │   └── signal.command.ts
+│   │       ├── messages
+│   │       │   └── build-onu-alert.ts
+│   │       ├── session
+│   │       │   ├── telegram-session.handler.ts
+│   │       │   └── telegram.session.ts
+│   │       ├── telegram.commands.ts
+│   │       ├── telegram.router.ts
+│   │       ├── telegram.service.ts
+│   │       ├── telegram.types.ts
+│   │       └── telegram.webhook.ts
+│   ├── types
+│   │   └── fastify.d.ts
+│   └── utils
+│       ├── classify-rx-power.ts
+│       ├── formatter.ts
+│       ├── generate-internet-no.ts
+│       └── normalize-onu.ts
+├── struktur-folder.md
+├── tsconfig.json
+└── web
+    ├── README.md
+    ├── eslint.config.js
+    ├── index.html
+    ├── package-lock.json
+    ├── package.json
+    ├── public
+    │   ├── favicon.svg
+    │   └── icons.svg
+    ├── src
+    │   ├── App.css
+    │   ├── App.tsx
+    │   ├── api
+    │   │   └── auth.api.ts
+    │   ├── app
+    │   │   ├── providers.tsx
+    │   │   └── router.tsx
+    │   ├── assets
+    │   │   ├── hero.png
+    │   │   ├── react.svg
+    │   │   └── vite.svg
+    │   ├── hooks
+    │   │   └── use-login.ts
+    │   ├── index.css
+    │   ├── main.tsx
+    │   ├── modules
+    │   │   ├── auth
+    │   │   │   └── pages
+    │   │   │       └── login.page.tsx
+    │   │   └── dashboard
+    │   │       └── pages
+    │   │           └── dashboard.page.tsx
+    │   ├── shared
+    │   │   ├── components
+    │   │   │   └── sidebar.tsx
+    │   │   ├── layouts
+    │   │   │   ├── auth.layout.tsx
+    │   │   │   └── dashboard.layout.tsx
+    │   │   └── lib
+    │   │       └── api.ts
+    │   └── types
+    │       └── auth.types.ts
+    ├── tsconfig.app.json
+    ├── tsconfig.json
+    ├── tsconfig.node.json
+    └── vite.config.ts
+
+69 directories, 145 files

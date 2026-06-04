@@ -1,8 +1,23 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { login } from '../../../shared/utils/auth'
+
+import {
+    Navigate,
+    useNavigate
+} from "react-router-dom"
 import { useLogin } from "../../../hooks/use-login"
 
 export function LoginPage() {
+    const token = localStorage.getItem( 'token' )
+    if (token) {
+        return (
+            <Navigate
+            to="/dashboard"
+            replace
+            />
+        )
+    }
+
     const navigate = useNavigate()
     const loginMutation = useLogin()
     const [username, setUsername] = useState('')
@@ -16,9 +31,9 @@ export function LoginPage() {
                 password
             })
 
-            localStorage.setItem(
-                'token',
-                result.token
+            login(
+                result.token,
+                result.user
             )
             localStorage.setItem(
                 'user',
@@ -42,9 +57,16 @@ export function LoginPage() {
                     } />
                 </div>
                 <div>
-                    <input placeholder="Password" value={password} onChange={event =>
-                        setPassword(event.target.value)
-                    } />
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={event =>
+                            setPassword(
+                            event.target.value
+                            )
+                        }
+                        />
                 </div>
                 <button type="submit">Login</button>
             </form>
