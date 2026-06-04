@@ -1,6 +1,3 @@
-cd backend-olt
-tree -L 6 -I 'node_modules|dist|build' > struktur-folder.md
-
 .
 ├── README.md
 ├── docs
@@ -196,8 +193,12 @@ tree -L 6 -I 'node_modules|dist|build' > struktur-folder.md
     │   ├── main.tsx
     │   ├── modules
     │   │   ├── auth
+    │   │   │   ├── components
+    │   │   │   │   ├── logout-button.tsx
+    │   │   │   │   └── protected-route.tsx
     │   │   │   └── pages
-    │   │   │       └── login.page.tsx
+    │   │   │       ├── login.page.tsx
+    │   │   │       └── root.page.tsx
     │   │   └── dashboard
     │   │       └── pages
     │   │           └── dashboard.page.tsx
@@ -207,8 +208,10 @@ tree -L 6 -I 'node_modules|dist|build' > struktur-folder.md
     │   │   ├── layouts
     │   │   │   ├── auth.layout.tsx
     │   │   │   └── dashboard.layout.tsx
-    │   │   └── lib
-    │   │       └── api.ts
+    │   │   ├── lib
+    │   │   │   └── api.ts
+    │   │   └── utils
+    │   │       └── auth.ts
     │   └── types
     │       └── auth.types.ts
     ├── tsconfig.app.json
@@ -216,4 +219,4 @@ tree -L 6 -I 'node_modules|dist|build' > struktur-folder.md
     ├── tsconfig.node.json
     └── vite.config.ts
 
-69 directories, 145 files
+71 directories, 149 files
