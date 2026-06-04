@@ -1,4 +1,5 @@
 import Fastify from 'fastify'
+import cors from '@fastify/cors'
 import jwtPlugin from './plugins/jwt'
 import { authRoutes } from './modules/auth/auth.routes'
 import { userRoutes } from './modules/users/users.routes'
@@ -9,6 +10,12 @@ import { modulesTelegramRoutes } from './modules/telegram/telegram.routes'
 
 const app = Fastify({
   logger: true
+})
+
+app.register(cors, {
+  //jika live tentukna
+  // origin: 'http://localhost:5173'
+  origin: true //development
 })
 
 app.register(jwtPlugin)
