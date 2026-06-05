@@ -1,11 +1,17 @@
+export type TelegramRole =
+  | 'ADMIN'
+  | 'TEKNISI'
+
 export interface TelegramUser {
   id: string
 
   telegramId: string
 
-  name: string
+  username: string
 
-  role: string
+  fullName: string
+
+  role: TelegramRole
 
   isActive: boolean
 
@@ -15,7 +21,9 @@ export interface TelegramUser {
 export interface CreateTelegramUserRequest {
   telegramId: string
 
-  name: string
+  username: string
 
-  role: string
+  fullName: string
+
+  role: TelegramRole
 }

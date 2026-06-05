@@ -12,6 +12,7 @@ import {
 import {
   useDeleteTelegramUser
 } from '../hooks/use-delete-telegram-user'
+import type { TelegramRole } from '../types/telegram.types'
 
 export function TelegramUsersPage() {
 
@@ -32,14 +33,19 @@ export function TelegramUsersPage() {
   ] = useState('')
 
   const [
-    name,
-    setName
+    username,
+    setUsername
+  ] = useState('')
+
+  const [
+    fullName,
+    setFullName
   ] = useState('')
 
   const [
     role,
     setRole
-  ] = useState('USER')
+  ] = useState<TelegramRole>('TEKNISI')
 
   async function handleSubmit(
     event: React.FormEvent
@@ -49,12 +55,14 @@ export function TelegramUsersPage() {
 
     await createMutation.mutateAsync({
       telegramId,
-      name,
+      username,
+      fullName,
       role
     })
 
     setTelegramId('')
-    setName('')
+    setUsername('')
+    setFullName('')
   }
 
   if (isLoading) {
@@ -83,10 +91,19 @@ export function TelegramUsersPage() {
         />
 
         <input
-          placeholder="Name"
-          value={name}
+          placeholder="username"
+          value={username}
           onChange={event =>
-            setName(
+            setUsername(
+              event.target.value
+            )
+          }
+        />
+        <input
+          placeholder="fullname"
+          value={fullName}
+          onChange={event =>
+            setFullName(
               event.target.value
             )
           }
@@ -96,12 +113,12 @@ export function TelegramUsersPage() {
           value={role}
           onChange={event =>
             setRole(
-              event.target.value
+              event.target.value as TelegramRole
             )
           }
         >
-          <option value="USER">
-            USER
+          <option value="TEKNISI">
+            TEKNISI
           </option>
 
           <option value="ADMIN">
@@ -122,7 +139,8 @@ export function TelegramUsersPage() {
         <thead>
 
           <tr>
-            <th>Name</th>
+            <th>Username</th>
+            <th>Full Name</th>
             <th>Telegram ID</th>
             <th>Role</th>
             <th>Active</th>
@@ -138,7 +156,11 @@ export function TelegramUsersPage() {
             <tr key={user.id}>
 
               <td>
-                {user.name}
+                {user.username}
+              </td>
+
+              <td>
+                {user.fullName}
               </td>
 
               <td>
@@ -146,7 +168,9 @@ export function TelegramUsersPage() {
               </td>
 
               <td>
-                {user.role}
+                {
+                  user.role === 'ADMIN' ? '👑 ADMIN' : '🔧 TEKNISI'
+                }
               </td>
 
               <td>
