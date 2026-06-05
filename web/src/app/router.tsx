@@ -10,6 +10,7 @@ import { EndpointListPage } from '../modules/endpoint/pages/endpoint-list.page'
 import { DashboardLayout } from '../shared/layouts/dashboard.layout'
 import { UnregisteredOnuPage } from '../modules/onu/pages/unregistered-onu.page'
 import { EndpointDetailPage } from '../modules/endpoint/pages/endpoint-detail.page'
+import { TelegramUsersPage } from '../modules/telegram/pages/telegram-users.page'
 
 export const router =
   createBrowserRouter([
@@ -72,6 +73,18 @@ export const router =
         <ProtectedRoute>
           <DashboardLayout>
             <UnregisteredOnuPage />
+          </DashboardLayout>
+        </ProtectedRoute>
+      )
+    },
+    {
+      path:
+        '/telegram/users',
+
+      element: (
+        <ProtectedRoute>
+          <DashboardLayout>
+            <TelegramUsersPage />
           </DashboardLayout>
         </ProtectedRoute>
       )

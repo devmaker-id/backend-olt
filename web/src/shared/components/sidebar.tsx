@@ -45,11 +45,11 @@ export function Sidebar() {
             </Link>
           </li>
 
-          <li>
-            <Link to="/olt">
-              OLT
-            </Link>
-          </li>
+          <Link
+            to="/telegram/users"
+          >
+            Telegram Users
+          </Link>
 
           <li>
             <Link to="/onu">
