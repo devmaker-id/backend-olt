@@ -165,3 +165,135 @@ verifyTelegramBotToken(
 
   return result.result
 }
+
+export async function
+getWebhookInfo(
+  id: string
+) {
+
+  const bot =
+    await prisma.telegramBot.findUnique({
+
+      where: {
+        id
+      }
+    })
+
+  if (!bot) {
+
+    throw new Error(
+      'Bot tidak ditemukan'
+    )
+  }
+
+  const response =
+    await fetch(
+      `https://api.telegram.org/bot${bot.token}/getWebhookInfo`
+    )
+
+  return response.json()
+}
+export async function
+setWebhook(
+
+  id: string,
+
+  url: string
+) {
+
+  const bot =
+    await prisma.telegramBot.findUnique({
+
+      where: {
+        id
+      }
+    })
+
+  if (!bot) {
+
+    throw new Error(
+      'Bot tidak ditemukan'
+    )
+  }
+
+  const response =
+    await fetch(
+      `https://api.telegram.org/bot${bot.token}/setWebhook`,
+      {
+        method: 'POST',
+
+        headers: {
+          'Content-Type':
+            'application/json'
+        },
+
+        body:
+          JSON.stringify({
+            url
+          })
+      }
+    )
+
+  const result =
+    await response.json()
+
+  if (result.ok) {
+
+    await prisma.telegramBot.update({
+
+      where: {
+        id
+      },
+
+      data: {
+        webhookUrl: url
+      }
+    })
+  }
+
+  return result
+}
+export async function
+deleteWebhook(
+  id: string
+) {
+
+  const bot =
+    await prisma.telegramBot.findUnique({
+
+      where: {
+        id
+      }
+    })
+
+  if (!bot) {
+
+    throw new Error(
+      'Bot tidak ditemukan'
+    )
+  }
+
+  const response =
+    await fetch(
+      `https://api.telegram.org/bot${bot.token}/deleteWebhook`
+    )
+
+  const result =
+    await response.json()
+
+  if (result.ok) {
+
+    await prisma.telegramBot.update({
+
+      where: {
+        id
+      },
+
+      data: {
+        webhookUrl: null
+      }
+    })
+  }
+
+  return result
+}

@@ -17,7 +17,10 @@ import {
   updateTelegramBot,
 
   deleteTelegramBot,
-  sendTestMessage
+  sendTestMessage,
+  getWebhookInfo,
+  setWebhook,
+  deleteWebhook
 
 } from './telegram-bot.service'
 
@@ -147,6 +150,73 @@ sendTestMessageController(
       request.params.id,
 
       request.body.chatId
+    )
+
+  return {
+    data: result
+  }
+}
+
+export async function
+getWebhookInfoController(
+
+  request: FastifyRequest<{
+    Params: {
+      id: string
+    }
+  }>
+) {
+
+  const result =
+    await getWebhookInfo(
+      request.params.id
+    )
+
+  return {
+    data: result
+  }
+}
+export async function
+setWebhookController(
+
+  request: FastifyRequest<{
+
+    Params: {
+      id: string
+    }
+
+    Body: {
+      url: string
+    }
+
+  }>
+) {
+
+  const result =
+    await setWebhook(
+
+      request.params.id,
+
+      request.body.url
+    )
+
+  return {
+    data: result
+  }
+}
+export async function
+deleteWebhookController(
+
+  request: FastifyRequest<{
+    Params: {
+      id: string
+    }
+  }>
+) {
+
+  const result =
+    await deleteWebhook(
+      request.params.id
     )
 
   return {
