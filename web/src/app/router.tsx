@@ -12,6 +12,10 @@ import { UnregisteredOnuPage } from '../modules/onu/pages/unregistered-onu.page'
 import { EndpointDetailPage } from '../modules/endpoint/pages/endpoint-detail.page'
 import { TelegramUsersPage } from '../modules/telegram/pages/telegram-users.page'
 
+import { TelegramBotDetailPage } from '../modules/telegram-bot/pages/telegram-bot-detail.page'
+import { TelegramBotListPage } from '../modules/telegram-bot/pages/telegram-bot-list.page'
+import { TelegramBotCreatePage } from '../modules/telegram-bot/pages/telegram-bot-create.page'
+
 export const router =
   createBrowserRouter([
     {
@@ -88,5 +92,40 @@ export const router =
           </DashboardLayout>
         </ProtectedRoute>
       )
-    }
+    },
+    {
+      path: '/telegram-bots',
+
+      element: (
+        <ProtectedRoute>
+          <DashboardLayout>
+            <TelegramBotListPage />
+          </DashboardLayout>
+        </ProtectedRoute>
+      )
+    },
+
+    {
+      path: '/telegram-bots/create',
+
+      element: (
+        <ProtectedRoute>
+          <DashboardLayout>
+            <TelegramBotCreatePage />
+          </DashboardLayout>
+        </ProtectedRoute>
+      )
+    },
+
+    {
+      path: '/telegram-bots/:id',
+
+      element: (
+        <ProtectedRoute>
+          <DashboardLayout>
+            <TelegramBotDetailPage />
+          </DashboardLayout>
+        </ProtectedRoute>
+      )
+    },
   ])

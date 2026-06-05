@@ -39,17 +39,18 @@ export function Sidebar() {
           >
             Unregistered ONU
           </Link>
-          <li>
-            <Link to="/endpoints">
-              Endpoints
-            </Link>
-          </li>
 
           <Link
             to="/telegram/users"
           >
             Telegram Users
           </Link>
+
+          <li>
+            <Link to="/telegram-bots">
+              Telegram Bots
+            </Link>
+          </li>
 
           <li>
             <Link to="/onu">
@@ -66,7 +67,7 @@ export function Sidebar() {
           </li>
 
           <li>
-            <Link to="/endpoint">
+            <Link to="/endpoints">
               Endpoint
             </Link>
           </li>
