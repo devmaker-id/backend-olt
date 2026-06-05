@@ -7,6 +7,7 @@ import { oltRoutes } from './modules/olt/olt.routes'
 import { onuRoutes } from './modules/onu/onu.routes'
 import { endpointRoutes } from './modules/endpoint/endpoint.routes'
 import { modulesTelegramRoutes } from './modules/telegram/telegram.routes'
+import { telegramBotRoutes } from './modules/telegram-bot/telegram-bot.routes'
 
 const app = Fastify({
   logger: true
@@ -38,5 +39,11 @@ app.register( endpointRoutes, {
 app.register( modulesTelegramRoutes, {
   prefix: '/api/telegram/users'
 })
+app.register(
+  telegramBotRoutes,
+  {
+    prefix: '/api/telegram-bots'
+  }
+)
 
 export default app
