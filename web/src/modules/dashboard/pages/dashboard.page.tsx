@@ -1,18 +1,40 @@
-import {
-  DashboardLayout
-} from '../../../shared/layouts/dashboard.layout'
+import { SummaryCard } from '../../../shared/components/summary-card'
+import { DashboardLayout } from '../../../shared/layouts/dashboard.layout'
+import { useSummary } from '../hooks/use-summary'
 
 export function DashboardPage() {
+  const { data, isLoading } = useSummary()
+  
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
   return (
     <DashboardLayout>
+      <SummaryCard
+        title="Total ONU"
+        value={data.total}
+      />
 
-      <h1>
-        Dashboard NMS
-      </h1>
+      <SummaryCard
+        title="Registered"
+        value={data.registered}
+      />
 
-      <p>
-        Selamat datang
-      </p>
+      <SummaryCard
+        title="Unregistered"
+        value={data.unregistered}
+      />
+
+      <SummaryCard
+        title="Online"
+        value={data.online}
+      />
+
+      <SummaryCard
+        title="Fiber LOS"
+        value={data.fiberLos}
+      />
 
     </DashboardLayout>
   )

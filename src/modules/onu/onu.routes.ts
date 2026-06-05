@@ -10,6 +10,9 @@ import {
   authorizeOnuController,
   getUnauthorizedOnusController
 } from './onu.controller'
+import {
+  onuInventoryRoutes
+} from './inventory/onu-inventory.routes'
 
 export async function onuRoutes(
   app: FastifyInstance
@@ -28,5 +31,13 @@ export async function onuRoutes(
   app.post(
     '/authorize',
     authorizeOnuController
+  )
+
+  // INVENTORY ONU
+  app.register(
+    onuInventoryRoutes,
+    {
+      prefix: '/inventory'
+    }
   )
 }

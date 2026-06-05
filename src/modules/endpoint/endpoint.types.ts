@@ -1,7 +1,7 @@
 import { EndpointType } from '@prisma/client'
 
 export interface CreateEndpointDto {
-  internetNo?: string
+  internetNo: string
   type: EndpointType
   name: string
   code?: string

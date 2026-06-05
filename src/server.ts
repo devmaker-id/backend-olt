@@ -19,8 +19,9 @@ async function bootstrap() {
     app.register(
       telegramRouter
     )
-
-    startSchedulers()
+    
+    //START RECONCILEONU
+    //startSchedulers()
 
     console.log(
       `SYSLOG RUNNING : ${SYSLOG_PORT}`
