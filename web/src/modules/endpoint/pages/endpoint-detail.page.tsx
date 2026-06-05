@@ -6,6 +6,10 @@ import {
   useEndpoint
 } from '../hooks/use-endpoint'
 
+import {
+  useEndpointRealtime
+} from '../hooks/use-endpoint-realtime'
+
 export function EndpointDetailPage() {
 
   const { id } = useParams()
@@ -13,72 +17,203 @@ export function EndpointDetailPage() {
   const {
     data,
     isLoading
-  } = useEndpoint(
-    id!
-  )
+  } = useEndpoint(id!)
+
+  const realtimeMutation =
+    useEndpointRealtime()
 
   if (isLoading) {
     return (
       <div>
-        Loading...
+        Loading endpoint...
       </div>
     )
   }
 
-  const onu = data?.onus?.[0]
+  if (!data) {
+    return (
+      <div>
+        Endpoint tidak ditemukan
+      </div>
+    )
+  }
+
+  const onu =
+    data.onus?.[0]
+
+  const realtime =
+    realtimeMutation.data
 
   return (
     <div>
 
       <h1>
-        {data?.name}
+        {data.name}
       </h1>
 
       <p>
         Internet No:
-        {data?.internetNo}
+        {' '}
+        {data.internetNo}
       </p>
 
       <p>
         Address:
-        {data?.address}
+        {' '}
+        {data.address}
       </p>
+
+      <button
+        disabled={
+          realtimeMutation.isPending
+        }
+        onClick={() =>
+          realtimeMutation.mutate(
+            data.internetNo
+          )
+        }
+      >
+        {
+          realtimeMutation.isPending
+            ? 'Connecting OLT...'
+            : 'Refresh Realtime'
+        }
+      </button>
 
       <hr />
 
       <h2>
-        ONU
+        Database ONU
       </h2>
 
       <p>
         ONU ID:
-        {onu?.onuId}
+        {' '}
+        {onu?.onuId ?? '-'}
       </p>
 
       <p>
         EPON:
-        {onu?.eponPort}
+        {' '}
+        {onu?.eponPort ?? '-'}
       </p>
 
       <p>
         MAC:
-        {onu?.onuMac}
+        {' '}
+        {onu?.onuMac ?? '-'}
       </p>
 
       <p>
         Status:
-        {onu?.connectionState}
+        {' '}
+        {onu?.connectionState ?? '-'}
       </p>
 
       <p>
         RX:
-        {onu?.rxPower}
+        {' '}
+        {onu?.rxPower ?? '-'}
       </p>
 
       <p>
         TX:
-        {onu?.txPower}
+        {' '}
+        {onu?.txPower ?? '-'}
       </p>
+
+      {
+        realtimeMutation.isError && (
+          <>
+            <hr />
+
+            <p>
+              Gagal mengambil data realtime dari OLT
+            </p>
+          </>
+        )
+      }
+
+      {
+        realtime && (
+          <>
+            <hr />
+
+            <h2>
+              Realtime ONU
+            </h2>
+
+            <p>
+              Status:
+              {' '}
+              {realtime.onu.status}
+            </p>
+
+            <p>
+              Signal:
+              {' '}
+              {
+                realtime.onu.signalStatus === 'GOOD'
+                  ? '🟢 GOOD'
+                  : realtime.onu.signalStatus === 'WARNING'
+                  ? '🟡 WARNING'
+                  : realtime.onu.signalStatus === 'CRITICAL'
+                  ? '🔴 CRITICAL'
+                  : realtime.onu.signalStatus
+              }
+            </p>
+
+            <p>
+              Port:
+              {' '}
+              {realtime.onu.port}
+            </p>
+
+            <p>
+              Model:
+              {' '}
+              {realtime.onu.model}
+            </p>
+
+            <p>
+              RX Power:
+              {' '}
+              {realtime.onu.rxPower}
+            </p>
+
+            <p>
+              TX Power:
+              {' '}
+              {realtime.onu.txPower}
+            </p>
+
+            <p>
+              Temperature:
+              {' '}
+              {realtime.onu.temperature}
+            </p>
+
+            <p>
+              Offline Count:
+              {' '}
+              {realtime.onu.offlineCount}
+            </p>
+
+            <p>
+              First Uptime:
+              {' '}
+              {realtime.onu.firstUptime ?? '-'}
+            </p>
+
+            <p>
+              Last Offtime:
+              {' '}
+              {realtime.onu.lastOfftime ?? '-'}
+            </p>
+
+          </>
+        )
+      }
 
     </div>
   )

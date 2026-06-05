@@ -12,3 +12,15 @@ export async function getEndpointById(
 
   return response.data
 }
+
+export async function getRealtimeEndpoint(
+  internetNo: string
+) {
+
+  const response =
+    await api.get(
+      `/endpoint/internet/${internetNo}`
+    )
+
+  return response.data.result.data
+}
