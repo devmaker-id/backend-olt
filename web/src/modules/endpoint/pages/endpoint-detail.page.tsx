@@ -1,16 +1,20 @@
-import {
-  useParams
-} from 'react-router-dom'
+import { useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { useEndpoint } from '../hooks/use-endpoint'
+import { useEndpointRealtime } from '../hooks/use-endpoint-realtime'
 
-import {
-  useEndpoint
-} from '../hooks/use-endpoint'
-
-import {
-  useEndpointRealtime
-} from '../hooks/use-endpoint-realtime'
+import { useReplaceOnu } from '../../onu-replacement/hooks/use-replace-onu'
+import { useUnauthorizedOnus } from '../../onu/hooks/use-unauthorized-onus'
 
 export function EndpointDetailPage() {
+  const replaceMutation = useReplaceOnu()
+  const {
+    data: unauthorizedOnus
+  } = useUnauthorizedOnus()
+  const [
+    selectedUnauthorizedId,
+    setSelectedUnauthorizedId
+  ] = useState('')
 
   const { id } = useParams()
 
@@ -38,11 +42,9 @@ export function EndpointDetailPage() {
     )
   }
 
-  const onu =
-    data.onus?.[0]
+  const onu = data.onus?.[0]
 
-  const realtime =
-    realtimeMutation.data
+  const realtime = realtimeMutation.data
 
   return (
     <div>
@@ -121,6 +123,89 @@ export function EndpointDetailPage() {
         {' '}
         {onu?.txPower ?? '-'}
       </p>
+
+      <hr />
+
+      <h2>
+        Replace ONU
+      </h2>
+
+      <select
+
+        value={
+          selectedUnauthorizedId
+        }
+
+        onChange={
+          event =>
+            setSelectedUnauthorizedId(
+              event.target.value
+            )
+        }
+      >
+
+        <option value="">
+          Pilih ONU
+        </option>
+
+        {
+          unauthorizedOnus?.map(
+            (onu: any) => (
+
+              <option
+                key={onu.id}
+                value={onu.id}
+              >
+
+                {onu.macAddress}
+
+                {' - '}
+
+                {onu.eponPort}
+
+                :
+
+                {onu.onuId}
+
+              </option>
+            )
+          )
+        }
+
+      </select>
+
+      <button
+
+        disabled={
+          !selectedUnauthorizedId ||
+          replaceMutation.isPending
+        }
+
+        onClick={() =>
+
+          replaceMutation.mutate({
+
+            endpointId:
+              data.id,
+
+            unauthorizedOnuId:
+              selectedUnauthorizedId,
+
+            reason:
+              'ONU Rusak'
+          })
+        }
+      >
+
+        {
+          replaceMutation.isPending
+
+            ? 'Replacing...'
+
+            : 'Replace ONU'
+        }
+
+      </button>
 
       {
         realtimeMutation.isError && (

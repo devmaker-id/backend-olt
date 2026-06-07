@@ -40,11 +40,13 @@ export function Sidebar() {
             Unregistered ONU
           </Link>
 
-          <Link
-            to="/telegram/users"
-          >
-            Telegram Users
-          </Link>
+          <li>
+            <Link
+              to="/telegram/users"
+            >
+              Telegram Users
+            </Link>
+          </li>
 
           <li>
             <Link to="/telegram-bots">

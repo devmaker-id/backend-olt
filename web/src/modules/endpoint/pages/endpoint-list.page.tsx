@@ -1,5 +1,5 @@
 import { useEndpoints } from '../../../hooks/use-endpoints'
-import { Link, useParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 export function EndpointListPage() {
   const { data, isLoading } = useEndpoints()

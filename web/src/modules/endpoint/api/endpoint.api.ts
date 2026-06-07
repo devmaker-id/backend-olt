@@ -1,5 +1,4 @@
-import { api }
-from '../../../shared/lib/api'
+import { api } from '../../../shared/lib/api'
 
 export async function getEndpointById(
   id: string
