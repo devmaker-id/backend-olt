@@ -28,3 +28,12 @@ export const UNKNOWN_OPTICAL:
   txpower: null,
   rxpower: null
 }
+
+export interface ParsedOnuList {
+  port: string
+  onuId: string
+  macAddress: string
+  status: string
+  onuComtName?: String
+  name?: string
+}

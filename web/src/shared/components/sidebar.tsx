@@ -33,6 +33,11 @@ export function Sidebar() {
               Network
             </strong>
           </li>
+          <li>
+            <Link to="/olts">
+              OLT's
+            </Link>
+          </li>
           
           <Link
             to="/onu/unregistered"

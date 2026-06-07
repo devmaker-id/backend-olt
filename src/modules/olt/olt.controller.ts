@@ -20,11 +20,11 @@ import {
   OltParams,
 } from './olt.types'
 
-import { prisma }
-  from '../../config/prisma'
+import { prisma } from '../../config/prisma'
 
-import { NetworkFactory }
-  from '../../services/network/core/network.factory'
+import { TelnetTransport } from '../../services/network/hisfocus/telnet.transport'
+import { TelnetSession } from '../../services/network/hisfocus/telnet.session'
+import { HisfocusAdapter } from '../../services/network/hisfocus/hisfocus.adapter'
 
 export async function createOltController(
   req: FastifyRequest<{
@@ -76,11 +76,8 @@ export async function connectOltController(
   const { id } =
     req.params as OltParams
 
-  const olt =
-    await prisma.olt.findUnique({
-      where: {
-        id
-      }
+  const olt = await prisma.olt.findUnique({
+      where: { id }
     })
 
   if (!olt) {
@@ -90,22 +87,28 @@ export async function connectOltController(
     })
   }
 
+  const transport = new TelnetTransport()
   try {
-    const adapter =
-      await NetworkFactory.create(
-        olt
-      )
+    await transport.connect({
+      host: olt.ipAddress,
+      port: olt.telnetPort
+    })
+    const session = new TelnetSession(transport)
+    await session.login({
+      username: olt.username,
+      password: olt.password
+    })
+    const adapter = new HisfocusAdapter(session)
+    const result = await adapter.showSystem()
 
-    const result =
-      await adapter.getSystemInfo()
+    console.log(result)
 
     return reply.send({
       success: true,
       data: result
     })
-  }
-
-  catch (error: any) {
+  } catch (error: any) {
+    await transport.disconnect()
     return reply.code(500).send({
       success: false,
       message: 'FAILED_CONNECT_OLT',
@@ -113,6 +116,8 @@ export async function connectOltController(
       host: olt.ipAddress,
       port: olt.telnetPort
     })
+  } finally {
+    await transport.disconnect()
   }
 }
 
@@ -137,30 +142,33 @@ export async function getSystemInfoController(
     })
   }
 
+  const transport = new TelnetTransport()
   try {
-    const adapter =
-      await NetworkFactory.create(
-        olt
-      )
-
-    const result =
-      await adapter.getSystemInfo()
+    await transport.connect({
+      host: olt.ipAddress,
+      port: olt.telnetPort
+    })
+    const session = new TelnetSession(transport)
+    await session.login({
+      username: olt.username,
+      password: olt.password
+    })
+    const adapter = new HisfocusAdapter(session)
+    const result =await adapter.showSystem()
 
     return reply.send({
       success: true,
       data: result
     })
-  }
-
-  catch (error: any) {
+  } catch (error: any) {
+    await transport.disconnect()
     return reply.code(500).send({
       success: false,
-
-      message:
-        'FAILED_GET_SYSTEM_INFO',
-
+      message: 'FAILED_GET_SYSTEM_INFO',
       error: error.message
     })
+  } finally {
+    await transport.disconnect()
   }
 }
 
@@ -179,7 +187,6 @@ export async function getOnuInfoController(
     onuId
   } = req.query as {
     epon: string
-
     onuId: string
   }
 
@@ -197,16 +204,19 @@ export async function getOnuInfoController(
     })
   }
 
+  const transport = new TelnetTransport()
   try {
-
-    const adapter =
-      await NetworkFactory.create(
-        olt
-      )
-
-    const result =
-      await adapter
-        .getCompleteOnuInfo(
+    await transport.connect({
+      host: olt.ipAddress,
+      port: olt.telnetPort
+    })
+    const session = new TelnetSession(transport)
+    await session.login({
+      username: olt.username,
+      password: olt.password
+    })
+    const adapter = new HisfocusAdapter(session)
+    const result = await adapter.getCompleteOnuInfo(
           epon,
           onuId
         )
@@ -216,102 +226,61 @@ export async function getOnuInfoController(
       data: result
     })
 
-  }
-
-  catch (error: any) {
-
+  } catch (error: any) {
+    await transport.disconnect()
     return reply.code(500).send({
       success: false,
-
-      message:
-        'FAILED_GET_ONU_INFO',
-
+      message: 'FAILED_GET_ONU_INFO',
       error: error.message
     })
+  } finally {
+    await transport.disconnect()
   }
 }
 
 export async function getOnuListController(
-
   request: FastifyRequest<{
-    Params: {
-      id: string
-    }
-
-    Querystring: {
-      port: string
-    }
+    Params: { id: string }
+    Querystring: { port: string }
   }>,
-
   reply: FastifyReply
 ) {
-
   try {
-
-    const result =
-      await testOnuList(
-
+    const result = await testOnuList(
         request.params.id,
-
         request.query.port
       )
-
-    return reply.send({
-
-      success: true,
-
-      ...result
-    })
-  }
-
-  catch (error: any) {
-
+    return reply.send(result)
+  } catch (error: any) {
     return reply.status(500).send({
-
       success: false,
-
-      message:
-        error.message
+      message: error.message
     })
   }
 }
 
 export async function syncOltInventoryController(
-
   request: FastifyRequest<{
-
     Body: {
-
       oltId: string
-
       port: string
     }
   }>,
-
   reply: FastifyReply
 ) {
-
   try {
-
     const result = await syncOltInventory(
         request.body.oltId,
         request.body.port
       )
-
     return reply.send({
       success: true,
       ...result
     })
-  }
-
-  catch (error: any) {
-
+  } catch (error: any) {
     return reply.status(500).send({
-
       success: false,
-
-      message:
-        error.message
+      message: error.message
     })
   }
 }

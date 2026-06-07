@@ -1,5 +1,5 @@
 import { HisfocusCommands } from "./hisfocus.commands";
-import { HisfocusParser } from "./hisfocus.parser";
+import {HisfocusParser } from "./hisfocus.parser";
 import { UNKNOWN_OPTICAL } from "./hisfocus.types";
 import { TelnetSession } from "./telnet.session";
 
@@ -12,6 +12,14 @@ export class HisfocusAdapter {
         return this.session.execute(
             command
         )
+    }
+
+    async showSystem() {
+        await this.session.enable()
+        const rawSystem = await this.execute(
+            HisfocusCommands.showSystem()
+        )
+        return HisfocusParser.parseSystemInfo(rawSystem)
     }
 
     async saveConfig() {
@@ -77,6 +85,14 @@ export class HisfocusAdapter {
             )
         }
         return true
+    }
+
+    async getOnuList(
+        pon: string
+    ) {
+        await this.session.enable()
+        const onus = await this.session.execute(`show onu info epon ${pon} all`)
+        return HisfocusParser.parseOnuList(onus)
     }
 
     async deleteOnu(

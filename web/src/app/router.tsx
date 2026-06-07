@@ -6,6 +6,10 @@ import { NotFoundPage } from '../shared/pages/not-found.page'
 import { LoginPage } from '../modules/auth/pages/login.page'
 import { RootPage } from '../modules/auth/pages/root.page'
 import { DashboardPage } from '../modules/dashboard/pages/dashboard.page'
+
+import { OltListPage } from '../modules/olt/pages/olt-list.page'
+import { OltDetailPage } from '../modules/olt/pages/olt-detail.page'
+
 import { EndpointListPage } from '../modules/endpoint/pages/endpoint-list.page'
 import { DashboardLayout } from '../shared/layouts/dashboard.layout'
 import { UnregisteredOnuPage } from '../modules/onu/pages/unregistered-onu.page'
@@ -44,6 +48,26 @@ export const router =
       element: (
         <ProtectedRoute>
           <DashboardPage />
+        </ProtectedRoute>
+      )
+    },
+    {
+      path: '/olts',
+      element: (
+        <ProtectedRoute>
+          <DashboardLayout>
+            <OltListPage />
+          </DashboardLayout>
+        </ProtectedRoute>
+      )
+    },
+    {
+      path: '/olts/:id',
+      element: (
+        <ProtectedRoute>
+          <DashboardLayout>
+            <OltDetailPage />
+          </DashboardLayout>
         </ProtectedRoute>
       )
     },

@@ -2,6 +2,9 @@ export class HisfocusCommands {
     static saveConfig() {
         return 'write'
     }
+    static showSystem() {
+        return 'show system'
+    }
     static onuInfo(
         epon: string,
         onuId: string
