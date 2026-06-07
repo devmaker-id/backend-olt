@@ -56,6 +56,16 @@ export class TelnetSession {
         this.enabled = true
     }
 
+    async writeFile() {
+        await this.enable()
+        this.transport.clearBuffer()
+        this.transport.write( 'wr\r\n' )
+        return this.transport.waitFor(
+            /Configuration file saved ok!/i,
+            20000
+        )
+    }
+
     async execute(
         command: string,
         timeout = 5000

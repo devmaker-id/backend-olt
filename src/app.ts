@@ -8,6 +8,7 @@ import { onuRoutes } from './modules/onu/onu.routes'
 import { endpointRoutes } from './modules/endpoint/endpoint.routes'
 import { modulesTelegramRoutes } from './modules/telegram/telegram.routes'
 import { telegramBotRoutes } from './modules/telegram-bot/telegram-bot.routes'
+import { onuReplacementRoutes } from './modules/onu-replacement/onu-replacement.routes'
 
 const app = Fastify({
   logger: true
@@ -43,6 +44,12 @@ app.register(
   telegramBotRoutes,
   {
     prefix: '/api/telegram-bots'
+  }
+)
+app.register(
+  onuReplacementRoutes,
+  {
+    prefix: '/api/onu-replacement'
   }
 )
 

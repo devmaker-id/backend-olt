@@ -14,6 +14,10 @@ export class HisfocusAdapter {
         )
     }
 
+    async saveConfig() {
+        return this.session.writeFile()
+    }
+
     async getOnuInfo(
         epon: string,
         onuId: string
@@ -52,5 +56,46 @@ export class HisfocusAdapter {
         return {
             onu, optical
         }
+    }
+
+    async renameOnu(
+        epon: string,
+        onuId: string,
+        name: string
+    ) {
+        await this.session.enable()
+        const commands = HisfocusCommands.renameOnu(
+            epon,
+            onuId,
+            name
+        )
+        for (
+            const command of commands
+        ) {
+            await this.session.execute(
+                command
+            )
+        }
+        return true
+    }
+
+    async deleteOnu(
+        epon: string,
+        onuId: string
+    ) {
+        await this.session.enable()
+        const commands = HisfocusCommands.deleteOnu(
+            epon,
+            onuId
+            )
+        for (
+            const command
+            of commands
+        ) {
+            await this.session.execute(
+            command
+            )
+        }
+        return true
     }
 }

@@ -21,6 +21,7 @@ enum OnuStatus {
   UNVERIFIED
   ACTIVE
   SUSPEND
+  REPLACED
 }
 
 enum ConnectionState {
@@ -104,6 +105,9 @@ model Onu {
   isActive        Boolean          @default(true)
   alarmLogs       AlarmLog[]
   events          OnuEvent[]
+  replacementsFrom  OnuReplacement[] @relation("OldOnuReplacement")
+  replacementsTo    OnuReplacement[] @relation("NewOnuReplacement")
+
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 
@@ -112,6 +116,19 @@ model Onu {
   @@index([endpointId])
   @@index([onuMac])
   @@index([connectionState])
+}
+
+model OnuReplacement {
+  id String @id @default(cuid())
+  endpointId String
+  oldOnuId String
+  newOnuId String
+  reason String?
+  replacedBy String?
+  createdAt DateTime @default(now())
+  endpoint Endpoint @relation( fields: [endpointId], references: [id] )
+  oldOnu Onu @relation( "OldOnuReplacement", fields: [oldOnuId], references: [id] )
+  newOnu Onu @relation( "NewOnuReplacement", fields: [newOnuId], references: [id] )
 }
 
 model Endpoint {
@@ -125,6 +142,7 @@ model Endpoint {
   longitude   Float?
   description String?
   onus        Onu[]
+  replacements  OnuReplacement[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 }
