@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { useOlt } from '../hooks/use-olt'
 import { useConnectOlt } from '../hooks/use-connect-olt'
+import { useOltOptical } from '../hooks/use-olt-optical'
 
 export function OltDetailPage() {
 
@@ -10,6 +11,12 @@ export function OltDetailPage() {
     data,
     isLoading
   } = useOlt(
+    id!
+  )
+  const {
+    data: opticalPorts,
+    isLoading: opticalLoading
+  } = useOltOptical(
     id!
   )
 
@@ -99,6 +106,107 @@ export function OltDetailPage() {
         </tbody>
 
       </table>
+
+      <hr />
+      <h2>
+        OLT Optical Ports
+      </h2>
+
+      {
+        opticalLoading && (
+          <p>
+            Loading optical ports...
+          </p>
+        )
+      }
+
+      {
+        opticalPorts && (
+
+          <table border={1}>
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Port
+                </th>
+
+                <th>
+                  Status
+                </th>
+
+                <th>
+                  Temperature
+                </th>
+
+                <th>
+                  Voltage
+                </th>
+
+                <th>
+                  Tx Bias
+                </th>
+
+                <th>
+                  Tx Power
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              {
+                opticalPorts.map(
+                  (port: any) => (
+
+                    <tr
+                      key={port.port}
+                    >
+
+                      <td>
+                        {port.port}
+                      </td>
+
+                      <td>
+
+                        {
+                          port.status === 'ONLINE'
+                            ? '🟢 ONLINE'
+                            : '🔴 NO MODULE'
+                        }
+
+                      </td>
+
+                      <td>
+                        {port.temperature}
+                      </td>
+
+                      <td>
+                        {port.voltage}
+                      </td>
+
+                      <td>
+                        {port.txBias}
+                      </td>
+
+                      <td>
+                        {port.txPower}
+                      </td>
+
+                    </tr>
+                  )
+                )
+              }
+
+            </tbody>
+
+          </table>
+        )
+      }
 
       <br />
 

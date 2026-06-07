@@ -19,6 +19,42 @@ export async function getOlts() {
   })
 }
 
+export async function getOltOpticalPorts(
+  id: string
+) {
+  const olt =
+    await prisma.olt.findUnique({
+      where: { id }
+    })
+  if (!olt) {
+    return {
+      success: false,
+      message: 'OLT tidak ditemukan'
+    }
+  }
+  const transport = new TelnetTransport()
+  await transport.connect({
+    host: olt.ipAddress,
+    port: olt.telnetPort
+  })
+  const session = new TelnetSession( transport )
+  await session.login({
+    username: olt.username,
+    password: olt.password
+  })
+  const adapter = new HisfocusAdapter( session )
+  try {
+    const ports = await adapter.getOltOpticalPorts()
+    return {
+      success: true,
+      data: ports
+    }
+  }
+  finally {
+    await transport.disconnect()
+  }
+}
+
 export async function getOltById(id: string) {
   return prisma.olt.findUnique({
     where: {

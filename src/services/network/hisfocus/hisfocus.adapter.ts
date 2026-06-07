@@ -14,6 +14,42 @@ export class HisfocusAdapter {
         )
     }
 
+    async getOltOpticalInfo(
+        eponPort: string
+    ) {
+        const raw = await this.execute(
+            HisfocusCommands.oltOptical(
+                eponPort
+            )
+        )
+        return HisfocusParser.parseOltOpticalInfo(
+            raw,
+            eponPort
+        )
+    }
+    async getOltOpticalPorts() {
+        const ports = []
+        for (
+            let port = 1;
+            port <= 16;
+            port++
+        ) {
+
+            const eponPort = `0/${port}`
+            const raw = await this.execute(
+                HisfocusCommands.oltOptical(eponPort)
+            )
+            if(raw.includes('Interface num') && raw.includes('invalid')) {
+                console.log(`STOP AT ${eponPort}`)
+                break
+            }
+            ports.push(
+                HisfocusParser.parseOltOpticalInfo(raw, eponPort)
+            )
+        }
+        return ports
+    }
+
     async showSystem() {
         await this.session.enable()
         const rawSystem = await this.execute(

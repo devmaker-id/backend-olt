@@ -12,8 +12,10 @@ import {
   getSystemInfoController,
   getOnuInfoController,
   getOnuListController,
-  syncOltInventoryController
+  syncOltInventoryController,
+  getOltOpticalPortsController
 } from './olt.controller'
+
 
 export async function oltRoutes(
   app: FastifyInstance
@@ -26,6 +28,10 @@ export async function oltRoutes(
   app.post(
     '/',
     createOltController
+  )
+  app.get(
+    '/:id/optical',
+    getOltOpticalPortsController
   )
 
   app.get(

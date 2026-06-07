@@ -9,7 +9,8 @@ import {
   getOltById,
   updateOlt,
   deleteOlt,
-  testOnuList
+  testOnuList,
+  getOltOpticalPorts
 } from './olt.service'
 import {
   syncOltInventory
@@ -41,6 +42,15 @@ export async function createOltController(
 
 export async function getOltsController() {
   return getOlts()
+}
+
+export async function getOltOpticalPortsController(
+  request: FastifyRequest<{
+    Params: { id: string }
+  }>
+) {
+  const result = await getOltOpticalPorts( request.params.id )
+  return { data: result }
 }
 
 export async function getOltByIdController(

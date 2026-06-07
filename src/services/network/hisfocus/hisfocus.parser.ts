@@ -1,7 +1,10 @@
 import { ConnectionState } from '@prisma/client'
 import { HisfocusOpticalInfo } from './hisfocus.types'
 import { generateNameOnu } from '../../../utils/normalize-onu'
-import type { ParsedOnuList } from './hisfocus.types'
+import type {
+  ParsedOnuList,
+  OltOpticalInfo
+} from './hisfocus.types'
 
 export class HisfocusParser {
   static parseNetworkInfo(raw: string) {
@@ -195,6 +198,31 @@ export class HisfocusParser {
     }
   
     return result
+  }
+
+  static parseOltOpticalInfo(
+    raw: string,
+    port: string
+  ): OltOpticalInfo {
+
+    const getValue = (
+      pattern: RegExp
+    ) => {
+      const match = raw.match(pattern)
+      return match?.[1]?.trim() ?? ''
+    }
+
+    const temperature = getValue( /Temperature\s*:\s*(.+)/i )
+    const temp = parseFloat( temperature )
+
+    return {
+      port,
+      status: temp >= 255 ? 'NO_MODULE' : 'ONLINE',
+      temperature,
+      voltage: getValue(/Voltage\s*:\s*(.+)/i),
+      txBias: getValue(/TxBias\s*:\s*(.+)/i),
+      txPower: getValue(/TxPower\s*:\s*(.+)/i)
+    }
   }
 
 }

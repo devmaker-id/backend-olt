@@ -22,3 +22,19 @@ export interface Olt {
 
   updatedAt: string
 }
+export interface OltOptical {
+
+  port: string
+
+  status:
+    | 'ONLINE'
+    | 'NO_MODULE'
+
+  temperature: string
+
+  voltage: string
+
+  txBias: string
+
+  txPower: string
+}

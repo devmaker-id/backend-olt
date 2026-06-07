@@ -5,6 +5,11 @@ export class HisfocusCommands {
     static showSystem() {
         return 'show system'
     }
+    static oltOptical(
+        eponPort: string
+    ) {
+        return `show epon ${eponPort} optical-ddm`
+    }
     static onuInfo(
         epon: string,
         onuId: string

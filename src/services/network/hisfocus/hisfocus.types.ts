@@ -1,5 +1,14 @@
 export type OpticalStatus = | 'OK' | 'UNKNOWN'
 
+export interface OltOpticalInfo {
+  port: string
+  status: 'ONLINE' | 'NO_MODULE'
+  temperature: string
+  voltage: string
+  txBias: string
+  txPower: string
+}
+
 export interface HisfocusOnuInfo {
     onu_id: string,
     onu_mac: string,
