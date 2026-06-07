@@ -2,7 +2,7 @@ import { Olt }
   from '@prisma/client'
 
 import { TelnetTransport }
-  from '../transport/telnet.transport'
+  from '../transport/telnet.transport_v1'
 
 class ConnectionManager {
   private connections = new Map<

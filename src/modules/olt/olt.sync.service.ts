@@ -1,5 +1,5 @@
 import { prisma } from '../../config/prisma'
-import { TelnetTransport } from '../../services/network/transport/telnet.transport'
+import { TelnetTransport } from '../../services/network/transport/telnet.transport_v1'
 import { parseOnuList } from './parsers/onu-list.parser'
 import {
   normalizeMac,

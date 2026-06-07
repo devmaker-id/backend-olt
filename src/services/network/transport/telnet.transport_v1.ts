@@ -114,7 +114,7 @@ export class TelnetTransport {
     resolve: () => void
   ) {
     console.log(
-      'RAW:',
+      'trasport_v1:',
       JSON.stringify(data)
     )
 

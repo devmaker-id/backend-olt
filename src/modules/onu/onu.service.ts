@@ -1,6 +1,7 @@
 import { prisma } from '../../config/prisma'
-import { TelnetTransport } from '../../services/network/transport/telnet.transport'
-import { HisfocusAdapter } from '../../services/network/vendors/hisfocus/hisfocus.adapter'
+import { TelnetTransport } from '../../services/network/hisfocus/telnet.transport'
+import { TelnetSession } from '../../services/network/hisfocus/telnet.session'
+import { HisfocusAdapter } from '../../services/network/hisfocus/hisfocus.adapter'
 import {
   AuthorizeOnuDto,
   AuthorizeOnuResult
@@ -49,12 +50,15 @@ export async function authorizeOnu(
 
   await transport.connect({
     host: olt.ipAddress,
-    port: olt.telnetPort,
+    port: olt.telnetPort
+  })
+  const session = new TelnetSession(transport)
+  await session.login({
     username: olt.username,
     password: olt.password
   })
 
-  const adapter = new HisfocusAdapter( transport )
+  const adapter = new HisfocusAdapter(session)
 
   try {
     const normalizedName =
@@ -66,6 +70,7 @@ export async function authorizeOnu(
       unauthorized.data?.onuId!,
       normalizedName
     )
+    await adapter.saveConfig()
 
     const profile = await adapter.getCompleteOnuInfo(
         unauthorized.data?.eponPort!,

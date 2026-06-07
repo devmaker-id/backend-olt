@@ -1,6 +1,7 @@
 import { prisma } from '../../config/prisma'
-import { TelnetTransport } from '../../services/network/transport/telnet.transport'
-import { HisfocusAdapter } from '../../services/network/vendors/hisfocus/hisfocus.adapter'
+import { TelnetSession } from '../../services/network/hisfocus/telnet.session'
+import { TelnetTransport } from '../../services/network/hisfocus/telnet.transport'
+import { HisfocusAdapter } from '../../services/network/hisfocus/hisfocus.adapter'
 import { classifyRxPower } from '../../utils/classify-rx-power'
 
 import {
@@ -87,13 +88,16 @@ export async function getEndpointByInet(
 
   await transport.connect({
     host: onu.olt.ipAddress,
-    port: onu.olt.telnetPort,
+    port: onu.olt.telnetPort
+  })
+
+  const session = new TelnetSession( transport )
+  await session.login({
     username: onu.olt.username,
     password: onu.olt.password
   })
 
-  const adapter =
-    new HisfocusAdapter( transport )
+  const adapter = new HisfocusAdapter( session )
 
   try {
 

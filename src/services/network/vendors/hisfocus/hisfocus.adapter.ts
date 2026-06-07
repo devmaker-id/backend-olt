@@ -1,4 +1,4 @@
-import { TelnetTransport } from '../../transport/telnet.transport'
+import { TelnetTransport } from '../../transport/telnet.transport_v1'
 import { HisfocusCommands } from './hisfocus.commands'
 import { HisfocusParser } from './hisfocus.parser'
 import {
