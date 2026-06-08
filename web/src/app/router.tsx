@@ -21,6 +21,7 @@ import { TelegramUsersPage } from '../modules/telegram/pages/telegram-users.page
 import { TelegramBotDetailPage } from '../modules/telegram-bot/pages/telegram-bot-detail.page'
 import { TelegramBotListPage } from '../modules/telegram-bot/pages/telegram-bot-list.page'
 import { TelegramBotCreatePage } from '../modules/telegram-bot/pages/telegram-bot-create.page'
+import { TelegramBotEditPage } from '../modules/telegram-bot/pages/telegram-bot-edit.page'
 
 import { OnuReplacementListPage } from '../modules/onu-replacement/pages/onu-replacement-list.page'
 import { OnuReplacementDetailPage } from '../modules/onu-replacement/pages/onu-replacement-detail.page'
@@ -165,7 +166,6 @@ export const router =
     },
     {
       path: '/telegram-bots/:id',
-
       element: (
         <ProtectedRoute>
           <DashboardLayout>
@@ -175,8 +175,16 @@ export const router =
       )
     },
     {
+      path: '/telegram-bots/:id/edit',
+      element:
+        <ProtectedRoute>
+          <DashboardLayout>
+            <TelegramBotEditPage />
+          </DashboardLayout>
+        </ProtectedRoute>
+    },
+    {
       path: '/onu/replacements',
-
       element: (
         <ProtectedRoute>
           <DashboardLayout>
