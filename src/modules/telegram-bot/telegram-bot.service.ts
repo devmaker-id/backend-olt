@@ -1,17 +1,38 @@
-import { prisma }
-from '../../config/prisma'
+import { prisma } from '../../config/prisma'
 
 import {
-
   CreateTelegramBotDto,
-
-  UpdateTelegramBotDto
-
+  UpdateTelegramBotDto,
+  TelegramWebhookDto
 } from './telegram-bot.types'
 
-import {
-  validateDuplicateTelegramBot
-} from './telegram-bot.validation'
+import { validateDuplicateTelegramBot } from './telegram-bot.validation'
+import { extractTelegramMessage } from './telegram-bot.utils'
+
+export async function createTelegramAccessLog(
+  update: TelegramWebhookDto,
+  isAuthorized: boolean,
+  telegramBotId: string
+) {
+  const message = update.message
+  if(!message?.from) {
+    return null
+  }
+  return prisma.telegramAccessLog.create({
+    data: {
+      telegramId: String(update.message?.from?.id),
+      username: update.message?.from?.username,
+      firstName: update.message?.from?.first_name,
+      message: extractTelegramMessage(update),
+      chatType: update.message?.chat?.type,
+      isAuthorized,
+      rawUpdate: JSON.parse(
+        JSON.stringify(update)
+      ),
+      telegramBotId
+    }
+  })
+}
 
 export async function createTelegramBot(
   data: CreateTelegramBotDto
@@ -193,16 +214,12 @@ getWebhookInfo(
 
   return response.json()
 }
-export async function
-setWebhook(
-
+export async function setWebhook(
   id: string,
-
   url: string
 ) {
 
-  const bot =
-    await prisma.telegramBot.findUnique({
+  const bot = await prisma.telegramBot.findUnique({
 
       where: {
         id
@@ -216,9 +233,7 @@ setWebhook(
     )
   }
 
-  const response =
-    await fetch(
-      `https://api.telegram.org/bot${bot.token}/setWebhook`,
+  const response = await fetch(`https://api.telegram.org/bot${bot.token}/setWebhook`,
       {
         method: 'POST',
 
@@ -229,13 +244,12 @@ setWebhook(
 
         body:
           JSON.stringify({
-            url
+            url: `${url}/webhook/telegram/${bot.id}`
           })
       }
     )
 
-  const result =
-    await response.json()
+  const result = await response.json()
 
   if (result.ok) {
 
@@ -246,7 +260,7 @@ setWebhook(
       },
 
       data: {
-        webhookUrl: url
+        webhookUrl: `${url}/webhook/telegram/${bot.id}`
       }
     })
   }

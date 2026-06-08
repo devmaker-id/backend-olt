@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2'
 import {
   useState
 } from 'react'
@@ -26,8 +27,7 @@ import {
   useDeleteWebhook
 } from '../hooks/use-delete-webhook'
 
-export function
-TelegramBotDetailPage() {
+export function TelegramBotDetailPage() {
 
   const { id } =
     useParams()
@@ -53,6 +53,26 @@ TelegramBotDetailPage() {
 
   const [url, setUrl] =
     useState('')
+
+  async function handleTestMessage() {
+    try {
+      const result = await testMutation.mutateAsync({
+        id: data.id,
+        chatId: data.defaultChatId
+      })
+      await Swal.fire({
+        icon: 'success',
+        title: 'Pesan berhasil dikirim',
+        text: `${result?.result?.text}`
+      })
+    } catch(error: any) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'Gagal mengirim pesan',
+        text: error?.response?.data?.message
+      })
+    }
+  }
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -87,11 +107,8 @@ TelegramBotDetailPage() {
       </p>
 
       <button
-        onClick={() =>
-          testMutation.mutate(
-            data.id
-          )
-        }
+        disabled={!data.defaultChatId}
+        onClick={handleTestMessage}
       >
         Test Message
       </button>
@@ -121,11 +138,8 @@ TelegramBotDetailPage() {
       <button
         onClick={() =>
           setWebhookMutation.mutate({
-
             id: data.id,
-
             url
-
           })
         }
       >

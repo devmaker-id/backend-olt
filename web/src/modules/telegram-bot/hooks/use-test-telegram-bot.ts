@@ -1,16 +1,17 @@
-import { useMutation }
-from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
+import { testTelegramBot } from '../api/telegram-bot.api'
 
-import {
-  testTelegramBot
-} from '../api/telegram-bot.api'
-
-export function
-useTestTelegramBot() {
-
+export function useTestTelegramBot() {
   return useMutation({
-
-    mutationFn:
-      testTelegramBot
+    mutationFn: ({
+      id,
+      chatId
+    }: {
+      id: string,
+      chatId: string
+    }) => testTelegramBot(
+      id,
+      chatId
+    )
   })
 }

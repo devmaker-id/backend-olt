@@ -1,7 +1,131 @@
 import { env } from '../../config/env'
+import { TelegramBot } from '@prisma/client'
 import { TelegramMessage } from './telegram.types'
 
+import { TelegramCommands } from './telegram.commands'
+import { handleInetCommand } from './commands/inet.command'
+import { handleHelpCommand } from './commands/help.command'
+import { handleOnuOfflineCommand } from './commands/onu-offline.command'
+import { handleSignalCommand } from './commands/signal.command'
+import { validateTelegramUser } from '../../modules/telegram/telegram.auth'
+import { handleSession } from './session/telegram-session.handler'
+import { TelegramSessionStore } from './session/telegram.session'
+import { handleAuthorizeCommand } from './commands/authorize.command'
+import {
+  createTelegramAccessLog
+} from '../../modules/telegram-bot/telegram-bot.service'
+import { TelegramWebhookDto } from '../../modules/telegram-bot/telegram-bot.types'
+
 export class TelegramService {
+  static async processTelegramUpdate(
+    bot: TelegramBot,
+    update: TelegramWebhookDto
+  ){
+      try {
+        const telegramId = String(update.message?.from?.id)
+        const chatId = String(update.message?.chat?.id)
+        const text = update.message?.text
+        const telegramUser = await validateTelegramUser(telegramId)
+
+        await createTelegramAccessLog(
+          update,
+          !!telegramUser,
+          bot.id
+        )
+        
+        if (!telegramUser) {
+          console.log(
+            '[UNAUTHORIZED TELEGRAM USER]',
+            telegramId
+          )
+          return
+        }
+
+        if (!text) {
+          return
+        }
+
+        const role = telegramUser.role
+        const args = text.split(' ')
+        const command = args[0]
+        console.log(
+          '[TELEGRAM COMMAND]',
+          command
+        )
+
+        const session = TelegramSessionStore.get(
+            chatId
+          )
+
+
+        if ( session ) {
+
+          await handleSession(
+            update,
+            session
+          )
+
+          return {
+            ok:true
+          }
+        }
+
+        switch(command) {
+
+          case TelegramCommands.help:
+            await handleHelpCommand(
+              update,
+              role
+            )
+            break
+          case TelegramCommands.inet:
+            await handleInetCommand(
+              update
+            )
+            break
+          case TelegramCommands.signal:
+            await handleSignalCommand(
+              update
+            )
+            break
+          case TelegramCommands.onuOffline:
+            await handleOnuOfflineCommand(
+              update
+            )
+            break
+          
+          case TelegramCommands.authorize:
+            await handleAuthorizeCommand(
+              update, role
+            )
+            break
+
+          default:
+            console.log(
+              '[UNKNOWN COMMAND]',
+              command
+            )
+        }
+
+        return {
+          ok: true
+        }
+      }
+
+      catch(error) {
+
+        console.log(
+          '[TELEGRAM WEBHOOK ERROR]'
+        )
+
+        console.log(error)
+
+        return {
+          ok: true
+        }
+      }
+  }
+
   static async sendMessage( message: TelegramMessage ) {
     try {
       const response = await fetch(`https://api.telegram.org/bot${env.telegramBotToken}/sendMessage`, {

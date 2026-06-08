@@ -128,30 +128,21 @@ deleteTelegramBotController(
   }
 }
 
-export async function
-sendTestMessageController(
-
+export async function sendTestMessageController(
   request: FastifyRequest<{
-
     Params: {
       id: string
     }
-
     Body: {
       chatId: string
     }
-
   }>
 ) {
 
-  const result =
-    await sendTestMessage(
-
+  const result = await sendTestMessage(
       request.params.id,
-
       request.body.chatId
     )
-
   return {
     data: result
   }
@@ -176,8 +167,7 @@ getWebhookInfoController(
     data: result
   }
 }
-export async function
-setWebhookController(
+export async function setWebhookController(
 
   request: FastifyRequest<{
 
@@ -192,11 +182,8 @@ setWebhookController(
   }>
 ) {
 
-  const result =
-    await setWebhook(
-
+  const result = await setWebhook(
       request.params.id,
-
       request.body.url
     )
 

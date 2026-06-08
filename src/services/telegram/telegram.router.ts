@@ -9,9 +9,8 @@ export async function
 telegramRouter(
   app: FastifyInstance
 ) {
-
   app.post(
-    '/webhook/telegram',
+    '/webhook/telegram/:botId',
     telegramWebhook
   )
 }

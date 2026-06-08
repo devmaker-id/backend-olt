@@ -75,16 +75,17 @@ deleteTelegramBot(
   return response.data.data
 }
 
-export async function
-testTelegramBot(
-  id: string
+export async function testTelegramBot(
+  id: string,
+  chatId: string
 ) {
 
-  const response =
-    await api.post(
-      `/telegram-bots/${id}/test`
+  const response = await api.post(
+      `/telegram-bots/${id}/test`,
+      {
+        chatId
+      }
     )
-
   return response.data.data
 }
 
@@ -101,8 +102,7 @@ getWebhookInfo(
   return response.data.data
 }
 
-export async function
-setWebhook(
+export async function setWebhook(
   id: string,
   url: string
 ) {
