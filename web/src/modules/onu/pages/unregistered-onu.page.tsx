@@ -109,7 +109,7 @@ export function UnregisteredOnuPage() {
       <br />
       <br />
 
-      <table>
+      <table border={1}>
 
         <thead>
           <tr>

@@ -12,7 +12,7 @@ export function EndpointListPage() {
     <div>
       <h1>Endpoints</h1>
 
-      <table>
+      <table border={1}>
         <thead>
           <tr>
             <th>Internet No</th>

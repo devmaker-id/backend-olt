@@ -24,3 +24,53 @@ export interface ReplaceOnuResponse {
     port: string
   }
 }
+
+export interface OnuReplacement {
+
+  id: string
+
+  endpointId: string
+
+  oldOnuId: string
+
+  newOnuId: string
+
+  reason: string
+
+  replacedBy: string | null
+
+  createdAt: string
+
+  endpoint: {
+
+    id: string
+
+    internetNo: string
+
+    name: string
+
+    address: string
+  }
+
+  oldOnu: {
+
+    onuId: string
+
+    onuMac: string
+
+    onuName: string
+
+    model: string
+  }
+
+  newOnu: {
+
+    onuId: string
+
+    onuMac: string
+
+    onuName: string
+
+    model: string
+  }
+}

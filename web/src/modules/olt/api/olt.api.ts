@@ -36,3 +36,21 @@ export async function connectOlt(
     )
   return response.data
 }
+export async function createOlt(data:any) {
+  const response = await api.post('/olt', data)
+  return response.data.data
+}
+export async function updateOlt(
+  id: string,
+  data: any
+) {
+  const response = await api.put(
+    `/olt/${id}`,
+    data
+  )
+  return response.data.data
+}
+export async function deleteOlt(id:string) {
+  const response = await api.delete(`/olt/${id}`)
+  return response.data.data
+}

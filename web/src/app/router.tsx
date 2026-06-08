@@ -7,6 +7,8 @@ import { LoginPage } from '../modules/auth/pages/login.page'
 import { RootPage } from '../modules/auth/pages/root.page'
 import { DashboardPage } from '../modules/dashboard/pages/dashboard.page'
 
+import { OltCreatePage } from '../modules/olt/pages/olt-create.page'
+import { OltEditPage } from '../modules/olt/pages/olt-edit.page'
 import { OltListPage } from '../modules/olt/pages/olt-list.page'
 import { OltDetailPage } from '../modules/olt/pages/olt-detail.page'
 
@@ -19,6 +21,9 @@ import { TelegramUsersPage } from '../modules/telegram/pages/telegram-users.page
 import { TelegramBotDetailPage } from '../modules/telegram-bot/pages/telegram-bot-detail.page'
 import { TelegramBotListPage } from '../modules/telegram-bot/pages/telegram-bot-list.page'
 import { TelegramBotCreatePage } from '../modules/telegram-bot/pages/telegram-bot-create.page'
+
+import { OnuReplacementListPage } from '../modules/onu-replacement/pages/onu-replacement-list.page'
+import { OnuReplacementDetailPage } from '../modules/onu-replacement/pages/onu-replacement-detail.page'
 
 export const router =
   createBrowserRouter([
@@ -52,6 +57,24 @@ export const router =
       )
     },
     {
+      path: '/olt/create',
+      element: 
+        <ProtectedRoute>
+          <DashboardLayout>
+            <OltCreatePage />
+          </DashboardLayout>
+        </ProtectedRoute>
+    },
+    {
+      path: '/olt/:id/edit',
+      element: 
+        <ProtectedRoute>
+          <DashboardLayout>
+            <OltEditPage />
+          </DashboardLayout>
+        </ProtectedRoute>
+    },
+    {
       path: '/olts',
       element: (
         <ProtectedRoute>
@@ -62,7 +85,7 @@ export const router =
       )
     },
     {
-      path: '/olts/:id',
+      path: '/olt/:id',
       element: (
         <ProtectedRoute>
           <DashboardLayout>
@@ -140,7 +163,6 @@ export const router =
         </ProtectedRoute>
       )
     },
-
     {
       path: '/telegram-bots/:id',
 
@@ -152,4 +174,27 @@ export const router =
         </ProtectedRoute>
       )
     },
+    {
+      path: '/onu/replacements',
+
+      element: (
+        <ProtectedRoute>
+          <DashboardLayout>
+            <OnuReplacementListPage />
+          </DashboardLayout>
+        </ProtectedRoute>
+      )
+    },
+
+    {
+      path: '/onu/replacements/:id',
+
+      element: (
+        <ProtectedRoute>
+          <DashboardLayout>
+            <OnuReplacementDetailPage />
+          </DashboardLayout>
+        </ProtectedRoute>
+      )
+    }
   ])

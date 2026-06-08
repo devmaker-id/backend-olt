@@ -5,6 +5,72 @@ import { TelnetTransport } from '../../services/network/hisfocus/telnet.transpor
 
 import { ReplaceOnuDto } from './onu-replacement.types'
 
+export async function getOnuReplacements() {
+  return prisma.onuReplacement.findMany({
+    include: {
+      endpoint: {
+        select: {
+          id: true,
+          internetNo: true,
+          name: true,
+          address: true
+        }
+      },
+      oldOnu: {
+        select:{
+          onuId: true,
+          onuMac: true,
+          onuName: true,
+          model: true
+        }
+      },
+      newOnu: {
+        select: {
+          onuId: true,
+          onuMac: true,
+          onuName: true,
+          model: true
+        }
+      }
+    },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  })
+}
+
+export async function getOnuReplacementById(id: string) {
+  return prisma.onuReplacement.findUnique({
+    where: {id},
+    include: {
+      endpoint: {
+        select:{
+          id: true,
+          internetNo: true,
+          name: true,
+          address: true
+        }
+      },
+      oldOnu: {
+        select:{
+          onuId: true,
+          onuMac: true,
+          onuName: true,
+          model: true
+        }
+      },
+      newOnu: {
+        select:{
+          onuId: true,
+          onuMac: true,
+          onuName: true,
+          model: true
+        }
+      }
+    }
+  })
+}
+
 export async function replaceOnu(
   data: ReplaceOnuDto
 ) {

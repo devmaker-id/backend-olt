@@ -111,8 +111,6 @@ export async function connectOltController(
     const adapter = new HisfocusAdapter(session)
     const result = await adapter.showSystem()
 
-    console.log(result)
-
     return reply.send({
       success: true,
       data: result

@@ -134,7 +134,7 @@ export function TelegramUsersPage() {
 
       <hr />
 
-      <table>
+      <table border={1}>
 
         <thead>
 

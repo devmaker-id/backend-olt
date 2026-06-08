@@ -18,6 +18,9 @@ TelegramBotListPage() {
     return <div>Loading...</div>
   }
 
+  async function handleEdit(bot){
+    alert(`Edit bot ID: ${bot.id}`)
+  }
   return (
     <div>
 
@@ -31,7 +34,7 @@ TelegramBotListPage() {
         Create Bot
       </Link>
 
-      <table>
+      <table border={1}>
 
         <thead>
 
@@ -46,6 +49,7 @@ TelegramBotListPage() {
             <th>Chat ID</th>
 
             <th>Status</th>
+            <th>Aksi</th>
 
           </tr>
 
@@ -88,6 +92,14 @@ TelegramBotListPage() {
                       ? 'ACTIVE'
                       : 'INACTIVE'
                   }
+                </td>
+                <td>
+                  <button
+                    onClick={()=>
+                      handleEdit(bot)
+                    }
+                  >edit</button>
+                  <button>hapus</button>
                 </td>
 
               </tr>

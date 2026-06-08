@@ -38,13 +38,19 @@ export function Sidebar() {
               OLT's
             </Link>
           </li>
-          
-          <Link
-            to="/onu/unregistered"
-          >
-            Unregistered ONU
-          </Link>
 
+          <br />
+
+          <li>
+            <strong>
+              Telegram
+            </strong>
+          </li>
+          <li>
+            <Link to="/telegram-bots">
+              Telegram Bots
+            </Link>
+          </li>
           <li>
             <Link
               to="/telegram/users"
@@ -53,15 +59,26 @@ export function Sidebar() {
             </Link>
           </li>
 
+          <br />
+
           <li>
-            <Link to="/telegram-bots">
-              Telegram Bots
-            </Link>
+            <strong>
+              Onu Mgmnt
+            </strong>
           </li>
 
           <li>
-            <Link to="/onu">
-              ONU
+            <Link
+              to="/onu/unregistered"
+            >
+              Unregistered ONU
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/onu/replacements"
+            >
+              Replacement
             </Link>
           </li>
 
