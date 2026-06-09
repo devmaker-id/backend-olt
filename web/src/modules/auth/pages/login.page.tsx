@@ -46,30 +46,70 @@ export function LoginPage() {
         }
     }
     return (
-        <div>
-            <h1>
-                Login Nms
+    <div
+        style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '100vh',
+            width: '100vw',
+            backgroundColor: '#f0f2f5'
+        }}
+    >
+        <form
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
+                padding: '2rem',
+                backgroundColor: '#fff',
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                width: '300px'
+            }}
+            onSubmit={handleSubmit}
+        >
+            <h1
+                style={{
+                    textAlign: 'center',
+                    margin: 0
+                }}
+            >
+                Login NMS
             </h1>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <input placeholder="Username" value={username} onChange={event =>
-                        setUsername(event.target.value)
-                    } />
-                </div>
-                <div>
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={event =>
-                            setPassword(
-                            event.target.value
-                            )
-                        }
-                        />
-                </div>
-                <button type="submit">Login</button>
-            </form>
-        </div>
-    )
+
+            <input
+                placeholder="Username"
+                value={username}
+                onChange={(event) =>
+                    setUsername(event.target.value)
+                }
+                style={{
+                    padding: '10px'
+                }}
+            />
+
+            <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(event) =>
+                    setPassword(event.target.value)
+                }
+                style={{
+                    padding: '10px'
+                }}
+            />
+
+            <button
+                type="submit"
+                style={{
+                    padding: '10px'
+                }}
+            >
+                Login
+            </button>
+        </form>
+    </div>
+)
 }

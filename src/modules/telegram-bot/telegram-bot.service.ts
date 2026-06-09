@@ -9,6 +9,7 @@ import {
 import { validateDuplicateTelegramBot } from './telegram-bot.validation'
 import { extractTelegramMessage } from './telegram-bot.utils'
 
+// SERVICE TELEGRAM ACCESS LOG
 export async function createTelegramAccessLog(
   update: TelegramWebhookDto,
   isAuthorized: boolean,
@@ -34,6 +35,40 @@ export async function createTelegramAccessLog(
   })
 }
 
+export async function getTelegramAccessLogs() {
+  return prisma.telegramAccessLog.findMany({
+    include: {
+      bot: true
+    },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  })
+}
+export async function deleteTelegramAccessLog(
+  id: string
+) {
+  const result = await prisma.telegramAccessLog.count({
+    where: { id }
+  })
+
+  if(!result){
+    return {
+        success: false,
+        message: 'Telegram Access, tidak ditemukan'
+    }
+  }
+  const res = await prisma.telegramAccessLog.delete({
+    where: { id }
+  })
+  return {
+    success: true,
+    message: 'Berhasil dihapus',
+    data: res
+  }
+}
+
+// SERVICE TELEGRAM BOT
 export async function createTelegramBot(
   data: CreateTelegramBotDto
 ) {

@@ -1,37 +1,45 @@
 import {
-
   FastifyReply,
-
   FastifyRequest
-
 } from 'fastify'
 
 import {
-
   createTelegramBot,
-
   getTelegramBots,
-
   getTelegramBotById,
-
   updateTelegramBot,
-
   deleteTelegramBot,
   sendTestMessage,
   getWebhookInfo,
   setWebhook,
-  deleteWebhook
+  deleteWebhook,
 
+  getTelegramAccessLogs,
+  deleteTelegramAccessLog
 } from './telegram-bot.service'
 
 import {
-
   CreateTelegramBotDto,
-
   UpdateTelegramBotDto
-
 } from './telegram-bot.types'
 
+//CONTROLLER TELEGRAM ACCESS LOG
+export async function getTelegramAccessLogsController() {
+  return await getTelegramAccessLogs()
+}
+export async function deleteTelegramAccessLogsController(
+  request: FastifyRequest<{
+    Params: {
+      id: string
+    }
+  }>
+) {
+  return await deleteTelegramAccessLog(
+      request.params.id
+    )
+}
+
+//CONTROLLER TELEGRAM BOT
 export async function createTelegramBotController(
 
   request: FastifyRequest<{
@@ -53,16 +61,14 @@ export async function createTelegramBotController(
 
 export async function getTelegramBotsController() {
 
-  const bots =
-    await getTelegramBots()
+  const bots = await getTelegramBots()
 
   return {
     data: bots
   }
 }
 
-export async function
-getTelegramBotByIdController(
+export async function getTelegramBotByIdController(
 
   request: FastifyRequest<{
     Params: {
@@ -81,8 +87,7 @@ getTelegramBotByIdController(
   }
 }
 
-export async function
-updateTelegramBotController(
+export async function updateTelegramBotController(
 
   request: FastifyRequest<{
 
@@ -108,8 +113,7 @@ updateTelegramBotController(
   }
 }
 
-export async function
-deleteTelegramBotController(
+export async function deleteTelegramBotController(
 
   request: FastifyRequest<{
     Params: {
@@ -148,8 +152,7 @@ export async function sendTestMessageController(
   }
 }
 
-export async function
-getWebhookInfoController(
+export async function getWebhookInfoController(
 
   request: FastifyRequest<{
     Params: {
@@ -191,8 +194,7 @@ export async function setWebhookController(
     data: result
   }
 }
-export async function
-deleteWebhookController(
+export async function deleteWebhookController(
 
   request: FastifyRequest<{
     Params: {

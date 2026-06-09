@@ -1,266 +1,144 @@
 import { useParams } from 'react-router-dom'
+
+import { Button } from '@/components/ui/button'
+
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+
+import { PageContainer } from '@/shared/components/page-container'
+import { PageHeader } from '@/shared/components/page-header'
+import { LoadingState } from '@/shared/components/loading-state'
+import { ErrorState } from '@/shared/components/error-state'
+
 import { useOlt } from '../hooks/use-olt'
 import { useConnectOlt } from '../hooks/use-connect-olt'
 import { useOltOptical } from '../hooks/use-olt-optical'
 
-export function OltDetailPage() {
+import { OltInfoCard } from '../components/olt-info-card'
+import { OpticalPortTable } from '../components/optical-port-table'
 
+export function OltDetailPage() {
   const { id } = useParams()
 
   const {
     data,
-    isLoading
-  } = useOlt(
-    id!
-  )
+    isLoading,
+    error,
+  } = useOlt(id!)
+
   const {
     data: opticalPorts,
-    isLoading: opticalLoading
-  } = useOltOptical(
-    id!
-  )
+    isLoading: opticalLoading,
+  } = useOltOptical(id!)
 
-  const connectMutation = useConnectOlt()
+  const connectMutation =
+    useConnectOlt()
 
   if (isLoading) {
-
-    return (
-      <div>
-        Loading OLT...
-      </div>
-    )
+    return <LoadingState />
   }
 
-  if (!data) {
-
+  if (error || !data) {
     return (
-      <div>
-        OLT tidak ditemukan
-      </div>
+      <ErrorState
+        message="OLT tidak ditemukan"
+      />
     )
   }
 
   return (
+    <PageContainer>
+      <PageHeader
+        title={data.name}
+        description="OLT Detail Information"
+      />
 
-    <div>
+      <OltInfoCard
+        olt={data}
+      />
 
-      <h1>
-        {data.name}
-      </h1>
-
-      <table border={1}>
-
-        <tbody>
-
-          <tr>
-            <td>ID</td>
-            <td>{data.id}</td>
-          </tr>
-
-          <tr>
-            <td>Name</td>
-            <td>{data.name}</td>
-          </tr>
-
-          <tr>
-            <td>Syslog</td>
-            <td>{data.syslogName}</td>
-          </tr>
-
-          <tr>
-            <td>IP Address</td>
-            <td>{data.ipAddress}</td>
-          </tr>
-
-          <tr>
-            <td>Telnet Port</td>
-            <td>{data.telnetPort}</td>
-          </tr>
-
-          <tr>
-            <td>Vendor</td>
-            <td>{data.vendor}</td>
-          </tr>
-
-          <tr>
-            <td>Location</td>
-            <td>
-              {data.location ?? '-'}
-            </td>
-          </tr>
-
-          <tr>
-            <td>Created At</td>
-            <td>
-              {data.createdAt}
-            </td>
-          </tr>
-
-          <tr>
-            <td>Updated At</td>
-            <td>
-              {data.updatedAt}
-            </td>
-          </tr>
-
-        </tbody>
-
-      </table>
-
-      <hr />
-      <h2>
-        OLT Optical Ports
-      </h2>
-
-      {
-        opticalLoading && (
-          <p>
-            Loading optical ports...
-          </p>
-        )
-      }
-
-      {
-        opticalPorts && (
-
-          <table border={1}>
-
-            <thead>
-
-              <tr>
-
-                <th>
-                  Port
-                </th>
-
-                <th>
-                  Status
-                </th>
-
-                <th>
-                  Temperature
-                </th>
-
-                <th>
-                  Voltage
-                </th>
-
-                <th>
-                  Tx Bias
-                </th>
-
-                <th>
-                  Tx Power
-                </th>
-
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              {
-                opticalPorts.map(
-                  (port: any) => (
-
-                    <tr
-                      key={port.port}
-                    >
-
-                      <td>
-                        {port.port}
-                      </td>
-
-                      <td>
-
-                        {
-                          port.status === 'ONLINE'
-                            ? '🟢 ONLINE'
-                            : '🔴 NO MODULE'
-                        }
-
-                      </td>
-
-                      <td>
-                        {port.temperature}
-                      </td>
-
-                      <td>
-                        {port.voltage}
-                      </td>
-
-                      <td>
-                        {port.txBias}
-                      </td>
-
-                      <td>
-                        {port.txPower}
-                      </td>
-
-                    </tr>
-                  )
-                )
-              }
-
-            </tbody>
-
-          </table>
-        )
-      }
-
-      <br />
-
-      <button
-        disabled={
-            connectMutation.isPending
-        }
-        onClick={ () =>
+      <div className="flex flex-wrap gap-2">
+        <Button
+          onClick={() =>
             connectMutation.mutate(
-                data.id
+              data.id
             )
-        }
-      >
-        {connectMutation.isPending ? 'Connecting...' : 'Connect'}
-      </button>
+          }
+          disabled={
+            connectMutation.isPending
+          }
+        >
+          {connectMutation.isPending
+            ? 'Connecting...'
+            : 'Connect'}
+        </Button>
 
-      {' '}
+        <Button
+          variant="outline"
+        >
+          System Info
+        </Button>
 
-      <button>
-        System Info
-      </button>
+        <Button
+          variant="outline"
+        >
+          Sync Inventory
+        </Button>
+      </div>
 
-      {' '}
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            Optical Ports
+          </CardTitle>
+        </CardHeader>
 
-      <button>
-        Sync Inventory
-      </button>
-      {
-        connectMutation.data && (
+        <CardContent>
+          {opticalLoading ? (
+            <p>
+              Loading optical ports...
+            </p>
+          ) : (
+            <OpticalPortTable
+              ports={
+                opticalPorts ?? []
+              }
+            />
+          )}
+        </CardContent>
+      </Card>
 
-            <div>
+      {connectMutation.data && (
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              Connection Result
+            </CardTitle>
+          </CardHeader>
 
-            <hr />
-
-            <h3>
-                Connection Result
-            </h3>
-
-            <pre>
-
-                {
-                JSON.stringify(
-                    connectMutation.data,
-                    null,
-                    2
-                )
-                }
-
+          <CardContent>
+            <pre
+              className="
+                overflow-auto
+                rounded-md
+                bg-muted
+                p-4
+                text-sm
+              "
+            >
+              {JSON.stringify(
+                connectMutation.data,
+                null,
+                2
+              )}
             </pre>
-
-            </div>
-        )
-       }
-
-    </div>
+          </CardContent>
+        </Card>
+      )}
+    </PageContainer>
   )
 }

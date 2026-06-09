@@ -11,7 +11,10 @@ import {
   sendTestMessageController,
   getWebhookInfoController,
   setWebhookController,
-  deleteWebhookController
+  deleteWebhookController,
+
+  getTelegramAccessLogsController,
+  deleteTelegramAccessLogsController
 } from './telegram-bot.controller'
 
 export async function telegramBotRoutes(
@@ -67,5 +70,15 @@ export async function telegramBotRoutes(
   fastify.delete(
     '/:id/webhook',
     deleteWebhookController
+  )
+
+  //ROUTE TELEGRAM ACCESS LOG
+  fastify.get(
+    '/access-logs',
+    getTelegramAccessLogsController
+  )
+  fastify.delete(
+    '/access-logs/:id',
+    deleteTelegramAccessLogsController
   )
 }

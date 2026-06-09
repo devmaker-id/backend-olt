@@ -23,8 +23,11 @@ import { TelegramBotListPage } from '../modules/telegram-bot/pages/telegram-bot-
 import { TelegramBotCreatePage } from '../modules/telegram-bot/pages/telegram-bot-create.page'
 import { TelegramBotEditPage } from '../modules/telegram-bot/pages/telegram-bot-edit.page'
 
+import TelegramAccessLogsPage from '../modules/system-logs/pages/telegram-access-logs.page'
+
 import { OnuReplacementListPage } from '../modules/onu-replacement/pages/onu-replacement-list.page'
 import { OnuReplacementDetailPage } from '../modules/onu-replacement/pages/onu-replacement-detail.page'
+
 
 export const router =
   createBrowserRouter([
@@ -201,6 +204,17 @@ export const router =
         <ProtectedRoute>
           <DashboardLayout>
             <OnuReplacementDetailPage />
+          </DashboardLayout>
+        </ProtectedRoute>
+      )
+    },
+
+    {
+      path: '/system-logs/telegram-access',
+      element: (
+        <ProtectedRoute>
+          <DashboardLayout>
+            <TelegramAccessLogsPage />,
           </DashboardLayout>
         </ProtectedRoute>
       )
