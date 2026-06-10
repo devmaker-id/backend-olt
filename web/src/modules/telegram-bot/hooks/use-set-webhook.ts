@@ -1,23 +1,54 @@
-import { useMutation }
-from '@tanstack/react-query'
+import {
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query'
 
 import {
-  setWebhook
+  setWebhook,
 } from '../api/telegram-bot.api'
 
-export function
-useSetWebhook() {
+import {
+  appToast,
+} from '@/shared/lib/toast'
+
+interface SetWebhookPayload {
+  id: string
+
+  url: string
+}
+
+export function useSetWebhook() {
+  const queryClient =
+    useQueryClient()
 
   return useMutation({
-
-    mutationFn:
-      ({
+    mutationFn: ({
+      id,
+      url,
+    }: SetWebhookPayload) =>
+      setWebhook(
         id,
-        url
-      }: any) =>
-        setWebhook(
-          id,
-          url
-        )
+        url,
+      ),
+
+    onSuccess() {
+
+      queryClient.invalidateQueries({
+        queryKey: [
+          'telegram-bots',
+        ],
+      })
+
+      appToast.success(
+        'Webhook configured',
+      )
+    },
+
+    onError(error) {
+
+      appToast.error(
+        error.message,
+      )
+    },
   })
 }

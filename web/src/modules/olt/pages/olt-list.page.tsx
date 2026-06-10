@@ -72,7 +72,7 @@ export function OltListPage() {
         search.toLowerCase()
 
       return data.filter(
-        (olt) =>
+        (olt: Olt) =>
           olt.name
             ?.toLowerCase()
             .includes(

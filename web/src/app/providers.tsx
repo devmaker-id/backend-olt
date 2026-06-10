@@ -1,3 +1,4 @@
+import { Toaster } from 'sonner'
 import {
   QueryClient,
   QueryClientProvider
@@ -16,6 +17,7 @@ export function Providers(
       client={queryClient}
     >
       {props.children}
+      <Toaster />
     </QueryClientProvider>
   )
 }

@@ -44,3 +44,14 @@ export interface UpdateTelegramBotDto {
 
   isActive?: boolean
 }
+export interface SetWebhookRequest {
+  id: string
+
+  url: string
+}
+
+export interface TestTelegramBotRequest {
+  id: string
+
+  chatId: string
+}

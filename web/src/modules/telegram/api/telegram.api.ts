@@ -1,9 +1,9 @@
 import { api }
 from '../../../shared/lib/api'
-
 import type {
   TelegramUser,
-  CreateTelegramUserRequest
+  CreateTelegramUserRequest,
+  UpdateTelegramUserRequest
 } from '../types/telegram.types'
 
 export async function getTelegramUsers() {
@@ -24,6 +24,19 @@ export async function createTelegramUser(
     await api.post(
       '/telegram/users',
       payload
+    )
+
+  return response.data
+}
+
+export async function updateTelegramUser(
+  id: string,
+  payload: UpdateTelegramUserRequest,
+) {
+  const response =
+    await api.patch(
+      `/telegram/users/${id}`,
+      payload,
     )
 
   return response.data

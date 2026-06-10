@@ -1,206 +1,153 @@
-import { useState }
-from 'react'
+import { useMemo } from 'react'
+import { useState } from 'react'
 
 import {
-  useTelegramUsers
+  Button,
+} from '@/components/ui/button'
+
+import {
+  PageContainer,
+} from '@/shared/components/page-container'
+
+import {
+  PageHeader,
+} from '@/shared/components/page-header'
+
+import {
+  CreateTelegramUserDialog,
+} from '../components/create-telegram-user-dialog'
+
+import {
+  EditTelegramUserDialog,
+} from '../components/edit-telegram-user-dialog'
+
+import {
+  TelegramUserTable,
+} from '../components/telegram-user-table'
+
+import {
+  TelegramUserToolbar,
+} from '../components/telegram-user-toolbar'
+
+import {
+  useTelegramUsers,
 } from '../hooks/use-telegram-users'
 
-import {
-  useCreateTelegramUser
-} from '../hooks/use-create-telegram-user'
-
-import {
-  useDeleteTelegramUser
-} from '../hooks/use-delete-telegram-user'
-import type { TelegramRole } from '../types/telegram.types'
+import type {
+  TelegramUser,
+} from '../types/telegram.types'
 
 export function TelegramUsersPage() {
 
   const {
     data = [],
-    isLoading
+    isLoading,
   } = useTelegramUsers()
 
-  const createMutation =
-    useCreateTelegramUser()
-
-  const deleteMutation =
-    useDeleteTelegramUser()
-
   const [
-    telegramId,
-    setTelegramId
+    search,
+    setSearch,
   ] = useState('')
 
   const [
-    username,
-    setUsername
-  ] = useState('')
+    createOpen,
+    setCreateOpen,
+  ] = useState(false)
 
   const [
-    fullName,
-    setFullName
-  ] = useState('')
+    selectedUser,
+    setSelectedUser,
+  ] = useState<TelegramUser | null>(
+    null,
+  )
 
-  const [
-    role,
-    setRole
-  ] = useState<TelegramRole>('TEKNISI')
+  const filteredUsers =
+    useMemo(() => {
 
-  async function handleSubmit(
-    event: React.FormEvent
-  ) {
+      const keyword =
+        search.toLowerCase()
 
-    event.preventDefault()
+      return data.filter(
+        user =>
+          user.username
+            ?.toLowerCase()
+            .includes(keyword) ||
+          user.fullName
+            .toLowerCase()
+            .includes(keyword) ||
+          user.telegramId
+            .toLowerCase()
+            .includes(keyword),
+      )
 
-    await createMutation.mutateAsync({
-      telegramId,
-      username,
-      fullName,
-      role
-    })
-
-    setTelegramId('')
-    setUsername('')
-    setFullName('')
-  }
-
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
+    }, [
+      data,
+      search,
+    ])
 
   return (
-    <div>
+    <PageContainer>
 
-      <h1>
-        Telegram Users
-      </h1>
+      <PageHeader
+        title="Telegram Users"
+        description="
+          Manage telegram bot access users
+        "
+        actions={
 
-      <form
-        onSubmit={handleSubmit}
-      >
+          <Button
+            onClick={() =>
+              setCreateOpen(true)
+            }
+          >
+            Add User
+          </Button>
 
-        <input
-          placeholder="Telegram ID"
-          value={telegramId}
-          onChange={event =>
-            setTelegramId(
-              event.target.value
+        }
+      />
+
+      <TelegramUserToolbar
+        search={search}
+        onSearchChange={
+          setSearch
+        }
+      />
+
+      <TelegramUserTable
+        users={filteredUsers}
+        isLoading={isLoading}
+        onEdit={
+          setSelectedUser
+        }
+      />
+
+      <CreateTelegramUserDialog
+        open={createOpen}
+        onOpenChange={
+          setCreateOpen
+        }
+      />
+
+      <EditTelegramUserDialog
+        user={selectedUser}
+        open={
+          Boolean(
+            selectedUser,
+          )
+        }
+        onOpenChange={(
+          open,
+        ) => {
+
+          if (!open) {
+            setSelectedUser(
+              null,
             )
           }
-        />
 
-        <input
-          placeholder="username"
-          value={username}
-          onChange={event =>
-            setUsername(
-              event.target.value
-            )
-          }
-        />
-        <input
-          placeholder="fullname"
-          value={fullName}
-          onChange={event =>
-            setFullName(
-              event.target.value
-            )
-          }
-        />
+        }}
+      />
 
-        <select
-          value={role}
-          onChange={event =>
-            setRole(
-              event.target.value as TelegramRole
-            )
-          }
-        >
-          <option value="TEKNISI">
-            TEKNISI
-          </option>
-
-          <option value="ADMIN">
-            ADMIN
-          </option>
-        </select>
-
-        <button type="submit">
-          Add User
-        </button>
-
-      </form>
-
-      <hr />
-
-      <table border={1}>
-
-        <thead>
-
-          <tr>
-            <th>Username</th>
-            <th>Full Name</th>
-            <th>Telegram ID</th>
-            <th>Role</th>
-            <th>Active</th>
-            <th>Action</th>
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-          {data.map(user => (
-
-            <tr key={user.id}>
-
-              <td>
-                {user.username}
-              </td>
-
-              <td>
-                {user.fullName}
-              </td>
-
-              <td>
-                {user.telegramId}
-              </td>
-
-              <td>
-                {
-                  user.role === 'ADMIN' ? '👑 ADMIN' : '🔧 TEKNISI'
-                }
-              </td>
-
-              <td>
-                {String(
-                  user.isActive
-                )}
-              </td>
-
-              <td>
-
-                <button
-                  onClick={() =>
-                    deleteMutation.mutate(
-                      user.id
-                    )
-                  }
-                >
-                  Delete
-                </button>
-
-              </td>
-
-            </tr>
-
-          ))}
-
-        </tbody>
-
-      </table>
-
-    </div>
+    </PageContainer>
   )
 }

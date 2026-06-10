@@ -1,16 +1,42 @@
-import { useMutation }
-from '@tanstack/react-query'
+import {
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query'
 
 import {
-  deleteTelegramBot
+  deleteTelegramBot,
 } from '../api/telegram-bot.api'
 
-export function
-useDeleteTelegramBot() {
+import {
+  appToast,
+} from '@/shared/lib/toast'
+
+export function useDeleteTelegramBot() {
+  const queryClient =
+    useQueryClient()
 
   return useMutation({
-
     mutationFn:
-      deleteTelegramBot
+      deleteTelegramBot,
+
+    onSuccess() {
+
+      queryClient.invalidateQueries({
+        queryKey: [
+          'telegram-bots',
+        ],
+      })
+
+      appToast.success(
+        'Telegram bot deleted',
+      )
+    },
+
+    onError(error) {
+
+      appToast.error(
+        error.message,
+      )
+    },
   })
 }

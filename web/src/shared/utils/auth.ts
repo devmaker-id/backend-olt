@@ -4,6 +4,14 @@ export function getToken() {
   )
 }
 
+export function hasToken() {
+  return Boolean(
+    localStorage.getItem(
+      'token',
+    ),
+  )
+}
+
 export function getUser() {
 
   const user =

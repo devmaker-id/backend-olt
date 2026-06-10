@@ -65,7 +65,7 @@ export default function TelegramAccessLogsPage() {
     )
   }
 
-  const filteredLogs = data.filter((log) => {
+  const filteredLogs = data.filter((log: TelegramAccessLog) => {
     const keyword = search.toLowerCase()
     const matchesSearch =
       log.username?.toLowerCase().includes(keyword) ||

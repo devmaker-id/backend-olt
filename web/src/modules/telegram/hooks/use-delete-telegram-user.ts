@@ -6,6 +6,7 @@ import {
 import {
   deleteTelegramUser
 } from '../api/telegram.api'
+import { appToast } from '@/shared/lib/toast'
 
 export function useDeleteTelegramUser() {
 
@@ -24,6 +25,15 @@ export function useDeleteTelegramUser() {
           'telegram-users'
         ]
       })
+      appToast.success(
+        'Telegram user berhasil di hapus'
+      )
+    },
+    onError(error) {
+      appToast.error(
+        error.message ??
+        'Failed to delete telegram user'
+      )
     }
   })
 }

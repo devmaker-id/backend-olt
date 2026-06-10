@@ -1,16 +1,42 @@
-import { useMutation }
-from '@tanstack/react-query'
+import {
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query'
 
 import {
-  createTelegramBot
+  createTelegramBot,
 } from '../api/telegram-bot.api'
 
-export function
-useCreateTelegramBot() {
+import {
+  appToast,
+} from '@/shared/lib/toast'
+
+export function useCreateTelegramBot() {
+  const queryClient =
+    useQueryClient()
 
   return useMutation({
-
     mutationFn:
-      createTelegramBot
+      createTelegramBot,
+
+    onSuccess() {
+
+      queryClient.invalidateQueries({
+        queryKey: [
+          'telegram-bots',
+        ],
+      })
+
+      appToast.success(
+        'Telegram bot created',
+      )
+    },
+
+    onError(error) {
+
+      appToast.error(
+        error.message,
+      )
+    },
   })
 }

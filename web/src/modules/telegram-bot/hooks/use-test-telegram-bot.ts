@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { testTelegramBot } from '../api/telegram-bot.api'
+import { appToast } from '@/shared/lib/toast'
 
 export function useTestTelegramBot() {
   return useMutation({
@@ -12,6 +13,12 @@ export function useTestTelegramBot() {
     }) => testTelegramBot(
       id,
       chatId
-    )
+    ),
+    onSuccess() {
+
+      appToast.success(
+        'Test message sent',
+      )
+    }
   })
 }
