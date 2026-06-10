@@ -1,4 +1,5 @@
 import './index.css'
+import { Toaster } from '@/components/ui/sonner'
 import ReactDOM from 'react-dom/client'
 import {
   RouterProvider
@@ -14,5 +15,6 @@ ReactDOM.createRoot(
     <RouterProvider
       router={router}
     />
+    <Toaster />
   </Providers>
 )

@@ -1,222 +1,100 @@
-import { createBrowserRouter } from 'react-router-dom'
-import { ProtectedRoute } from '../modules/auth/components/protected-route'
+import {
+  createBrowserRouter
+} from 'react-router-dom'
 
-import { ErrorPage } from '../shared/pages/error.page'
-import { NotFoundPage } from '../shared/pages/not-found.page'
-import { LoginPage } from '../modules/auth/pages/login.page'
-import { RootPage } from '../modules/auth/pages/root.page'
-import { DashboardPage } from '../modules/dashboard/pages/dashboard.page'
+import {
+  ProtectedRoute
+} from '@/modules/auth/components/protected-route'
 
-import { OltCreatePage } from '../modules/olt/pages/olt-create.page'
-import { OltEditPage } from '../modules/olt/pages/olt-edit.page'
-import { OltListPage } from '../modules/olt/pages/olt-list.page'
-import { OltDetailPage } from '../modules/olt/pages/olt-detail.page'
+import {
+  DashboardLayout
+} from '@/shared/layouts/dashboard.layout'
 
-import { EndpointListPage } from '../modules/endpoint/pages/endpoint-list.page'
-import { DashboardLayout } from '../shared/layouts/dashboard.layout'
-import { UnregisteredOnuPage } from '../modules/onu/pages/unregistered-onu.page'
-import { EndpointDetailPage } from '../modules/endpoint/pages/endpoint-detail.page'
-import { TelegramUsersPage } from '../modules/telegram/pages/telegram-users.page'
+import {
+  LoginPage
+} from '@/modules/auth/pages/login.page'
 
-import { TelegramBotDetailPage } from '../modules/telegram-bot/pages/telegram-bot-detail.page'
-import { TelegramBotListPage } from '../modules/telegram-bot/pages/telegram-bot-list.page'
-import { TelegramBotCreatePage } from '../modules/telegram-bot/pages/telegram-bot-create.page'
-import { TelegramBotEditPage } from '../modules/telegram-bot/pages/telegram-bot-edit.page'
+import {
+  RootPage
+} from '@/modules/auth/pages/root.page'
 
-import TelegramAccessLogsPage from '../modules/system-logs/pages/telegram-access-logs.page'
+import {
+  ErrorPage
+} from '@/shared/pages/error.page'
 
-import { OnuReplacementListPage } from '../modules/onu-replacement/pages/onu-replacement-list.page'
-import { OnuReplacementDetailPage } from '../modules/onu-replacement/pages/onu-replacement-detail.page'
+import {
+  NotFoundPage
+} from '@/shared/pages/not-found.page'
 
+import { dashboardRoutes } from '@/modules/dashboard/routes'
+import {
+  endpointRoutes
+} from '@/modules/endpoint/routes'
 
-export const router =
-  createBrowserRouter([
-    {
-      path: '*',
-      element: (
-        <ProtectedRoute>
-          <NotFoundPage />
-        </ProtectedRoute>
-      )
-    },
+import {
+  oltRoutes
+} from '@/modules/olt/routes'
+
+import {
+  telegramRoutes
+} from '@/modules/telegram/routes'
+
+import {
+  telegramBotRoutes
+} from '@/modules/telegram-bot/routes'
+
+import {
+  onuRoutes
+} from '@/modules/onu/routes'
+
+import {
+  onuReplacementRoutes
+} from '@/modules/onu-replacement/routes'
+
+import {
+  systemLogsRoutes
+} from '@/modules/system-logs/routes'
+
+export const router = createBrowserRouter([
+
     {
       path: '/',
       element: <RootPage />,
       errorElement: <ErrorPage />
     },
-    {
-      path: '/',
-      element: <RootPage />
-    },
+
     {
       path: '/login',
       element: <LoginPage />
     },
+
     {
-      path: '/dashboard',
-      element: (
-        <ProtectedRoute>
-          <DashboardPage />
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: '/olt/create',
-      element: 
-        <ProtectedRoute>
-          <DashboardLayout>
-            <OltCreatePage />
-          </DashboardLayout>
-        </ProtectedRoute>
-    },
-    {
-      path: '/olt/:id/edit',
-      element: 
-        <ProtectedRoute>
-          <DashboardLayout>
-            <OltEditPage />
-          </DashboardLayout>
-        </ProtectedRoute>
-    },
-    {
-      path: '/olts',
-      element: (
-        <ProtectedRoute>
-          <DashboardLayout>
-            <OltListPage />
-          </DashboardLayout>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: '/olt/:id',
-      element: (
-        <ProtectedRoute>
-          <DashboardLayout>
-            <OltDetailPage />
-          </DashboardLayout>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: '/endpoints',
-      element: (
-        <ProtectedRoute>
-          <DashboardLayout>
-            <EndpointListPage />
-          </DashboardLayout>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path:
-        '/endpoints/:id',
+      path: '/',
 
       element: (
-        <ProtectedRoute>
-          <DashboardLayout>
-            <EndpointDetailPage />
-          </DashboardLayout>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path:
-        '/onu/unregistered',
 
-      element: (
         <ProtectedRoute>
-          <DashboardLayout>
-            <UnregisteredOnuPage />
-          </DashboardLayout>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path:
-        '/telegram/users',
 
-      element: (
-        <ProtectedRoute>
-          <DashboardLayout>
-            <TelegramUsersPage />
-          </DashboardLayout>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: '/telegram-bots',
+          <DashboardLayout />
 
-      element: (
-        <ProtectedRoute>
-          <DashboardLayout>
-            <TelegramBotListPage />
-          </DashboardLayout>
         </ProtectedRoute>
-      )
+
+      ),
+
+      children: [
+        ...dashboardRoutes,
+        ...oltRoutes,
+        ...endpointRoutes,
+        ...telegramRoutes,
+        ...telegramBotRoutes,
+        ...onuRoutes,
+        ...onuReplacementRoutes,
+        ...systemLogsRoutes
+      ]
     },
 
     {
-      path: '/telegram-bots/create',
-
-      element: (
-        <ProtectedRoute>
-          <DashboardLayout>
-            <TelegramBotCreatePage />
-          </DashboardLayout>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: '/telegram-bots/:id',
-      element: (
-        <ProtectedRoute>
-          <DashboardLayout>
-            <TelegramBotDetailPage />
-          </DashboardLayout>
-        </ProtectedRoute>
-      )
-    },
-    {
-      path: '/telegram-bots/:id/edit',
-      element:
-        <ProtectedRoute>
-          <DashboardLayout>
-            <TelegramBotEditPage />
-          </DashboardLayout>
-        </ProtectedRoute>
-    },
-    {
-      path: '/onu/replacements',
-      element: (
-        <ProtectedRoute>
-          <DashboardLayout>
-            <OnuReplacementListPage />
-          </DashboardLayout>
-        </ProtectedRoute>
-      )
-    },
-
-    {
-      path: '/onu/replacements/:id',
-
-      element: (
-        <ProtectedRoute>
-          <DashboardLayout>
-            <OnuReplacementDetailPage />
-          </DashboardLayout>
-        </ProtectedRoute>
-      )
-    },
-
-    {
-      path: '/system-logs/telegram-access',
-      element: (
-        <ProtectedRoute>
-          <DashboardLayout>
-            <TelegramAccessLogsPage />,
-          </DashboardLayout>
-        </ProtectedRoute>
-      )
+      path: '*',
+      element: <NotFoundPage />
     }
   ])

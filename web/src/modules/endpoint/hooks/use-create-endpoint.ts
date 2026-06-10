@@ -2,15 +2,15 @@ import { useMutation }
 from '@tanstack/react-query'
 
 import {
-  getRealtimeEndpoint
+  createEndpoint
 } from '../api/endpoint.api'
 
 export function
-useEndpointRealtime() {
+useCreateEndpoint() {
 
   return useMutation({
 
     mutationFn:
-      getRealtimeEndpoint
+      createEndpoint
   })
 }

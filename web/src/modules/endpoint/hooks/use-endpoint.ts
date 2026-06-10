@@ -1,22 +1,28 @@
-import {
-  useQuery
-} from '@tanstack/react-query'
+import { useQuery }
+from '@tanstack/react-query'
 
 import {
   getEndpointById
 } from '../api/endpoint.api'
 
-export function useEndpoint(
+export function
+useEndpoint(
   id: string
 ) {
 
   return useQuery({
+
     queryKey: [
       'endpoint',
       id
     ],
 
     queryFn: () =>
-      getEndpointById(id)
+      getEndpointById(
+        id
+      ),
+
+    enabled:
+      !!id
   })
 }

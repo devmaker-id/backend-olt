@@ -1,33 +1,67 @@
-import type {
-  ReactNode
-} from 'react'
+import {
+  Outlet
+} from 'react-router-dom'
 
-import { Sidebar }
-  from '../components/sidebar'
+import {
+  Sidebar
+} from '../navigation/sidebar'
 
-interface Props {
-  children: ReactNode
-}
+import {
+  Header
+} from '../navigation/header'
 
-export function DashboardLayout(
-  props: Props
-) {
+import {
+  Footer
+} from '../navigation/footer'
+
+export function DashboardLayout() {
+
   return (
-    <div
-      style={{
-        display: 'flex'
-      }}
-    >
-      <Sidebar />
 
-      <main
-        style={{
-          flex: 1,
-          padding: '20px'
-        }}
+    <div
+      className="
+        flex
+        min-h-screen
+      "
+    >
+
+      <div
+        className="
+          hidden
+          lg:block
+        "
       >
-        {props.children}
-      </main>
+
+        <Sidebar />
+
+      </div>
+
+      <div
+        className="
+          flex
+          min-w-0
+          flex-1
+          flex-col
+        "
+      >
+
+        <Header />
+
+        <main
+          className="
+            flex-1
+            overflow-auto
+          "
+        >
+
+          <Outlet />
+
+        </main>
+
+        <Footer />
+
+      </div>
+
     </div>
   )
 }

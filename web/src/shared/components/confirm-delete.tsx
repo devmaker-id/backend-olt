@@ -14,9 +14,8 @@ interface ConfirmDeleteProps {
   onOpenChange: (
     open: boolean
   ) => void
-
   onConfirm: () => void
-
+  isLoading?: boolean
   title?: string
   description?: string
 }
@@ -25,6 +24,7 @@ export function ConfirmDelete({
   open,
   onOpenChange,
   onConfirm,
+  isLoading,
   title = 'Delete Item',
   description = 'This action cannot be undone.',
 }: ConfirmDeleteProps) {
@@ -50,9 +50,12 @@ export function ConfirmDelete({
           </AlertDialogCancel>
 
           <AlertDialogAction
+            disabled={isLoading}
             onClick={onConfirm}
           >
-            Delete
+            {
+              isLoading ? 'Deleting' : 'Delete'
+            }
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -1,305 +1,220 @@
-import { useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { useEndpoint } from '../hooks/use-endpoint'
-import { useEndpointRealtime } from '../hooks/use-endpoint-realtime'
+import {
+  useState
+} from 'react'
 
-import { useReplaceOnu } from '../../onu-replacement/hooks/use-replace-onu'
-import { useUnauthorizedOnus } from '../../onu/hooks/use-unauthorized-onus'
+import {
+  useParams
+} from 'react-router-dom'
+
+import {
+  Button
+} from '@/components/ui/button'
+
+import {
+  PageContainer
+} from '@/shared/components/page-container'
+
+import {
+  PageHeader
+} from '@/shared/components/page-header'
+
+import {
+  LoadingState
+} from '@/shared/components/loading-state'
+
+import {
+  ErrorState
+} from '@/shared/components/error-state'
+
+import {
+  useEndpoint
+} from '../hooks/use-endpoint'
+
+import {
+  useEndpointRealtime
+} from '../hooks/use-endpoint-realtime'
+
+import {
+  useUnauthorizedOnus
+} from '@/modules/onu/hooks/use-unauthorized-onus'
+
+import {
+  useReplaceOnu
+} from '@/modules/onu-replacement/hooks/use-replace-onu'
+
+import {
+  EndpointInfoCard
+} from '../components/endpoint-info-card'
+
+import {
+  EndpointOnuCard
+} from '../components/endpoint-onu-card'
+
+import {
+  EndpointRealtimeCard
+} from '../components/endpoint-realtime-card'
+
+import {
+  EndpointReplaceOnuCard
+} from '../components/endpoint-replace-onu-card'
 
 export function EndpointDetailPage() {
-  const replaceMutation = useReplaceOnu()
-  const {
-    data: unauthorizedOnus
-  } = useUnauthorizedOnus()
-  const [
-    selectedUnauthorizedId,
-    setSelectedUnauthorizedId
-  ] = useState('')
 
   const { id } = useParams()
 
   const {
     data,
-    isLoading
+    isLoading,
+    error
   } = useEndpoint(id!)
 
   const realtimeMutation =
     useEndpointRealtime()
 
+  const replaceMutation =
+    useReplaceOnu()
+
+  const {
+    data: unauthorizedOnus
+  } = useUnauthorizedOnus()
+
+  const [
+    selectedUnauthorizedId,
+    setSelectedUnauthorizedId
+  ] = useState('')
+
   if (isLoading) {
     return (
-      <div>
-        Loading endpoint...
-      </div>
+      <LoadingState />
     )
   }
 
-  if (!data) {
+  if (error || !data) {
     return (
-      <div>
-        Endpoint tidak ditemukan
-      </div>
+      <ErrorState
+        message="Endpoint not found"
+      />
     )
   }
 
-  const onu = data.onus?.[0]
-
-  const realtime = realtimeMutation.data
+  const onu =
+    data.onus?.[0]
 
   return (
-    <div>
 
-      <h1>
-        {data.name}
-      </h1>
+    <PageContainer>
 
-      <p>
-        Internet No:
-        {' '}
-        {data.internetNo}
-      </p>
+      <PageHeader
+        title={data.name}
+        description={data.internetNo}
+      />
 
-      <p>
-        Address:
-        {' '}
-        {data.address}
-      </p>
-
-      <button
-        disabled={
-          realtimeMutation.isPending
-        }
-        onClick={() =>
-          realtimeMutation.mutate(
-            data.internetNo
-          )
-        }
-      >
-        {
-          realtimeMutation.isPending
-            ? 'Connecting OLT...'
-            : 'Refresh Realtime'
-        }
-      </button>
-
-      <hr />
-
-      <h2>
-        Database ONU
-      </h2>
-
-      <p>
-        ONU ID:
-        {' '}
-        {onu?.onuId ?? '-'}
-      </p>
-
-      <p>
-        EPON:
-        {' '}
-        {onu?.eponPort ?? '-'}
-      </p>
-
-      <p>
-        MAC:
-        {' '}
-        {onu?.onuMac ?? '-'}
-      </p>
-
-      <p>
-        Status:
-        {' '}
-        {onu?.connectionState ?? '-'}
-      </p>
-
-      <p>
-        RX:
-        {' '}
-        {onu?.rxPower ?? '-'}
-      </p>
-
-      <p>
-        TX:
-        {' '}
-        {onu?.txPower ?? '-'}
-      </p>
-
-      <hr />
-
-      <h2>
-        Replace ONU
-      </h2>
-
-      <select
-
-        value={
-          selectedUnauthorizedId
-        }
-
-        onChange={
-          event =>
-            setSelectedUnauthorizedId(
-              event.target.value
-            )
-        }
+      <div
+        className="
+          space-y-6
+        "
       >
 
-        <option value="">
-          Pilih ONU
-        </option>
+        <EndpointInfoCard
+          endpoint={data}
+        />
+
+        <div>
+
+          <Button
+
+            disabled={
+              realtimeMutation.isPending
+            }
+
+            onClick={() =>
+              realtimeMutation.mutate(
+                data.internetNo
+              )
+            }
+          >
+
+            {
+              realtimeMutation.isPending
+
+                ? 'Refreshing Realtime...'
+
+                : 'Refresh Realtime'
+            }
+
+          </Button>
+
+        </div>
+
+        <EndpointOnuCard
+          onu={onu}
+        />
+
+        <EndpointReplaceOnuCard
+
+          selectedId={
+            selectedUnauthorizedId
+          }
+
+          onSelectedChange={
+            setSelectedUnauthorizedId
+          }
+
+          unauthorizedOnus={
+            unauthorizedOnus ?? []
+          }
+
+          isPending={
+            replaceMutation.isPending
+          }
+
+          onReplace={() =>
+
+            replaceMutation.mutate({
+
+              endpointId:
+                data.id,
+
+              unauthorizedOnuId:
+                selectedUnauthorizedId,
+
+              reason:
+                'ONU Rusak'
+            })
+          }
+
+        />
 
         {
-          unauthorizedOnus?.map(
-            (onu: any) => (
+          realtimeMutation.isError && (
 
-              <option
-                key={onu.id}
-                value={onu.id}
-              >
+            <ErrorState
+              message="
+                Failed to retrieve
+                realtime ONU data
+              "
+            />
 
-                {onu.macAddress}
-
-                {' - '}
-
-                {onu.eponPort}
-
-                :
-
-                {onu.onuId}
-
-              </option>
-            )
           )
         }
 
-      </select>
-
-      <button
-
-        disabled={
-          !selectedUnauthorizedId ||
-          replaceMutation.isPending
-        }
-
-        onClick={() =>
-
-          replaceMutation.mutate({
-
-            endpointId:
-              data.id,
-
-            unauthorizedOnuId:
-              selectedUnauthorizedId,
-
-            reason:
-              'ONU Rusak'
-          })
-        }
-      >
-
         {
-          replaceMutation.isPending
+          realtimeMutation.isSuccess &&
+          realtimeMutation.data && (
 
-            ? 'Replacing...'
+            <EndpointRealtimeCard
 
-            : 'Replace ONU'
-        }
-
-      </button>
-
-      {
-        realtimeMutation.isError && (
-          <>
-            <hr />
-
-            <p>
-              Gagal mengambil data realtime dari OLT
-            </p>
-          </>
-        )
-      }
-
-      {
-        realtime && (
-          <>
-            <hr />
-
-            <h2>
-              Realtime ONU
-            </h2>
-
-            <p>
-              Status:
-              {' '}
-              {realtime.onu.status}
-            </p>
-
-            <p>
-              Signal:
-              {' '}
-              {
-                realtime.onu.signalStatus === 'GOOD'
-                  ? '🟢 GOOD'
-                  : realtime.onu.signalStatus === 'WARNING'
-                  ? '🟡 WARNING'
-                  : realtime.onu.signalStatus === 'CRITICAL'
-                  ? '🔴 CRITICAL'
-                  : realtime.onu.signalStatus
+              realtime={
+                realtimeMutation.data
               }
-            </p>
 
-            <p>
-              Port:
-              {' '}
-              {realtime.onu.port}
-            </p>
+            />
 
-            <p>
-              Model:
-              {' '}
-              {realtime.onu.model}
-            </p>
+          )
+        }
 
-            <p>
-              RX Power:
-              {' '}
-              {realtime.onu.rxPower}
-            </p>
+      </div>
 
-            <p>
-              TX Power:
-              {' '}
-              {realtime.onu.txPower}
-            </p>
-
-            <p>
-              Temperature:
-              {' '}
-              {realtime.onu.temperature}
-            </p>
-
-            <p>
-              Offline Count:
-              {' '}
-              {realtime.onu.offlineCount}
-            </p>
-
-            <p>
-              First Uptime:
-              {' '}
-              {realtime.onu.firstUptime ?? '-'}
-            </p>
-
-            <p>
-              Last Offtime:
-              {' '}
-              {realtime.onu.lastOfftime ?? '-'}
-            </p>
-
-          </>
-        )
-      }
-
-    </div>
+    </PageContainer>
   )
 }
