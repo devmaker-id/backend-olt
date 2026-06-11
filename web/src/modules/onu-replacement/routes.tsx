@@ -1,10 +1,4 @@
-import {
-  OnuReplacementListPage
-} from './pages/onu-replacement-list.page'
-
-import {
-  OnuReplacementDetailPage
-} from './pages/onu-replacement-detail.page'
+import { OnuReplacementsPage } from './pages/onu-replacements.page'
 
 export const onuReplacementRoutes = [
 
@@ -12,15 +6,7 @@ export const onuReplacementRoutes = [
     path: 'onu/replacements',
 
     element: (
-      <OnuReplacementListPage />
-    )
-  },
-
-  {
-    path: 'onu/replacements/:id',
-
-    element: (
-      <OnuReplacementDetailPage />
+      <OnuReplacementsPage />
     )
   }
 ]

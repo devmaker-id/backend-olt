@@ -10,42 +10,35 @@ import {
 } from '@/shared/components/page-header'
 
 import {
-  AuthorizeOnuDialog,
-} from '../components/authorize-onu-dialog'
+  OnuReplacementDetailSheet,
+} from '../components/onu-replacement-detail-sheet'
 
 import {
-  UnregisteredOnuPagination,
-} from '../components/unregistered-onu-pagination'
+  OnuReplacementSummary,
+} from '../components/onu-replacement-summary'
 
 import {
-  UnregisteredOnuSummary,
-} from '../components/unregistered-onu-summary'
+  OnuReplacementTable,
+} from '../components/onu-replacement-table'
 
 import {
-  UnregisteredOnuTable,
-} from '../components/unregistered-onu-table'
+  OnuReplacementToolbar,
+} from '../components/onu-replacement-toolbar'
 
 import {
-  UnregisteredOnuToolbar,
-} from '../components/unregistered-onu-toolbar'
-import {
-  LoadingState,
-} from '@/shared/components/data-table/loading-state'
-
-import {
-  useUnauthorizedOnus,
-} from '../hooks/use-unauthorized-onus'
+  useOnuReplacements,
+} from '../hooks/use-onu-replacements'
 
 import type {
-  UnauthorizedOnu,
-} from '../types/onu.types'
+  OnuReplacement,
+} from '../types/onu-replacement.types'
 
-export function UnregisteredOnuPage() {
+export function OnuReplacementsPage() {
 
   const {
     data = [],
     isLoading,
-  } = useUnauthorizedOnus()
+  } = useOnuReplacements()
 
   const [
     search,
@@ -63,13 +56,13 @@ export function UnregisteredOnuPage() {
   ] = useState(10)
 
   const [
-    selectedOnu,
-    setSelectedOnu,
-  ] = useState<UnauthorizedOnu | null>(
+    selectedReplacement,
+    setSelectedReplacement,
+  ] = useState<OnuReplacement | null>(
     null,
   )
 
-  const filteredOnus =
+  const filteredData =
     useMemo(() => {
 
       const keyword =
@@ -77,27 +70,49 @@ export function UnregisteredOnuPage() {
 
       return data.filter(
         (
-          onu: UnauthorizedOnu,
+          item: OnuReplacement,
         ) => {
 
           return (
-            onu.onuName
-              ?.toLowerCase()
-              .includes(
-                keyword,
-              ) ||
 
-            onu.macAddress
-              ?.toLowerCase()
-              .includes(
-                keyword,
-              ) ||
-
-            onu.onuId
+            item.endpoint.internetNo
               ?.toLowerCase()
               .includes(
                 keyword,
               )
+
+            ||
+
+            item.endpoint.name
+              ?.toLowerCase()
+              .includes(
+                keyword,
+              )
+
+            ||
+
+            item.oldOnu.onuMac
+              ?.toLowerCase()
+              .includes(
+                keyword,
+              )
+
+            ||
+
+            item.newOnu.onuMac
+              ?.toLowerCase()
+              .includes(
+                keyword,
+              )
+
+            ||
+
+            item.reason
+              ?.toLowerCase()
+              .includes(
+                keyword,
+              )
+
           )
 
         },
@@ -112,35 +127,32 @@ export function UnregisteredOnuPage() {
     Math.max(
       1,
       Math.ceil(
-        filteredOnus.length /
+        filteredData.length /
         pageSize,
       ),
     )
 
-  const paginatedOnus =
-    filteredOnus.slice(
+  const paginatedData =
+    filteredData.slice(
       (page - 1) * pageSize,
       page * pageSize,
     )
 
-  if (isLoading) {
-    return (
-      <LoadingState />
-    )
-  }
   return (
     <PageContainer>
 
       <PageHeader
-        title="Unauthorized ONU"
+        title="
+          ONU Replacement History
+        "
         description="
-          Manage ONU discovered from OLT and authorize them as customer endpoints.
+          Historical ONU replacement records.
         "
       />
 
-      <UnregisteredOnuSummary
+      <OnuReplacementSummary
         total={
-          filteredOnus.length
+          filteredData.length
         }
       />
 
@@ -155,7 +167,7 @@ export function UnregisteredOnuPage() {
         "
       >
 
-        <UnregisteredOnuToolbar
+        <OnuReplacementToolbar
           search={search}
           onSearchChange={(
             value,
@@ -232,40 +244,87 @@ export function UnregisteredOnuPage() {
 
       </div>
 
-      <UnregisteredOnuTable
-        onus={
-          paginatedOnus
+      <OnuReplacementTable
+        replacements={
+          paginatedData
         }
         isLoading={
           isLoading
         }
-        onAuthorize={
-          setSelectedOnu
+        onView={
+          setSelectedReplacement
         }
       />
 
-      <UnregisteredOnuPagination
-        page={page}
-        totalPages={
-          totalPages
-        }
-        onPrevious={() =>
-          setPage(
-            page - 1,
-          )
-        }
-        onNext={() =>
-          setPage(
-            page + 1,
-          )
-        }
-      />
+      <div
+        className="
+          flex
+          items-center
+          justify-end
+          gap-4
+        "
+      >
 
-      <AuthorizeOnuDialog
-        onu={selectedOnu}
+        <button
+          className="
+            rounded-md
+            border
+            px-3
+            py-2
+          "
+          disabled={
+            page === 1
+          }
+          onClick={() =>
+            setPage(
+              page - 1,
+            )
+          }
+        >
+          Prev
+        </button>
+
+        <span
+          className="
+            text-sm
+            text-muted-foreground
+          "
+        >
+
+          Page {page}
+          {' / '}
+          {totalPages}
+
+        </span>
+
+        <button
+          className="
+            rounded-md
+            border
+            px-3
+            py-2
+          "
+          disabled={
+            page === totalPages
+          }
+          onClick={() =>
+            setPage(
+              page + 1,
+            )
+          }
+        >
+          Next
+        </button>
+
+      </div>
+
+      <OnuReplacementDetailSheet
+        replacement={
+          selectedReplacement
+        }
         open={
           Boolean(
-            selectedOnu,
+            selectedReplacement,
           )
         }
         onOpenChange={(
@@ -274,7 +333,7 @@ export function UnregisteredOnuPage() {
 
           if (!open) {
 
-            setSelectedOnu(
+            setSelectedReplacement(
               null,
             )
 

@@ -19,24 +19,23 @@ import {
 } from '@/components/ui/table'
 
 import type {
-  UnauthorizedOnu,
-} from '../types/onu.types'
-import { EmptyState } from '@/shared/components/data-table/empty-state'
+  OnuReplacement,
+} from '../types/onu-replacement.types'
 
 interface Props {
-  onus: UnauthorizedOnu[]
+  replacements: OnuReplacement[]
 
   isLoading: boolean
 
-  onAuthorize: (
-    onu: UnauthorizedOnu
+  onView: (
+    replacement: OnuReplacement
   ) => void
 }
 
-export function UnregisteredOnuTable({
-  onus,
+export function OnuReplacementTable({
+  replacements,
   isLoading,
-  onAuthorize,
+  onView,
 }: Props) {
 
   return (
@@ -45,7 +44,7 @@ export function UnregisteredOnuTable({
       <CardHeader>
 
         <CardTitle>
-          Unauthorized ONU
+          ONU Replacement History
         </CardTitle>
 
       </CardHeader>
@@ -59,23 +58,27 @@ export function UnregisteredOnuTable({
             <TableRow>
 
               <TableHead>
-                ONU ID
+                Date
               </TableHead>
 
               <TableHead>
-                EPON Port
+                Internet No
               </TableHead>
 
               <TableHead>
-                MAC Address
+                Customer
               </TableHead>
 
               <TableHead>
-                ONU Name
+                Old ONU
               </TableHead>
 
               <TableHead>
-                Comment
+                New ONU
+              </TableHead>
+
+              <TableHead>
+                Reason
               </TableHead>
 
               <TableHead>
@@ -93,16 +96,12 @@ export function UnregisteredOnuTable({
               <TableRow>
 
                 <TableCell
-                  colSpan={6}
+                  colSpan={7}
                   className="
                     text-center
                   "
                 >
-                  <EmptyState
-                    title="
-                      No Replacement History
-                    "
-                  />
+                  Loading...
                 </TableCell>
 
               </TableRow>
@@ -110,61 +109,99 @@ export function UnregisteredOnuTable({
             )}
 
             {!isLoading &&
-              onus.length === 0 && (
+              replacements.length === 0 && (
 
                 <TableRow>
 
                   <TableCell
-                    colSpan={6}
+                    colSpan={7}
                     className="
                       text-center
                     "
                   >
-                    No unauthorized ONU found
+                    No replacement history found
                   </TableCell>
 
                 </TableRow>
 
               )}
 
-            {onus.map(
-              onu => (
+            {replacements.map(
+              replacement => (
 
                 <TableRow
-                  key={onu.id}
+                  key={
+                    replacement.id
+                  }
                 >
 
                   <TableCell>
-                    {onu.onuId}
+
+                    {
+                      new Date(
+                        replacement.createdAt,
+                      ).toLocaleString()
+                    }
+
                   </TableCell>
 
                   <TableCell>
-                    {onu.eponPort}
+
+                    {
+                      replacement.endpoint
+                        .internetNo
+                    }
+
                   </TableCell>
 
                   <TableCell>
-                    {onu.macAddress}
+
+                    {
+                      replacement.endpoint
+                        .name
+                    }
+
                   </TableCell>
 
                   <TableCell>
-                    {onu.onuName}
+
+                    {
+                      replacement.oldOnu
+                        .onuMac
+                    }
+
                   </TableCell>
 
                   <TableCell>
-                    {onu.onuComtName}
+
+                    {
+                      replacement.newOnu
+                        .onuMac
+                    }
+
+                  </TableCell>
+
+                  <TableCell>
+
+                    {
+                      replacement.reason ||
+                      '-'
+                    }
+
                   </TableCell>
 
                   <TableCell>
 
                     <Button
                       size="sm"
+                      variant="outline"
                       onClick={() =>
-                        onAuthorize(
-                          onu,
+                        onView(
+                          replacement,
                         )
                       }
                     >
-                      Authorize
+                      View
                     </Button>
 
                   </TableCell>

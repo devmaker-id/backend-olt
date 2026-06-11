@@ -23,12 +23,24 @@ import {
 } from '@/components/ui/label'
 
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
+import {
   useAuthorizeOnu,
 } from '../hooks/use-authorize-onu'
 
 import type {
   UnauthorizedOnu,
 } from '../types/onu.types'
+
+import type {
+  EndpointType,
+} from '@/modules/endpoint/types/endpoint.types'
 
 interface AuthorizeOnuDialogProps {
   onu: UnauthorizedOnu | null
@@ -38,6 +50,16 @@ interface AuthorizeOnuDialogProps {
   onOpenChange: (
     open: boolean
   ) => void
+}
+
+const endpointLabels: Record<
+  EndpointType,
+  string
+> = {
+  CUSTOMER: 'Customer',
+  RESELLER: 'Reseller',
+  POP: 'POP Site',
+  BACKHAUL: 'Backhaul',
 }
 
 export function AuthorizeOnuDialog({
@@ -50,8 +72,15 @@ export function AuthorizeOnuDialog({
     useAuthorizeOnu()
 
   const [
-    customerName,
-    setCustomerName,
+    endpointType,
+    setEndpointType,
+  ] = useState<EndpointType>(
+    'CUSTOMER',
+  )
+
+  const [
+    endpointName,
+    setEndpointName,
   ] = useState('')
 
   const [
@@ -65,7 +94,11 @@ export function AuthorizeOnuDialog({
       return
     }
 
-    setCustomerName(
+    setEndpointType(
+      'CUSTOMER',
+    )
+
+    setEndpointName(
       onu.onuName ||
       `ONU-${onu.onuId}`,
     )
@@ -92,10 +125,10 @@ export function AuthorizeOnuDialog({
       endpoint: {
 
         type:
-          'CUSTOMER',
+          endpointType,
 
         name:
-          customerName,
+          endpointName,
 
         address,
 
@@ -127,43 +160,70 @@ export function AuthorizeOnuDialog({
           </DialogTitle>
 
           <DialogDescription>
-            Register unauthorized ONU as customer endpoint.
+            Authorize discovered ONU
+            and assign it to an endpoint.
           </DialogDescription>
 
         </DialogHeader>
 
-        <div className="space-y-2 rounded-lg border p-4 text-sm">
+        <div
+          className="
+            grid
+            gap-2
+            rounded-lg
+            border
+            p-4
+            text-sm
+            md:grid-cols-2
+          "
+        >
 
           <div>
+
             <span className="font-medium">
               ONU ID:
             </span>
+
             {' '}
+
             {onu.onuId}
+
           </div>
 
           <div>
-            <span className="font-medium">
-              MAC Address:
-            </span>
-            {' '}
-            {onu.macAddress}
-          </div>
 
-          <div>
-            <span className="font-medium">
-              EPON Port:
-            </span>
-            {' '}
-            {onu.eponPort}
-          </div>
-
-          <div>
             <span className="font-medium">
               ONU Name:
             </span>
+
             {' '}
+
             {onu.onuName || '-'}
+
+          </div>
+
+          <div>
+
+            <span className="font-medium">
+              MAC Address:
+            </span>
+
+            {' '}
+
+            {onu.macAddress}
+
+          </div>
+
+          <div>
+
+            <span className="font-medium">
+              EPON Port:
+            </span>
+
+            {' '}
+
+            {onu.eponPort}
+
           </div>
 
         </div>
@@ -178,21 +238,86 @@ export function AuthorizeOnuDialog({
           <div className="space-y-2">
 
             <Label>
-              Customer Name
+              Endpoint Type
+            </Label>
+
+            <Select
+              value={
+                endpointType
+              }
+              onValueChange={(
+                value,
+              ) =>
+                setEndpointType(
+                  value as EndpointType,
+                )
+              }
+            >
+
+              <SelectTrigger>
+
+                <SelectValue />
+
+              </SelectTrigger>
+
+              <SelectContent>
+
+                <SelectItem
+                  value="CUSTOMER"
+                >
+                  Customer
+                </SelectItem>
+
+                <SelectItem
+                  value="RESELLER"
+                >
+                  Reseller
+                </SelectItem>
+
+                <SelectItem
+                  value="POP"
+                >
+                  POP Site
+                </SelectItem>
+
+                <SelectItem
+                  value="BACKHAUL"
+                >
+                  Backhaul Link
+                </SelectItem>
+
+              </SelectContent>
+
+            </Select>
+
+          </div>
+
+          <div className="space-y-2">
+
+            <Label>
+              {
+                endpointLabels[
+                  endpointType
+                ]
+              }
+              {' '}
+              Name
             </Label>
 
             <Input
               value={
-                customerName
+                endpointName
               }
               onChange={event =>
-                setCustomerName(
+                setEndpointName(
                   event.target.value,
                 )
               }
-              placeholder="
-                Customer Name
-              "
+              placeholder={
+                `${endpointLabels[
+                  endpointType
+                ]} Name`
+              }
               required
             />
 
@@ -211,9 +336,7 @@ export function AuthorizeOnuDialog({
                   event.target.value,
                 )
               }
-              placeholder="
-                Customer Address
-              "
+              placeholder="Address"
               required
             />
 
