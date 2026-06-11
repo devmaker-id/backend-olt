@@ -54,6 +54,8 @@ import {
 import {
   systemLogsRoutes
 } from '@/modules/system-logs/routes'
+import { LoadingState } from '@/shared/components/loading-state'
+import { Suspense } from 'react'
 
 export const router = createBrowserRouter([
 
@@ -74,9 +76,13 @@ export const router = createBrowserRouter([
       element: (
 
         <ProtectedRoute>
-
-          <DashboardLayout />
-
+          <Suspense
+            fallback={
+              <LoadingState />
+            }
+          >
+            <DashboardLayout />
+          </Suspense>
         </ProtectedRoute>
 
       ),

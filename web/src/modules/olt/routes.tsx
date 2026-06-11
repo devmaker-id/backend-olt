@@ -1,38 +1,71 @@
 import {
-  OltListPage
-} from './pages/olt-list.page'
+  lazyPage,
+} from '@/shared/lib/lazy-page'
 
-import {
-  OltCreatePage
-} from './pages/olt-create.page'
+const OltListPage =
+  lazyPage(
+    () =>
+      import(
+        './pages/olt-list.page'
+      ),
+    'OltListPage',
+  )
 
-import {
-  OltDetailPage
-} from './pages/olt-detail.page'
+const OltCreatePage =
+  lazyPage(
+    () =>
+      import(
+        './pages/olt-create.page'
+      ),
+    'OltCreatePage',
+  )
 
-import {
-  OltEditPage
-} from './pages/olt-edit.page'
+const OltDetailPage =
+  lazyPage(
+    () =>
+      import(
+        './pages/olt-detail.page'
+      ),
+    'OltDetailPage',
+  )
+
+const OltEditPage =
+  lazyPage(
+    () =>
+      import(
+        './pages/olt-edit.page'
+      ),
+    'OltEditPage',
+  )
 
 export const oltRoutes = [
 
   {
     path: 'olts',
-    element: <OltListPage />
+    element: (
+      <OltListPage />
+    ),
   },
 
   {
     path: 'olt/create',
-    element: <OltCreatePage />
+    element: (
+      <OltCreatePage />
+    ),
   },
 
   {
     path: 'olt/:id',
-    element: <OltDetailPage />
+    element: (
+      <OltDetailPage />
+    ),
   },
 
   {
     path: 'olt/:id/edit',
-    element: <OltEditPage />
-  }
+    element: (
+      <OltEditPage />
+    ),
+  },
+
 ]

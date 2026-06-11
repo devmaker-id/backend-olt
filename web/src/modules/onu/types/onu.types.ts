@@ -1,3 +1,12 @@
+export interface AuthorizeOnuRequest {
+  macAddress: string
+
+  endpoint: {
+    type: 'CUSTOMER'
+    name: string
+    address: string
+  }
+}
 export interface UnauthorizedOnu {
 
   id: string
