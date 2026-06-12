@@ -174,8 +174,30 @@ respon json
 }
 ```
 
+## patch user
+/api/users/cmqayjncd0000g18fp8va3paj
+```json
+Authorize Bearer token
+
+body json
+{
+  "username": "teknisi2",
+  "role": "OWNER"
+}
+
+respon json
+{
+  "success": true,
+  "message": "USER_UPDATED",
+  "data": {
+    "id": "cmqayjncd0000g18fp8va3paj",
+    "username": "teknisi2",
+    "role": "OWNER"
+  }
+}
+```
+
 Belum tersedia:
 ```text
-PATCH /api/users/:id
 DELETE /api/users/:id
 ```

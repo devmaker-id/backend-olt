@@ -10,6 +10,7 @@ import type { CreateUserDto } from './dto/create-user.dto'
 import type {
   ChangePasswordDto,
 } from './dto/change-password.dto'
+import type { UpdateUserDto } from './dto/update-user.dto'
 
 import {
   validateExistingUser,
@@ -89,7 +90,101 @@ createUser(
   }
 
 }
+export async function
+updateUser(
+  id: string,
+  data: UpdateUserDto,
+) {
 
+  const user =
+    await prisma.user.findUnique({
+
+      where: {
+        id,
+      },
+
+    })
+
+  if (!user) {
+
+    throw new Error(
+      'USER_NOT_FOUND',
+    )
+
+  }
+
+  if (
+    data.username &&
+    data.username !==
+      user.username
+  ) {
+
+    const existingUser =
+      await prisma.user.findUnique({
+
+        where: {
+          username:
+            data.username,
+        },
+
+      })
+
+    if (existingUser) {
+
+      throw new Error(
+        'USERNAME_ALREADY_EXISTS',
+      )
+
+    }
+
+  }
+
+  const updatedUser =
+    await prisma.user.update({
+
+      where: {
+        id,
+      },
+
+      data: {
+
+        username:
+          data.username,
+
+        role:
+          data.role,
+
+      },
+
+      select: {
+
+        id: true,
+
+        username: true,
+
+        role: true,
+
+        createdAt: true,
+
+        updatedAt: true,
+
+      },
+
+    })
+
+  return {
+
+    success: true,
+
+    message:
+      'USER_UPDATED',
+
+    data:
+      updatedUser,
+
+  }
+
+}
 export async function getUsers() {
 
   return prisma.user.findMany({

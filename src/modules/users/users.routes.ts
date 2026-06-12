@@ -8,6 +8,7 @@ import {
 
 import {
   createUserController,
+  updateUserController,
   getCurrentUserController,
   updateProfileController,
   changePasswordController,
@@ -62,6 +63,14 @@ usersRoutes(
         authMiddleware,
     },
     createUserController,
+  )
+  app.patch(
+    '/:id',
+    {
+      preHandler:
+        authMiddleware,
+    },
+    updateUserController,
   )
 
   app.get(
