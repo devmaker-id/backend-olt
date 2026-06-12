@@ -17,11 +17,7 @@ export function UnregisteredOnuToolbar({
 
   return (
     <Input
-      placeholder="
-        Search ONU,
-        MAC Address,
-        ONU ID
-      "
+      placeholder="Search ONU, MAC Address, ONU ID"
       value={search}
       onChange={event =>
         onSearchChange(

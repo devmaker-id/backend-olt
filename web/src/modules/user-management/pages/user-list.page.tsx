@@ -338,11 +338,39 @@ export function UserListPage() {
       />
 
       <UserDetailSheet
+
         user={selectedUser}
+
         open={detailOpen}
+
         onOpenChange={
           setDetailOpen
         }
+
+        onEdit={() => {
+
+          setDetailOpen(
+            false,
+          )
+
+          setEditOpen(
+            true,
+          )
+
+        }}
+
+        onResetPassword={() => {
+
+          setDetailOpen(
+            false,
+          )
+
+          setResetPasswordOpen(
+            true,
+          )
+
+        }}
+
       />
 
       <ConfirmDelete

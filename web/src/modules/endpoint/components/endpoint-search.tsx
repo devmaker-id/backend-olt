@@ -12,34 +12,19 @@ interface EndpointSearchProps {
 }
 
 export function EndpointSearch({
-
   value,
-
   onChange
-
 }: EndpointSearchProps) {
-
   return (
-
     <Input
-
-      placeholder="
-        Search internet no,
-        name or address...
-      "
-
+      placeholder="Search internet no, name or address..."
       value={value}
-
       onChange={(event) =>
         onChange(
           event.target.value
         )
       }
-
-      className="
-        max-w-md
-      "
+      className="max-w-md"
     />
-
   )
 }

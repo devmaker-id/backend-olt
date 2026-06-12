@@ -1,4 +1,15 @@
 import {
+  Button,
+} from '@/components/ui/button'
+
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+
+import {
   Sheet,
   SheetContent,
   SheetDescription,
@@ -20,12 +31,18 @@ interface Props {
     open: boolean,
   ) => void
 
+  onEdit: () => void
+
+  onResetPassword: () => void
+
 }
 
 export function UserDetailSheet({
   user,
   open,
   onOpenChange,
+  onEdit,
+  onResetPassword,
 }: Props) {
 
   if (!user) {
@@ -41,16 +58,23 @@ export function UserDetailSheet({
       }
     >
 
-      <SheetContent>
+      <SheetContent
+        className="
+          p-3
+          w-full
+          overflow-y-auto
+          sm:max-w-xl
+        "
+      >
 
         <SheetHeader>
 
           <SheetTitle>
-            User Detail
+            {user.username}
           </SheetTitle>
 
           <SheetDescription>
-            User information.
+            User information and actions
           </SheetDescription>
 
         </SheetHeader>
@@ -62,77 +86,136 @@ export function UserDetailSheet({
           "
         >
 
-          <div>
+          <Card>
 
-            <p
+            <CardHeader>
+
+              <CardTitle>
+                Information
+              </CardTitle>
+
+            </CardHeader>
+
+            <CardContent
               className="
-                text-sm
-                text-muted-foreground
+                space-y-3
               "
             >
-              Username
-            </p>
 
-            <p>
-              {user.username}
-            </p>
+              <div>
 
-          </div>
+                <p
+                  className="
+                    text-sm
+                    text-muted-foreground
+                  "
+                >
+                  Username
+                </p>
 
-          <div>
+                <p>
+                  {user.username}
+                </p>
 
-            <p
+              </div>
+
+              <div>
+
+                <p
+                  className="
+                    text-sm
+                    text-muted-foreground
+                  "
+                >
+                  Role
+                </p>
+
+                <p>
+                  {user.role}
+                </p>
+
+              </div>
+
+              <div>
+
+                <p
+                  className="
+                    text-sm
+                    text-muted-foreground
+                  "
+                >
+                  Created At
+                </p>
+
+                <p>
+                  {new Date(
+                    user.createdAt,
+                  ).toLocaleString()}
+                </p>
+
+              </div>
+
+              <div>
+
+                <p
+                  className="
+                    text-sm
+                    text-muted-foreground
+                  "
+                >
+                  Updated At
+                </p>
+
+                <p>
+                  {new Date(
+                    user.updatedAt,
+                  ).toLocaleString()}
+                </p>
+
+              </div>
+
+            </CardContent>
+
+          </Card>
+
+          <Card>
+
+            <CardHeader>
+
+              <CardTitle>
+                Actions
+              </CardTitle>
+
+            </CardHeader>
+
+            <CardContent
               className="
-                text-sm
-                text-muted-foreground
+                flex
+                flex-wrap
+                gap-2
               "
             >
-              Role
-            </p>
 
-            <p>
-              {user.role}
-            </p>
+              <Button
+                onClick={
+                  onEdit
+                }
+              >
+                Edit User
+              </Button>
 
-          </div>
+              <Button
+                variant="secondary"
+                onClick={
+                  onResetPassword
+                }
+              >
+                Reset Password
+              </Button>
 
-          <div>
+            </CardContent>
 
-            <p
-              className="
-                text-sm
-                text-muted-foreground
-              "
-            >
-              Created At
-            </p>
-
-            <p>
-              {new Date(
-                user.createdAt,
-              ).toLocaleString()}
-            </p>
-
-          </div>
-
-          <div>
-
-            <p
-              className="
-                text-sm
-                text-muted-foreground
-              "
-            >
-              Updated At
-            </p>
-
-            <p>
-              {new Date(
-                user.updatedAt,
-              ).toLocaleString()}
-            </p>
-
-          </div>
+          </Card>
 
         </div>
 

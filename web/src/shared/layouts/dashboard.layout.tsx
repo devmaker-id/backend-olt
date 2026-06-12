@@ -21,7 +21,8 @@ export function DashboardLayout() {
     <div
       className="
         flex
-        min-h-screen
+        h-screen
+        overflow-hidden
       "
     >
 
@@ -49,8 +50,9 @@ export function DashboardLayout() {
 
         <main
           className="
+            min-h-0
             flex-1
-            overflow-auto
+            overflow-y-auto
           "
         >
 

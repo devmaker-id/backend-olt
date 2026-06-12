@@ -17,12 +17,7 @@ export function OnuReplacementToolbar({
 
   return (
     <Input
-      placeholder="
-        Search internet no,
-        customer,
-        old ONU,
-        new ONU
-      "
+      placeholder="Search internet no, customer, old ONU, new ONU"
       value={search}
       onChange={event =>
         onSearchChange(

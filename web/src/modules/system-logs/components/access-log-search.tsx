@@ -28,11 +28,7 @@ export function AccessLogSearch({
       />
 
       <Input
-        placeholder="
-          Search username,
-          telegram id,
-          message...
-        "
+        placeholder="Search username, telegram id, message..."
         value={value}
         onChange={(e) =>
           onChange(

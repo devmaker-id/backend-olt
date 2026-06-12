@@ -90,9 +90,7 @@ export function TelegramUsersPage() {
 
       <PageHeader
         title="Telegram Users"
-        description="
-          Manage telegram bot access users
-        "
+        description="Manage telegram bot access users"
         actions={
 
           <Button

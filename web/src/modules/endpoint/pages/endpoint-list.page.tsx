@@ -204,24 +204,15 @@ export function EndpointListPage() {
       />
 
       <DataTableToolbar
-
         search={
-
           <SearchInput
-
             value={search}
-
-            placeholder="
-              Search internet no,
-              name or address...
-            "
-
+            placeholder="Search internet no, name or address..."
             onChange={
               setSearch
             }
           />
         }
-
         actions={
 
           <div

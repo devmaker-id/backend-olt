@@ -94,6 +94,7 @@ export function TelegramBotDetailSheet({
 
       <SheetContent
         className="
+          p-3
           w-full
           sm:max-w-2xl
           overflow-y-auto

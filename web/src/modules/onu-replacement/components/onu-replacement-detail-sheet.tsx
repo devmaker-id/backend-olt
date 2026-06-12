@@ -44,6 +44,7 @@ export function OnuReplacementDetailSheet({
           w-full
           sm:max-w-xl
           overflow-y-auto
+          p-2
         "
       >
 
@@ -71,9 +72,9 @@ export function OnuReplacementDetailSheet({
 
         <div
           className="
-            mt-6
+            mt-0
             space-y-4
-            m-2
+            px-2
           "
         >
 
