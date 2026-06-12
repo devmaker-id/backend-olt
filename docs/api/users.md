@@ -175,7 +175,7 @@ respon json
 ```
 
 ## patch user
-/api/users/cmqayjncd0000g18fp8va3paj
+/api/users/:id
 ```json
 Authorize Bearer token
 
@@ -197,7 +197,42 @@ respon json
 }
 ```
 
-Belum tersedia:
-```text
+## user delete
 DELETE /api/users/:id
+```json
+Authorize Bearer token
+
+respon json
+{
+  "success": true,
+  "message": "USER_DELETED"
+}
+
+respon jika owner terakhir di hapus
+respon json
+{
+  "success": false,
+  "message": "LAST_OWNER_CANNOT_BE_DELETED"
+}
 ```
+
+## flow map
+```prisma
+Users Self Service
+────────────────────
+GET    /users/me
+PATCH  /users/me
+PATCH  /users/password
+
+Users Management
+────────────────────
+GET    /users
+GET    /users/:id
+POST   /users
+PATCH  /users/:id
+DELETE /users/:id
+
+Protection
+────────────────────
+✅ Prevent deleting last OWNER
+``

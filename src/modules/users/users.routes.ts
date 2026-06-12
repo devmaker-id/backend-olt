@@ -14,6 +14,7 @@ import {
   changePasswordController,
   getUsersController,
   getUserByIdController,
+  deleteUserController,
 } from './users.controller'
 
 export async function
@@ -80,6 +81,15 @@ usersRoutes(
         authMiddleware,
     },
     getUserByIdController,
+  )
+
+  app.delete(
+    '/:id',
+    {
+      preHandler:
+        authMiddleware,
+    },
+    deleteUserController,
   )
 
 }

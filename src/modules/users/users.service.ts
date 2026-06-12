@@ -211,8 +211,7 @@ export async function getUsers() {
 
 }
 
-export async function
-getUserById(
+export async function getUserById(
   id: string,
 ) {
 
@@ -237,6 +236,73 @@ getUserById(
     },
 
   })
+
+}
+
+export async function
+deleteUser(
+  id: string,
+) {
+
+  const user =
+    await prisma.user.findUnique({
+
+      where: {
+        id,
+      },
+
+    })
+
+  if (!user) {
+
+    throw new Error(
+      'USER_NOT_FOUND',
+    )
+
+  }
+
+  if (
+    user.role ===
+    'OWNER'
+  ) {
+
+    const ownerCount =
+      await prisma.user.count({
+
+        where: {
+          role: 'OWNER',
+        },
+
+      })
+
+    if (
+      ownerCount <= 1
+    ) {
+
+      throw new Error(
+        'LAST_OWNER_CANNOT_BE_DELETED',
+      )
+
+    }
+
+  }
+
+  await prisma.user.delete({
+
+    where: {
+      id,
+    },
+
+  })
+
+  return {
+
+    success: true,
+
+    message:
+      'USER_DELETED',
+
+  }
 
 }
 

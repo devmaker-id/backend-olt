@@ -11,6 +11,7 @@ import {
   changePassword,
   getUserById,
   getUsers,
+  deleteUser,
 } from './users.service'
 
 import type { CreateUserDto } from './dto/create-user.dto'
@@ -220,6 +221,49 @@ export async function changePasswordController(
 
     return reply
       .status(400)
+      .send({
+
+        success: false,
+
+        message:
+          error.message,
+
+      })
+
+  }
+
+}
+export async function
+deleteUserController(
+  req: FastifyRequest,
+  reply: FastifyReply,
+) {
+
+  try {
+
+    const {
+      id,
+    } = req.params as {
+      id: string
+    }
+
+    const result =
+      await deleteUser(
+        id,
+      )
+
+    return reply.send(
+      result,
+    )
+
+  }
+
+  catch (
+    error: any
+  ) {
+
+    return reply
+      .code(400)
       .send({
 
         success: false,
