@@ -27,8 +27,9 @@ import {
 } from './sidebar-content'
 
 import {
-  LogoutButton
-} from '@/modules/auth/components/logout-button'
+  UserMenu,
+} from '@/modules/users/components/user-menu'
+import { SidebarBrand } from './sidebar-brand'
 
 export function MobileSidebar() {
 
@@ -82,32 +83,7 @@ export function MobileSidebar() {
 
         </SheetHeader>
 
-        <div
-          className="
-            border-b
-            p-6
-          "
-        >
-
-          <h1
-            className="
-              text-xl
-              font-bold
-            "
-          >
-            NMS
-          </h1>
-
-          <p
-            className="
-              text-sm
-              text-muted-foreground
-            "
-          >
-            Network Management
-          </p>
-
-        </div>
+        <SidebarBrand />
 
         <SidebarContent />
 
@@ -118,7 +94,7 @@ export function MobileSidebar() {
           "
         >
 
-          <LogoutButton />
+          <UserMenu />
 
         </div>
 

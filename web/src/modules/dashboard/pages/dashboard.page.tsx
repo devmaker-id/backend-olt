@@ -38,13 +38,9 @@ import { useNavigate } from 'react-router-dom'
 export function DashboardPage() {
 
   const {
-
     data,
-
     isLoading,
-
     error
-
   } = useSummary()
   const navigate = useNavigate()
 

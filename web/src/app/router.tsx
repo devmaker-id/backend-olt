@@ -1,3 +1,5 @@
+import { LoadingState } from '@/shared/components/loading-state'
+import { Suspense } from 'react'
 import {
   createBrowserRouter
 } from 'react-router-dom'
@@ -54,8 +56,10 @@ import {
 import {
   systemLogsRoutes
 } from '@/modules/system-logs/routes'
-import { LoadingState } from '@/shared/components/loading-state'
-import { Suspense } from 'react'
+
+import {
+  usersRoutes,
+} from '@/modules/users/routes'
 
 export const router = createBrowserRouter([
 
@@ -95,7 +99,8 @@ export const router = createBrowserRouter([
         ...telegramBotRoutes,
         ...onuRoutes,
         ...onuReplacementRoutes,
-        ...systemLogsRoutes
+        ...systemLogsRoutes,
+        ...usersRoutes,
       ]
     },
 

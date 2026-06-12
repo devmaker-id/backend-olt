@@ -1,10 +1,10 @@
 import {
-  LogoutButton
-} from '@/modules/auth/components/logout-button'
-
+  UserMenu,
+} from '@/modules/users/components/user-menu'
 import {
   SidebarContent
 } from './sidebar-content'
+import { SidebarBrand } from './sidebar-brand'
 
 export function Sidebar() {
 
@@ -21,32 +21,7 @@ export function Sidebar() {
       "
     >
 
-      <div
-        className="
-          border-b
-          p-6
-        "
-      >
-
-        <h1
-          className="
-            text-xl
-            font-bold
-          "
-        >
-          NMS
-        </h1>
-
-        <p
-          className="
-            text-sm
-            text-muted-foreground
-          "
-        >
-          Network Management
-        </p>
-
-      </div>
+      <SidebarBrand />
 
       <SidebarContent />
 
@@ -57,7 +32,7 @@ export function Sidebar() {
         "
       >
 
-        <LogoutButton />
+        <UserMenu />
 
       </div>
 
