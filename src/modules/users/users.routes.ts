@@ -5,6 +5,7 @@ import type {
 import {
   authMiddleware,
 } from '../../middleware/auth.middleware'
+import { roleMiddleware } from '../../middleware/role.middleware'
 
 import {
   createUserController,
@@ -48,7 +49,6 @@ usersRoutes(
     },
     changePasswordController,
   )
-
   app.get(
     '/',
     {
@@ -57,37 +57,57 @@ usersRoutes(
     },
     getUsersController,
   )
+
+  /*
+   * Management
+   * OWNER Only
+   */
+
+  app.get(
+    '/:id',
+    {
+      preHandler: [
+        authMiddleware,
+        roleMiddleware(
+          'OWNER'
+        )
+      ],
+    },
+    getUserByIdController,
+  )
   app.post(
     '/',
     {
-      preHandler:
+      preHandler: [
         authMiddleware,
+        roleMiddleware(
+          'OWNER'
+        )
+      ],
     },
     createUserController,
   )
   app.patch(
     '/:id',
     {
-      preHandler:
+      preHandler: [
         authMiddleware,
+        roleMiddleware(
+          'OWNER'
+        )
+      ],
     },
     updateUserController,
   )
-
-  app.get(
-    '/:id',
-    {
-      preHandler:
-        authMiddleware,
-    },
-    getUserByIdController,
-  )
-
   app.delete(
     '/:id',
     {
-      preHandler:
+      preHandler: [
         authMiddleware,
+        roleMiddleware(
+          'OWNER'
+        )
+      ],
     },
     deleteUserController,
   )
