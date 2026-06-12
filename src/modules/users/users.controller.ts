@@ -9,6 +9,7 @@ import {
   getCurrentUser,
   updateProfile,
   changePassword,
+  resetUserPassword,
   getUserById,
   getUsers,
   deleteUser,
@@ -24,6 +25,7 @@ import type {
 import type {
   ChangePasswordDto,
 } from './dto/change-password.dto'
+import type { ResetPasswordDto } from './dto/reset-password.tdo'
 
 export async function createUserController(
   req: FastifyRequest,
@@ -64,8 +66,7 @@ export async function createUserController(
   }
 
 }
-export async function
-updateUserController(
+export async function updateUserController(
   req: FastifyRequest,
   reply: FastifyReply,
 ) {
@@ -233,8 +234,56 @@ export async function changePasswordController(
   }
 
 }
-export async function
-deleteUserController(
+export async function resetPasswordController(
+  req: FastifyRequest,
+  reply: FastifyReply,
+) {
+
+  try {
+
+    const {
+      id,
+    } = req.params as {
+      id: string
+    }
+
+    const body =
+      req.body as ResetPasswordDto
+
+    const result =
+      await resetUserPassword(
+
+        id,
+
+        body.password,
+
+      )
+
+    return reply.send(
+      result,
+    )
+
+  }
+
+  catch (
+    error: any
+  ) {
+
+    return reply
+      .code(400)
+      .send({
+
+        success: false,
+
+        message:
+          error.message,
+
+      })
+
+  }
+
+}
+export async function deleteUserController(
   req: FastifyRequest,
   reply: FastifyReply,
 ) {

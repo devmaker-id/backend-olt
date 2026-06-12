@@ -77,3 +77,24 @@ deleteUser(
   return response.data
 
 }
+
+export async function
+resetUserPassword(
+  id: string,
+  password: string,
+) {
+
+  const response =
+    await api.patch(
+
+      `/users/${id}/reset-password`,
+
+      {
+        password,
+      },
+
+    )
+
+  return response.data
+
+}

@@ -13,6 +13,7 @@ import {
   getCurrentUserController,
   updateProfileController,
   changePasswordController,
+  resetPasswordController,
   getUsersController,
   getUserByIdController,
   deleteUserController,
@@ -98,6 +99,18 @@ usersRoutes(
       ],
     },
     updateUserController,
+  )
+  app.patch(
+    '/:id/reset-password',
+    {
+      preHandler: [
+        authMiddleware,
+        roleMiddleware(
+          'OWNER',
+        ),
+      ],
+    },
+    resetPasswordController,
   )
   app.delete(
     '/:id',

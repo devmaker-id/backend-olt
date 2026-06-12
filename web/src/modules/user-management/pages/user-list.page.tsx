@@ -70,6 +70,7 @@ import {
 import type {
   User,
 } from '../types/user-management.types'
+import { ResetPasswordDialog } from '../components/reset-password-dialog'
 
 export function UserListPage() {
 
@@ -105,6 +106,11 @@ export function UserListPage() {
   const [
     deleteOpen,
     setDeleteOpen,
+  ] = useState(false)
+
+  const [
+    resetPasswordOpen,
+    setResetPasswordOpen,
   ] = useState(false)
 
   const [
@@ -300,6 +306,18 @@ export function UserListPage() {
 
           }}
 
+          onResetPassword={user => {
+
+            setSelectedUser(
+              user,
+            )
+
+            setResetPasswordOpen(
+              true,
+            )
+
+          }}
+
         />
 
       </div>
@@ -340,6 +358,20 @@ export function UserListPage() {
         isLoading={
           deleteMutation.isPending
         }
+      />
+
+      <ResetPasswordDialog
+
+        user={selectedUser}
+
+        open={
+          resetPasswordOpen
+        }
+
+        onOpenChange={
+          setResetPasswordOpen
+        }
+
       />
 
     </PageContainer>

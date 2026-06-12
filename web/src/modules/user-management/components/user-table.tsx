@@ -39,6 +39,10 @@ interface Props {
     user: User,
   ) => void
 
+  onResetPassword: (
+    user: User,
+  ) => void
+
 }
 
 export function UserTable({
@@ -46,6 +50,7 @@ export function UserTable({
   onView,
   onEdit,
   onDelete,
+  onResetPassword,
 }: Props) {
 
   return (
@@ -154,6 +159,10 @@ export function UserTable({
                         onDelete(
                           user,
                         )
+                      }
+
+                      onResetPassword={() => 
+                        onResetPassword(user)
                       }
 
                     />

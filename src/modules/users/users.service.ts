@@ -19,8 +19,7 @@ import {
   validateUsername,
 } from './validation/users.validation'
 
-export async function
-createUser(
+export async function createUser(
   data: CreateUserDto,
 ) {
 
@@ -90,8 +89,7 @@ createUser(
   }
 
 }
-export async function
-updateUser(
+export async function updateUser(
   id: string,
   data: UpdateUserDto,
 ) {
@@ -239,8 +237,7 @@ export async function getUserById(
 
 }
 
-export async function
-deleteUser(
+export async function deleteUser(
   id: string,
 ) {
 
@@ -437,4 +434,57 @@ export async function changePassword(
     message:
       'PASSWORD_UPDATED',
   }
+}
+export async function resetUserPassword(
+  id: string,
+  password: string,
+) {
+
+  const user =
+    await prisma.user.findUnique({
+
+      where: {
+        id,
+      },
+
+    })
+
+  if (!user) {
+
+    throw new Error(
+      'USER_NOT_FOUND',
+    )
+
+  }
+
+  const hashedPassword =
+    await bcrypt.hash(
+      password,
+      10,
+    )
+
+  await prisma.user.update({
+
+    where: {
+      id,
+    },
+
+    data: {
+
+      password:
+        hashedPassword,
+
+    },
+
+  })
+
+  return {
+
+    success: true,
+
+    message:
+      'PASSWORD_RESET',
+
+  }
+
 }

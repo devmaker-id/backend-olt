@@ -2,6 +2,7 @@ import {
   Eye,
   Pencil,
   Trash2,
+  KeyRound,
 } from 'lucide-react'
 
 import {
@@ -9,19 +10,17 @@ import {
 } from '@/components/ui/button'
 
 interface Props {
-
   onView: () => void
-
   onEdit: () => void
-
   onDelete: () => void
-
+  onResetPassword: () => void
 }
 
 export function UserActions({
   onView,
   onEdit,
   onDelete,
+  onResetPassword
 }: Props) {
 
   return (
@@ -32,6 +31,21 @@ export function UserActions({
         gap-2
       "
     >
+
+      <Button
+        size="icon"
+        variant="outline"
+        onClick={onResetPassword}
+      >
+
+        <KeyRound
+          className="
+            h-4
+            w-4
+          "
+        />
+
+      </Button>
 
       <Button
         size="icon"
