@@ -73,10 +73,26 @@ Check:
 ```bash
 npm -v
 ```
-
+## LOGS PORT 541
+JALANKAN NODE WAJIB SUPERUSER
 ---
 
 ## PostgreSQL
+
+## versi lapangan aku
+```sql
+postgres=# CREATE DATABASE "backendOlt";
+CREATE DATABASE
+postgres=# CREATE USER jawara WITH PASSWORD 'BackendOlt123';
+CREATE ROLE
+postgres=# GRANT ALL PRIVILEGES ON DATABASE "backendOlt" TO jawara;
+GRANT
+postgres=# ALTER DATABASE "backendOlt" OWNER TO jawara;
+ALTER DATABASE
+postgres=# \q
+
+DATABASE_URL="postgresql://jawara:BackendOlt123@localhost:5432/backendOlt"
+```
 
 Version:
 
@@ -257,9 +273,17 @@ npx prisma migrate deploy
 ## Seed Database
 
 If available:
-
+karna aku telah konfigurasi 
 ```bash
-npm run seed
+{
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}
+
+jadi cukup
+
+npx prisma db seed
 ```
 
 ---
@@ -305,6 +329,7 @@ npm install
 ---
 
 ## Create Environment
+saat ini masih opsional
 
 ```bash
 cp .env.example .env
@@ -525,15 +550,11 @@ pm2 restart backend-olt
 
 ```bash
 cd /opt/backend-olt/web
-
 git pull
-
 npm install
-
 npm run build
-
-sudo cp -R dist/* \
-/var/www/backend-olt/
+sudo rsync -av dist/ /var/www/backend-olt/
+sudo systemctl reload nginx
 ```
 
 ---

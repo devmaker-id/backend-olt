@@ -196,9 +196,7 @@ export function LoginPage() {
                     event.target.value,
                   )
                 }
-                placeholder="
-                  Enter username
-                "
+                placeholder="Enter username"
                 required
               />
 
@@ -226,9 +224,7 @@ export function LoginPage() {
                     event.target.value,
                   )
                 }
-                placeholder="
-                  Enter password
-                "
+                placeholder="Enter password"
                 required
               />
 
