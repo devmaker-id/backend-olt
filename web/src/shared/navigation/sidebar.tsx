@@ -31,7 +31,6 @@ export function Sidebar() {
           p-4
         "
       >
-
         <UserMenu />
 
       </div>

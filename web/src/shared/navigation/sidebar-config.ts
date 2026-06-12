@@ -33,23 +33,17 @@ import {
 import {
   systemLogsNavigation
 } from '@/modules/system-logs/navigation'
+import { userManagementNavigation } from '@/modules/user-management/navigation'
 
 export const sidebarConfig:
   NavigationSection[] = [
-
   dashboardNavigation,
-
+  userManagementNavigation,
   oltNavigation,
-
   endpointNavigation,
-
   telegramNavigation,
-
   telegramBotNavigation,
-
   onuNavigation,
-
   onuReplacementNavigation,
-
-  systemLogsNavigation
+  systemLogsNavigation,
 ]

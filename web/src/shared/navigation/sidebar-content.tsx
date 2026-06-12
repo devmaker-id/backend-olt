@@ -1,3 +1,4 @@
+import { Navigate } from 'react-router-dom'
 import {
   sidebarConfig
 } from './sidebar-config'
@@ -7,6 +8,28 @@ import {
 } from './sidebar-section'
 
 export function SidebarContent() {
+  const storedUser = localStorage.getItem('user')
+  if (!storedUser) {
+    return (
+      <Navigate
+        to="/login"
+        replace
+      />
+    )
+  }
+  const user = JSON.parse(
+    storedUser
+  )
+  const filteredSections = sidebarConfig.filter(
+    section => {
+      if (!section.roles) {
+        return true
+      }
+      return section.roles.includes(
+        user.role,
+      )
+    }
+  )
 
   return (
 
@@ -20,19 +43,13 @@ export function SidebarContent() {
     >
 
       {
-        sidebarConfig.map(
+        filteredSections.map(
           (section, index) => (
-
             <SidebarSection
-
               key={`${section.title}-${index}`}
-
               title={section.title}
-
               items={section.items}
-
             />
-
           )
         )
       }

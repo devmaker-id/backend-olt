@@ -11,5 +11,6 @@ export interface NavigationItem {
 
 export interface NavigationSection {
   title: string
+  roles?: string[]
   items: NavigationItem[]
 }

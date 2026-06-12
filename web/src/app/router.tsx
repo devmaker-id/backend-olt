@@ -60,6 +60,7 @@ import {
 import {
   usersRoutes,
 } from '@/modules/users/routes'
+import { userManagementRoutes } from '@/modules/user-management/routes'
 
 export const router = createBrowserRouter([
 
@@ -101,6 +102,7 @@ export const router = createBrowserRouter([
         ...onuReplacementRoutes,
         ...systemLogsRoutes,
         ...usersRoutes,
+        ...userManagementRoutes,
       ]
     },
 
