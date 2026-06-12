@@ -1,11 +1,11 @@
-import bcrypt
-  from 'bcrypt'
+import bcrypt from 'bcrypt'
 
 import { prisma } from "../../config/prisma"
 
 import type {
   UpdateProfileDto,
 } from './dto/update-profile.dto'
+import type { CreateUserDto } from './dto/create-user.dto'
 
 import type {
   ChangePasswordDto,
@@ -19,7 +19,78 @@ import {
 } from './validation/users.validation'
 
 export async function
-getUsers() {
+createUser(
+  data: CreateUserDto,
+) {
+
+  const existingUser =
+    await prisma.user.findUnique({
+
+      where: {
+        username:
+          data.username,
+      },
+
+    })
+
+  if (existingUser) {
+
+    throw new Error(
+      'USERNAME_ALREADY_EXISTS',
+    )
+
+  }
+
+  const hashedPassword =
+    await bcrypt.hash(
+      data.password,
+      10,
+    )
+
+  const user =
+    await prisma.user.create({
+
+      data: {
+
+        username:
+          data.username,
+
+        password:
+          hashedPassword,
+
+        role:
+          data.role,
+
+      },
+
+      select: {
+
+        id: true,
+
+        username: true,
+
+        role: true,
+
+        createdAt: true,
+
+      },
+
+    })
+
+  return {
+
+    success: true,
+
+    message:
+      'USER_CREATED',
+
+    data: user,
+
+  }
+
+}
+
+export async function getUsers() {
 
   return prisma.user.findMany({
 

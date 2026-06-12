@@ -137,17 +137,45 @@ Saat ini module User hanya menyediakan endpoint:
 GET /api/users/me
 ```
 
-Belum tersedia:
-
-```text
-GET /api/users
-GET /api/users/:id
-
+## create user
 POST /api/users
+```json
+Authorize Bearer token
+body json
+{
+  "username": "teknisi1",
+  "password": "123456",
+  "role": "TEKNISI"
+}
 
-PATCH /api/users/:id
-
-DELETE /api/users/:id
+respon json
+{
+  "success": true,
+  "message": "USER_CREATED",
+  "data": {
+    "id": "cmqayjncd0000g18fp8va3paj",
+    "username": "teknisi1",
+    "role": "TEKNISI",
+    "createdAt": "2026-06-12T13:23:56.267Z"
+  }
+}
 ```
 
-Sehingga manajemen User masih dilakukan langsung melalui database atau belum diimplementasikan.
+## get user by id
+GET /api/users/:id
+```json
+respon json
+{
+  "id": "cmqayjncd0000g18fp8va3paj",
+  "username": "teknisi1",
+  "role": "TEKNISI",
+  "createdAt": "2026-06-12T13:23:56.267Z",
+  "updatedAt": "2026-06-12T13:23:56.267Z"
+}
+```
+
+Belum tersedia:
+```text
+PATCH /api/users/:id
+DELETE /api/users/:id
+```

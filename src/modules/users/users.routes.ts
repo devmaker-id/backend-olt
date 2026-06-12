@@ -7,6 +7,7 @@ import {
 } from '../../middleware/auth.middleware'
 
 import {
+  createUserController,
   getCurrentUserController,
   updateProfileController,
   changePasswordController,
@@ -53,6 +54,14 @@ usersRoutes(
         authMiddleware,
     },
     getUsersController,
+  )
+  app.post(
+    '/',
+    {
+      preHandler:
+        authMiddleware,
+    },
+    createUserController,
   )
 
   app.get(

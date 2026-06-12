@@ -4,12 +4,15 @@ import type {
 } from 'fastify'
 
 import {
+  createUser,
   getCurrentUser,
   updateProfile,
   changePassword,
   getUserById,
   getUsers,
 } from './users.service'
+
+import type { CreateUserDto } from './dto/create-user.dto'
 
 import type {
   UpdateProfileDto,
@@ -19,6 +22,45 @@ import type {
   ChangePasswordDto,
 } from './dto/change-password.dto'
 
+export async function createUserController(
+  req: FastifyRequest,
+  reply: FastifyReply,
+) {
+
+  try {
+
+    const body =
+      req.body as CreateUserDto
+
+    const result =
+      await createUser(
+        body,
+      )
+
+    return reply.send(
+      result,
+    )
+
+  }
+
+  catch (
+    error: any
+  ) {
+
+    return reply
+      .code(400)
+      .send({
+
+        success: false,
+
+        message:
+          error.message,
+
+      })
+
+  }
+
+}
 export async function getUsersController() {
 
   return getUsers()
