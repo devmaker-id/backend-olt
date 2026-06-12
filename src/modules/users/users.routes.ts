@@ -10,6 +10,8 @@ import {
   getCurrentUserController,
   updateProfileController,
   changePasswordController,
+  getUsersController,
+  getUserByIdController,
 } from './users.controller'
 
 export async function
@@ -42,6 +44,24 @@ usersRoutes(
         authMiddleware,
     },
     changePasswordController,
+  )
+
+  app.get(
+    '/',
+    {
+      preHandler:
+        authMiddleware,
+    },
+    getUsersController,
+  )
+
+  app.get(
+    '/:id',
+    {
+      preHandler:
+        authMiddleware,
+    },
+    getUserByIdController,
   )
 
 }

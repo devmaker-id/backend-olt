@@ -7,6 +7,8 @@ import {
   getCurrentUser,
   updateProfile,
   changePassword,
+  getUserById,
+  getUsers,
 } from './users.service'
 
 import type {
@@ -16,6 +18,27 @@ import type {
 import type {
   ChangePasswordDto,
 } from './dto/change-password.dto'
+
+export async function getUsersController() {
+
+  return getUsers()
+
+}
+export async function getUserByIdController(
+  req: FastifyRequest
+) {
+
+  const {
+    id,
+  } = req.params as {
+    id: string
+  }
+
+  return getUserById(
+    id,
+  )
+
+}
 
 export async function getCurrentUserController(
   req: FastifyRequest,
@@ -45,8 +68,7 @@ export async function getCurrentUserController(
 
 }
 
-export async function
-updateProfileController(
+export async function updateProfileController(
   req: FastifyRequest,
   reply: FastifyReply,
 ) {

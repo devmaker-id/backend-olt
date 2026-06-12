@@ -18,6 +18,62 @@ import {
   validateUsername,
 } from './validation/users.validation'
 
+export async function
+getUsers() {
+
+  return prisma.user.findMany({
+
+    orderBy: {
+      createdAt: 'desc',
+    },
+
+    select: {
+
+      id: true,
+
+      username: true,
+
+      role: true,
+
+      createdAt: true,
+
+      updatedAt: true,
+
+    },
+
+  })
+
+}
+
+export async function
+getUserById(
+  id: string,
+) {
+
+  return prisma.user.findUnique({
+
+    where: {
+      id,
+    },
+
+    select: {
+
+      id: true,
+
+      username: true,
+
+      role: true,
+
+      createdAt: true,
+
+      updatedAt: true,
+
+    },
+
+  })
+
+}
+
 export async function getCurrentUser(
   id: string,
 ) {
@@ -40,8 +96,7 @@ export async function getCurrentUser(
   }
 }
 
-export async function
-updateProfile(
+export async function updateProfile(
   id: string,
   data: UpdateProfileDto,
 ) {
@@ -98,8 +153,7 @@ updateProfile(
   }
 }
 
-export async function
-changePassword(
+export async function changePassword(
   id: string,
   data: ChangePasswordDto,
 ) {
