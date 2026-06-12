@@ -11,6 +11,8 @@ Base URL
 # Login
 
 Authenticate user and generate JWT token.
+## token jwt
+token ini valid sementara 1d atau 24 jam
 
 ## Endpoint
 

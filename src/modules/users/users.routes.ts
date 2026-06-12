@@ -1,19 +1,47 @@
-import { FastifyInstance } from 'fastify'
+import type {
+  FastifyInstance,
+} from 'fastify'
 
-import { authMiddleware } from '../../middleware/auth.middleware'
+import {
+  authMiddleware,
+} from '../../middleware/auth.middleware'
 
-export async function userRoutes(
-  app: FastifyInstance
+import {
+  getCurrentUserController,
+  updateProfileController,
+  changePasswordController,
+} from './users.controller'
+
+export async function
+usersRoutes(
+  app: FastifyInstance,
 ) {
+
   app.get(
     '/me',
     {
-      preHandler: [authMiddleware]
+      preHandler:
+        authMiddleware,
     },
-    async (req) => {
-      return {
-        user: req.user
-      }
-    }
+    getCurrentUserController,
   )
+
+  app.patch(
+    '/me',
+    {
+      preHandler:
+        authMiddleware,
+    },
+    updateProfileController,
+  )
+
+  app.patch(
+    '/password',
+    {
+      preHandler:
+        authMiddleware,
+    },
+    changePasswordController,
+  )
+
 }
