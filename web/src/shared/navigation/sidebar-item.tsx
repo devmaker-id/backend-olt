@@ -7,11 +7,13 @@ import { cn } from '@/lib/utils'
 export function SidebarItem({
   label,
   path,
-  icon: Icon
+  icon: Icon,
+  end,
 }: NavigationItem) {
   return (
     <NavLink
       to={path}
+      end={end}
       className={({
         isActive
       }) =>

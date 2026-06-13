@@ -7,6 +7,7 @@ export interface NavigationItem {
   path: string
   icon: LucideIcon
   roles?: string[]
+  end?: boolean
 }
 
 export interface NavigationSection {

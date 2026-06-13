@@ -15,7 +15,8 @@ export const endpointNavigation: NavigationSection = {
     {
       label: 'Endpoints',
       path: '/endpoints',
-      icon: Users
+      icon: Users,
+      end: true
     },
     {
       label: 'Add Endpoints',
