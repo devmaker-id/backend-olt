@@ -53,6 +53,21 @@ enum TelegramRole {
   TEKNISI
 }
 
+enum SyslogEventType {
+  ONU_LINKUP
+  ONU_LINKDOWN
+  ONU_LOS
+  ONU_DYING_GASP
+  ONU_REGISTER
+  ONU_UNREGISTER
+  WEB_LOGIN
+  WEB_LOGOUT
+  WEB_CONNECTION
+  WEB_DISCONNECTION
+  SYSTEM
+  UNKNOWN
+}
+
 model User {
   id        String   @id @default(cuid())
   username  String   @unique
@@ -77,6 +92,7 @@ model Olt {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   unauthorizedOnus UnauthorizedOnu[]
+  syslogEvents     SyslogEventLog[]
 }
 
 model Onu {
@@ -105,6 +121,7 @@ model Onu {
   isActive         Boolean          @default(true)
   alarmLogs        AlarmLog[]
   events           OnuEvent[]
+  syslogEvents     SyslogEventLog[]
   replacementsFrom OnuReplacement[] @relation("OldOnuReplacement")
   replacementsTo   OnuReplacement[] @relation("NewOnuReplacement")
 
@@ -252,4 +269,28 @@ model OnuEvent {
   @@index([onuId])
   @@index([event])
   @@index([createdAt])
+}
+
+model SyslogEventLog {
+  id        String          @id @default(cuid())
+  oltId     String?
+  olt       Olt?            @relation(fields: [oltId], references: [id])
+  onuIdRef  String?
+  onu       Onu?            @relation(fields: [onuIdRef], references: [id])
+  type      SyslogEventType
+  sourceIp  String
+  oltName   String?
+  eponPort  String?
+  onuId     String?
+  onuMac    String?
+  onuName   String?
+  rawLog    String          @db.Text
+  payload   Json?
+  createdAt DateTime        @default(now())
+
+  @@index([type])
+  @@index([createdAt])
+  @@index([oltId])
+  @@index([onuIdRef])
+  @@index([onuMac])
 }

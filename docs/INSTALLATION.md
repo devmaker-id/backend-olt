@@ -629,3 +629,6 @@ domain : https://domainaku.com
 
 yang jadi webhook di web dev adalah https://domainku.com/api
 ```
+
+## syslog port 514 (wajib)
+kenapa 514 karna default olt hisfocus seperti itu

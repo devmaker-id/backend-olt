@@ -1,37 +1,62 @@
-import {
-  ParsedSyslog
-} from '../../core/syslog.types'
+import { SyslogParser }
+  from '../../contracts/syslog-parser'
 
-export class HisfocusSyslogParser {
+import { SyslogEvent }
+  from '../../core/syslog-event'
 
-  static parse(
+import { OnuParser } from './parsers/onu.parser'
+
+import { WebParser }
+  from './parsers/web.parser'
+
+export class HisfocusSyslogParser
+implements SyslogParser {
+
+  parse(
     log: string,
     sourceIp: string
-  ): ParsedSyslog | null {
+  ): SyslogEvent | null {
 
-    const regex = /^.*?\s([A-Z0-9_\\-]+):\s+\[(.*?)\]\s+ONU\s+(\d+\/\d+):(\d+)\s+\[\s*([0-9A-F:]+)\s*\]\s+\[(.*?)\]\s+(linkup|linkdown)/i
+    const parsers = [
 
-    const match =
-      log.match(regex)
+      OnuParser,
 
-    if (!match) {
-      return null
+      WebParser
+
+    ]
+
+    for (const parser of parsers) {
+
+      const event =
+        parser.parse(
+          log,
+          sourceIp
+        )
+
+      if (event) {
+        return event
+      }
+
     }
 
-    const onuName = match[5]?.trim()
-
     return {
-      oltName: match[1],
-      timestamp: match[2],
-      eponPort: match[3],
-      onuId: match[4],
-      onuMac: match[5].toUpperCase(),
-      onuName: onuName === 'Na' ? null : onuName,
-      status: match[7] as 'linkup' | 'linkdown',
-      isRegistered: onuName !== 'Na',
+
+      type: 'UNKNOWN',
+
+      oltName: 'UNKNOWN',
+
       sourceIp,
-      raw: log
+
+      timestamp: new Date(),
+
+      rawLog: log,
+
+      payload: {
+        reason: 'NO_MATCHING_PARSER'
+      }
+
     }
 
   }
+
 }

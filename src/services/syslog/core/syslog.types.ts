@@ -6,7 +6,6 @@ export interface ParsedSyslog {
   onuMac: string
   onuName: string | null
   status: 'linkup' | 'linkdown'
-  isRegistered: boolean
   sourceIp: string
   raw: string
 }

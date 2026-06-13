@@ -1,0 +1,262 @@
+import { prisma } from '../../../config/prisma'
+import { env } from '../../../config/env'
+
+import { normalizeMac }
+from '../../../utils/normalize-onu'
+
+import { EventCooldown }
+from '../../cache/event.cooldown'
+
+import { buildOnuAlertMessage }
+from '../../telegram/messages/build-onu-alert'
+
+import { createOnuEvent }
+from '../../../modules/onu/reconciliation/onu-event.service'
+
+import { AlarmProcessor }
+from '../processors/alarm.prosessor'
+
+import { NotificationProcessor }
+from '../processors/notification.processor'
+
+import { UnauthorizedOnuProcessor }
+from '../processors/unauthorize-onu.prosessor'
+
+import { SyslogEvent }
+from '../core/syslog-event'
+
+import { SyslogEventHandler }
+from '../contracts/syslog-event-handler'
+
+export class OnuEventHandler
+implements SyslogEventHandler {
+
+  async handle(
+    event: SyslogEvent
+  ): Promise<void> {
+
+    const normalizedMac =
+      normalizeMac(event.onuMac!)
+
+    const cooldownKey =
+      `${event.onuMac}-${event.type}`
+
+    if (
+      EventCooldown.isBlocked(
+        cooldownKey
+      )
+    ) {
+      console.log(
+        'ALERT COOLDOWN'
+      )
+      return
+    }
+
+    const olt =
+      await prisma.olt.findUnique({
+        where: {
+          syslogName:
+            event.oltName
+        }
+      })
+
+    if (!olt) {
+      console.log(
+        `UNKNOWN OLT ${event.oltName}`
+      )
+      return
+    }
+
+    if (
+      env.syslogStrictMode
+    ) {
+
+      if (
+        olt.ipAddress !==
+        event.sourceIp
+      ) {
+
+        console.log(
+          `INVALID SYSLOG SOURCE ${event.sourceIp}`
+        )
+
+        return
+
+      }
+
+    }
+
+    const onu =
+      await prisma.onu.findUnique({
+
+        where: {
+          onuMac:
+            normalizedMac
+        },
+
+        include: {
+          endpoint: true
+        }
+
+      })
+
+    if (onu) {
+
+      const isOnline =
+        event.type ===
+        'ONU_LINKUP'
+
+      const oldState =
+        onu.connectionState
+
+      const newState =
+        isOnline
+          ? 'ONLINE'
+          : 'OFFLINE'
+
+      await prisma.onu.update({
+
+        where: {
+          id: onu.id
+        },
+
+        data: {
+          connectionState:
+            newState
+        }
+
+      })
+
+      if (
+        oldState !== newState
+      ) {
+
+        await createOnuEvent({
+
+          onuId: onu.id,
+
+          event:
+            isOnline
+              ? 'LINK_UP'
+              : 'LINK_DOWN',
+
+          oldState:
+            oldState ??
+            undefined,
+
+          newState,
+
+          source: 'SYSLOG',
+
+          description:
+            event.rawLog
+
+        })
+
+      }
+
+      await AlarmProcessor.create({
+
+        oltId:
+          onu.oltId,
+
+        onuId:
+          onu.id,
+
+        type:
+          isOnline
+            ? 'ONU_LINKUP'
+            : 'ONU_LINKDOWN',
+
+        message:
+          `ONU ${event.onuMac} ${event.type}`,
+
+        sourceIp:
+          event.sourceIp,
+
+        rawLog:
+          event.rawLog
+
+      })
+
+      const message =
+        buildOnuAlertMessage(
+
+          isOnline
+            ? 'ONLINE'
+            : 'OFFLINE',
+
+          {
+
+            name:
+              onu.endpoint?.name,
+
+            internetNo:
+              onu.endpoint?.internetNo!,
+
+            address:
+              onu.endpoint?.address!,
+
+            oltName:
+              event.oltName,
+
+            port:
+              `${event.eponPort}:${event.onuId}`
+
+          }
+
+        )
+
+      await NotificationProcessor.send(
+        env.telegramChatId,
+        message
+      )
+
+      return
+
+    }
+
+    await UnauthorizedOnuProcessor.upsert({
+
+      oltId:
+        olt.id,
+
+      macAddress:
+        normalizedMac,
+
+      eponPort:
+        event.eponPort!,
+
+      onuId:
+        event.onuId!
+
+    })
+
+    let msg = ''
+
+    msg +=
+      '🚨 <b>ONU UNREGISTERED</b>\n'
+
+    msg +=
+      '======================\n'
+
+    msg +=
+      `🛰 OLT: ${event.oltName}\n`
+
+    msg +=
+      `🔌 PORT: ${event.eponPort}:${event.onuId}\n`
+
+    msg +=
+      `📶 MAC: <code>${normalizedMac}</code>\n\n`
+
+    msg +=
+      '⚠️ ONU baru terdeteksi dan belum di-authorize.'
+
+    await NotificationProcessor.send(
+      env.telegramChatId,
+      msg
+    )
+
+  }
+
+}
