@@ -6,8 +6,7 @@ import {
   Users
 } from 'lucide-react'
 
-export const endpointNavigation:
-  NavigationSection = {
+export const endpointNavigation: NavigationSection = {
 
   title: 'Customer',
 
@@ -16,6 +15,11 @@ export const endpointNavigation:
     {
       label: 'Endpoints',
       path: '/endpoints',
+      icon: Users
+    },
+    {
+      label: 'Add Endpoints',
+      path: '/endpoints/create',
       icon: Users
     }
   ]

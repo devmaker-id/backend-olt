@@ -17,6 +17,11 @@ export const oltNavigation:
       label: 'OLTs',
       path: '/olts',
       icon: Server
+    },
+    {
+      label: 'Add Olt',
+      path: '/olt/create',
+      icon: Server
     }
   ]
 }

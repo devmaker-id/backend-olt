@@ -619,3 +619,13 @@ nginx
 postgresql
 backend-olt (PM2)
 ```
+
+
+## webhook url telegram
+saatini tambahkan /api setelah domain
+```json
+misal ambil chontoh
+domain : https://domainaku.com
+
+yang jadi webhook di web dev adalah https://domainku.com/api
+```
