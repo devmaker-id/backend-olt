@@ -5,12 +5,11 @@ import {
   telegramWebhook
 } from './telegram.webhook'
 
-export async function
-telegramRouter(
+export async function telegramRouter(
   app: FastifyInstance
 ) {
   app.post(
-    '/webhook/telegram/:botId',
+    '/api/webhook/telegram/:botId',
     telegramWebhook
   )
 }
