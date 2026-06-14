@@ -88,7 +88,7 @@ export async function getEndpointByInet(
 
   await transport.connect({
     host: onu.olt.ipAddress,
-    port: onu.olt.telnetPort
+    port: onu.olt.managementPort
   })
 
   const session = new TelnetSession( transport )

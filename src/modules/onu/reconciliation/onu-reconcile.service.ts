@@ -17,7 +17,7 @@ export async function reconcileOltWithSession(oltId:string){
   try {
     await transport.connect({
       host: olt.ipAddress,
-      port: olt.telnetPort
+      port: olt.managementPort
     })
     const session = new TelnetSession(transport)
     await session.login({
@@ -163,7 +163,7 @@ export async function reconcileOnu(onuId: string) {
   try {
     await transport.connect({
         host: onu.olt.ipAddress,
-        port: onu.olt.telnetPort
+        port: onu.olt.managementPort
       })
 
       const session = new TelnetSession(transport)

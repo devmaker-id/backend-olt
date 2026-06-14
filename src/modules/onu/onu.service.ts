@@ -50,7 +50,7 @@ export async function authorizeOnu(
 
   await transport.connect({
     host: olt.ipAddress,
-    port: olt.telnetPort
+    port: olt.managementPort
   })
   const session = new TelnetSession(transport)
   await session.login({

@@ -29,7 +29,7 @@ class ConnectionManager {
     await transport.connect({
       host: olt.ipAddress,
 
-      port: olt.telnetPort,
+      port: olt.managementPort,
 
       username: olt.username,
 

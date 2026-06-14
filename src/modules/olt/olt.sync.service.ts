@@ -30,7 +30,7 @@ export async function syncOltInventory(
 
   await telnet.connect({
     host: olt.ipAddress,
-    port: olt.telnetPort,
+    port: olt.managementPort,
     username: olt.username,
     password: olt.password
   })

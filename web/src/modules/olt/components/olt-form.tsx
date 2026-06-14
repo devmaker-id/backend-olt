@@ -1,3 +1,10 @@
+import { useState } from 'react'
+
+import type {
+  OltPlatform,
+  OltConnectionType,
+} from '@prisma/client'
+
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
@@ -9,18 +16,23 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-import { useState } from 'react'
-
 import type { Olt } from '../types/olt.types'
 
 interface OltFormData {
   name: string
   syslogName: string
+
   ipAddress: string
-  telnetPort: number
+  managementPort: number
+
   username: string
   password: string
+
   vendor: string
+
+  platform: OltPlatform
+  connectionType: OltConnectionType
+
   location: string
 }
 
@@ -51,40 +63,35 @@ export function OltForm({
     syslogName,
     setSyslogName,
   ] = useState(
-    initialValues?.syslogName ??
-      ''
+    initialValues?.syslogName ?? ''
   )
 
   const [
     ipAddress,
     setIpAddress,
   ] = useState(
-    initialValues?.ipAddress ??
-      ''
+    initialValues?.ipAddress ?? ''
   )
 
   const [
-    telnetPort,
-    setTelnetPort,
+    managementPort,
+    setManagementPort,
   ] = useState(
-    initialValues?.telnetPort ??
-      23
+    initialValues?.managementPort ?? 23
   )
 
   const [
     username,
     setUsername,
   ] = useState(
-    initialValues?.username ??
-      'admin'
+    initialValues?.username ?? 'admin'
   )
 
   const [
     password,
     setPassword,
   ] = useState(
-    initialValues?.password ??
-      'admin'
+    initialValues?.password ?? 'admin'
   )
 
   const [vendor, setVendor] =
@@ -93,11 +100,28 @@ export function OltForm({
         'HISFOCUS'
     )
 
-  const [location, setLocation] =
-    useState(
-      initialValues?.location ??
-        ''
-    )
+  const [
+    platform,
+    setPlatform,
+  ] = useState<OltPlatform>(
+    initialValues?.platform ??
+      'HIOSO'
+  )
+
+  const [
+    connectionType,
+    setConnectionType,
+  ] = useState<OltConnectionType>(
+    initialValues?.connectionType ??
+      'TELNET'
+  )
+
+  const [
+    location,
+    setLocation,
+  ] = useState(
+    initialValues?.location ?? ''
+  )
 
   async function handleSubmit(
     event: React.FormEvent
@@ -107,11 +131,18 @@ export function OltForm({
     await onSubmit({
       name,
       syslogName,
+
       ipAddress,
-      telnetPort,
+      managementPort,
+
       username,
       password,
+
       vendor,
+
+      platform,
+      connectionType,
+
       location,
     })
   }
@@ -160,10 +191,10 @@ export function OltForm({
 
         <Input
           type="number"
-          placeholder="Telnet Port"
-          value={telnetPort}
+          placeholder="Management Port"
+          value={managementPort}
           onChange={(e) =>
-            setTelnetPort(
+            setManagementPort(
               Number(
                 e.target.value
               )
@@ -192,31 +223,109 @@ export function OltForm({
           }
         />
 
-        <Select
+        <Input
+          placeholder="Vendor / Brand"
           value={vendor}
-          onValueChange={
-            setVendor
+          onChange={(e) =>
+            setVendor(
+              e.target.value
+            )
           }
+        />
+
+        <Select
+          value={platform}
+          onValueChange={(value) => {
+            const selected =
+              value as OltPlatform
+
+            setPlatform(
+              selected
+            )
+
+            if (
+              selected ===
+              'HIOSO'
+            ) {
+              setConnectionType(
+                'TELNET'
+              )
+
+              setManagementPort(
+                23
+              )
+            }
+
+            if (
+              selected ===
+              'VSOL'
+            ) {
+              setConnectionType(
+                'SSH'
+              )
+
+              setManagementPort(
+                22
+              )
+            }
+          }}
         >
-          <SelectTrigger>
-            <SelectValue />
+          <SelectTrigger
+            className="
+              h-10
+              w-full
+            "
+          >
+            <SelectValue
+              placeholder="Platform"
+            />
           </SelectTrigger>
 
           <SelectContent>
-            <SelectItem value="HISFOCUS">
-              HISFOCUS
+            <SelectItem value="HIOSO">
+              HIOSO
             </SelectItem>
 
-            <SelectItem value="HUAWEI">
-              HUAWEI
+            <SelectItem value="VSOL">
+              VSOL
+            </SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={connectionType}
+          onValueChange={(value) =>
+            setConnectionType(
+              value as OltConnectionType
+            )
+          }
+        >
+          <SelectTrigger
+            className="
+              h-10
+              w-full
+            "
+          >
+            <SelectValue
+              placeholder="Connection Type"
+            />
+          </SelectTrigger>
+
+          <SelectContent>
+            <SelectItem value="TELNET">
+              TELNET
             </SelectItem>
 
-            <SelectItem value="ZTE">
-              ZTE
+            <SelectItem value="SSH">
+              SSH
             </SelectItem>
 
-            <SelectItem value="FIBERHOME">
-              FIBERHOME
+            <SelectItem value="API">
+              API
+            </SelectItem>
+
+            <SelectItem value="SNMP">
+              SNMP
             </SelectItem>
           </SelectContent>
         </Select>

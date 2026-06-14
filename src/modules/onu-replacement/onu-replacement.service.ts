@@ -94,7 +94,7 @@ export async function replaceOnu(
                     name: true,
                     vendor: true,
                     ipAddress: true,
-                    telnetPort: true,
+                    managementPort: true,
                     username: true,
                     password: true
                 }
@@ -144,7 +144,7 @@ export async function replaceOnu(
   const transport = new TelnetTransport()
   await transport.connect({
     host: oldOnu.olt.ipAddress,
-    port: oldOnu.olt.telnetPort
+    port: oldOnu.olt.managementPort
   })
   const session = new TelnetSession(transport)
   await session.login({

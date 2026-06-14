@@ -101,7 +101,7 @@ export async function connectOltController(
   try {
     await transport.connect({
       host: olt.ipAddress,
-      port: olt.telnetPort
+      port: olt.managementPort
     })
     const session = new TelnetSession(transport)
     await session.login({
@@ -122,7 +122,7 @@ export async function connectOltController(
       message: 'FAILED_CONNECT_OLT',
       error: error.message,
       host: olt.ipAddress,
-      port: olt.telnetPort
+      port: olt.managementPort
     })
   } finally {
     await transport.disconnect()
@@ -154,7 +154,7 @@ export async function getSystemInfoController(
   try {
     await transport.connect({
       host: olt.ipAddress,
-      port: olt.telnetPort
+      port: olt.managementPort
     })
     const session = new TelnetSession(transport)
     await session.login({
@@ -216,7 +216,7 @@ export async function getOnuInfoController(
   try {
     await transport.connect({
       host: olt.ipAddress,
-      port: olt.telnetPort
+      port: olt.managementPort
     })
     const session = new TelnetSession(transport)
     await session.login({
