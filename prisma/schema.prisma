@@ -12,6 +12,17 @@ enum Role {
   TEKNISI
 }
 
+enum OltPlatform {
+  HIOSO
+  VSOL
+}
+enum OltConnectionType {
+  TELNET
+  SSH
+  API
+  SNMP
+}
+
 enum OpticStatus {
   LINKUP
   LINKDOWN
@@ -94,10 +105,12 @@ model Olt {
   name             String            @unique
   syslogName       String            @unique
   ipAddress        String            @unique
-  telnetPort       Int               @default(23)
+  managementPort   Int               @default(23)
   username         String
   password         String
   vendor           String
+  platform         OltPlatform
+  connectionType   OltConnectionType
   location         String?
   onus             Onu[]
   alarmLogs        AlarmLog[]

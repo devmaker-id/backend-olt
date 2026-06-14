@@ -1,21 +1,23 @@
-export interface CreateOltDto {
-  name: string
-  syslogName: string
-  ipAddress: string
-  telnetPort?: number
-  username: string
-  password: string
-  vendor: string
-  location?: string
-}
+import type {
+  OltPlatform,
+  OltConnectionType
+} from '@prisma/client'
 
 export interface UpdateOltDto {
   name?: string
+  syslogName?: string
+
   ipAddress?: string
-  telnetPort?: number
+  managementPort?: number
+
   username?: string
   password?: string
+
   vendor?: string
+
+  platform?: OltPlatform
+  connectionType?: OltConnectionType
+
   location?: string
 }
 
