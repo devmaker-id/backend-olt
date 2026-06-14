@@ -35,11 +35,9 @@ implements SyslogEventHandler {
     event: SyslogEvent
   ): Promise<void> {
 
-    const normalizedMac =
-      normalizeMac(event.onuMac!)
+    const macAddress = event.onuMac ? normalizeMac(event.onuMac) : null
 
-    const cooldownKey =
-      `${event.onuMac}-${event.type}`
+    const cooldownKey = `${event.onuMac}-${event.type}`
 
     if (
       EventCooldown.isBlocked(
@@ -71,6 +69,11 @@ implements SyslogEventHandler {
       env.syslogStrictMode
     ) {
 
+      console.log(
+        'SYSLOG_STRICT_MODE:',
+        env.syslogStrictMode
+      )
+
       if (
         olt.ipAddress !==
         event.sourceIp
@@ -87,11 +90,19 @@ implements SyslogEventHandler {
     }
 
     const onu =
-      await prisma.onu.findUnique({
-
+    event.serialNumber
+      ? await prisma.onu.findFirst({
         where: {
-          onuMac:
-            normalizedMac
+          serialNumber: event.serialNumber
+        },
+        include: {
+          endpoint: true
+        }
+      })
+      : macAddress
+      ? await prisma.onu.findUnique({
+        where: {
+          onuMac: macAddress
         },
 
         include: {
@@ -99,20 +110,16 @@ implements SyslogEventHandler {
         }
 
       })
+      : null
 
     if (onu) {
 
-      const isOnline =
-        event.type ===
-        'ONU_LINKUP'
+      const isOnline = event.type === 'ONU_LINKUP' || event.type === 'ONU_ONLINE'
 
       const oldState =
         onu.connectionState
 
-      const newState =
-        isOnline
-          ? 'ONLINE'
-          : 'OFFLINE'
+      const newState = isOnline ? 'ONLINE' : 'OFFLINE'
 
       await prisma.onu.update({
 
@@ -135,10 +142,7 @@ implements SyslogEventHandler {
 
           onuId: onu.id,
 
-          event:
-            isOnline
-              ? 'LINK_UP'
-              : 'LINK_DOWN',
+          event: isOnline ? 'LINK_UP' : 'LINK_DOWN',
 
           oldState:
             oldState ??
@@ -216,21 +220,21 @@ implements SyslogEventHandler {
 
     }
 
-    await UnauthorizedOnuProcessor.upsert({
+    if(macAddress) {
+      await UnauthorizedOnuProcessor.upsert({
 
-      oltId:
-        olt.id,
+        oltId: olt.id,
 
-      macAddress:
-        normalizedMac,
+        macAddress,
 
-      eponPort:
-        event.eponPort!,
+        eponPort:
+          event.eponPort!,
 
-      onuId:
-        event.onuId!
+        onuId:
+          event.onuId!
 
-    })
+      })
+    }
 
     let msg = ''
 
@@ -246,8 +250,9 @@ implements SyslogEventHandler {
     msg +=
       `🔌 PORT: ${event.eponPort}:${event.onuId}\n`
 
-    msg +=
-      `📶 MAC: <code>${normalizedMac}</code>\n\n`
+    macAddress
+    ? msg += `📶 MAC: <code>${macAddress}</code>\n\n`
+    : msg += `📶 SN: <code>${event.serialNumber}</code>\n\n`
 
     msg +=
       '⚠️ ONU baru terdeteksi dan belum di-authorize.'

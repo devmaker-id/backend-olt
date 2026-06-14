@@ -1,6 +1,6 @@
 import { SyslogVendor } from '../../contracts/syslog-vendor'
-import { HisfocusSyslogParser } from './hisfocus.syslog.parser'
-import { HisfocusSyslogService } from './hisfocus.syslog.service'
+import { HisfocusSyslogParser } from './hioso.syslog.parser'
+import { HisfocusSyslogService } from './hioso.syslog.service'
 
 export const hisfocusVendor: SyslogVendor = {
   name: 'hisfocus',

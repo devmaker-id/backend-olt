@@ -1,4 +1,4 @@
-import { HisfocusSyslogParser } from '../vendors/hisfocus/hisfocus.syslog.parser'
+import { HisfocusSyslogParser } from '../vendors/hioso/hioso.syslog.parser'
 
 export class ParserRegistry {
     

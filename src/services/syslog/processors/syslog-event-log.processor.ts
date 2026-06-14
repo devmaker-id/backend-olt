@@ -16,10 +16,10 @@ export class SyslogEventLogProcessor {
                 eponPort: event.eponPort,
                 onuId: event.onuId,
                 onuMac: event.onuMac,
+                serialNumber: event.serialNumber,
                 onuName: event.onuName,
                 rawLog: event.rawLog,
                 payload: JSON.stringify(event.payload)
-
             }
         })
     } catch(error) {

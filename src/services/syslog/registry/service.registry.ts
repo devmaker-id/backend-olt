@@ -1,5 +1,5 @@
 import { HisfocusSyslogService }
-  from '../vendors/hisfocus/hisfocus.syslog.service'
+  from '../vendors/hioso/hioso.syslog.service'
 
 export class ServiceRegistry {
 

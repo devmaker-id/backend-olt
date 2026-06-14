@@ -3,9 +3,6 @@ import { env } from '../../../config/env'
 import { SyslogIpFilter } from './syslog-ip-filter'
 import { SyslogDispatcher } from './syslog.dispatcher'
 
-import { HisfocusSyslogParser } from '../vendors/hisfocus/hisfocus.syslog.parser'
-import { HisfocusSyslogService } from '../vendors/hisfocus/hisfocus.syslog.service'
-
 export class SyslogServer {
   private server = dgram.createSocket('udp4')
   start(
@@ -38,8 +35,9 @@ export class SyslogServer {
           return
         }
         console.log(
-          `SYSLOG FROM ${remote.address}`
+          `SYSLOG FROM ${remote.address}\n`
         )
+        console.log(log)
         await SyslogDispatcher.dispatch(
           log,
           remote.address
