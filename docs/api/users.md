@@ -2,150 +2,114 @@
 
 Base URL
 
-```text
+```json
 /api/users
 ```
 
 Authentication Required: Yes (JWT)
 
----
-
-# Get Current User
-
-Mengambil informasi user yang sedang login berdasarkan JWT token.
-
-## Endpoint
-
-```http
-GET /api/users/me
-```
-
-## Headers
-
-```http
-Authorization: Bearer <JWT_TOKEN>
-```
-
----
-
-## Success Response
-
+## get me (user login)
 ```json
+GET /api/users/me
+Authorize: Bearer token
+
+respon json
 {
-  "user": {
-    "id": "clxxxx",
-    "username": "admin",
-    "role": "OWNER"
+  "success": true,
+  "message": "CURRENT_USER_FOUND",
+  "data": {
+    "id": "cmpjs042x0000g137cp23tlpk",
+    "username": "owner",
+    "role": "OWNER",
+    "email": "admin@bibit.net",
+    "telepon": "08123456789",
+    "alamat": "jakarta",
+    "telegramId": "111111",
+    "createdAt": "2026-05-24T12:51:00.394Z",
+    "updatedAt": "2026-06-15T16:28:48.728Z"
   }
 }
 ```
 
-Field `user` berasal dari payload JWT yang telah divalidasi oleh:
-
-```text
-authMiddleware
-```
-
----
-
-## Authentication Flow
-
-```text
-Request
-   ↓
-Authorization Header
-   ↓
-authMiddleware
-   ↓
-JWT Verify
-   ↓
-req.user
-   ↓
-GET /me
-   ↓
-Return Current User
-```
-
----
-
-## JWT Payload
-
-Token yang valid akan menghasilkan:
-
+## update profile (user login)
 ```json
+PATCH /api/users/me
+Authorize: Bearer token
+
+filed dalm update
+username -> opsional
+telepon -> opsional
+email -> opsional
+alamat -> opsional
+telegram -> opsional
+
+body
 {
-  "id": "clxxxx",
-  "username": "admin",
-  "role": "OWNER"
+  "username": "teknisi1234",
+  "telepon": "09876543123",
+  "email": "changed@bibit.net",
+  "alamat": "bondowoso",
+  "telegramId": "12121212"
+}
+
+respon
+{
+  "success": true,
+  "message": "USER_UPDATED",
+  "data": {
+    "id": "cmpjs042x0000g137cp23tlpk",
+    "username": "teknisi1234",
+    "role": "OWNER",
+    "email": "changed@bibit.net",
+    "telepon": "09876543123",
+    "alamat": "bondowoso",
+    "telegramId": "12121212",
+    "createdAt": "2026-05-24T12:51:00.394Z",
+    "updatedAt": "2026-06-15T17:02:02.980Z"
+  }
+}
+
+jika username already
+{
+  "success": false,
+  "message": "VALIDATION_ERROR",
+  "errors": "USERNAME_ALREADY_EXISTS"
 }
 ```
-
-atau
-
+## change password (user login)
 ```json
+PATCH /api/users/password
+Authorize: Bearer token
+
+body
 {
-  "id": "clxxxx",
-  "username": "teknisi",
-  "role": "TEKNISI"
+  "oldPassword": "owner123456",
+  "newPassword": "owner123"
 }
-```
 
----
-
-## Roles
-
-```text
-OWNER
-TEKNISI
-```
-
----
-
-## Error Responses
-
-### Missing Token
-
-```json
+response
 {
-  "message": "Unauthorized"
+  "success": true,
+  "message": "PASSWORD_CHANGED",
+  "data": null
 }
-```
-
-### Invalid Token
-
-```json
-{
-  "message": "Unauthorized"
-}
-```
-
-### Expired Token
-
-```json
-{
-  "message": "Unauthorized"
-}
-```
-
----
-
-# Notes
-
-Saat ini module User hanya menyediakan endpoint:
-
-```text
-GET /api/users/me
 ```
 
 ## create user
 POST /api/users
 ```json
 Authorize Bearer token
+
+semua field wajib di isi (required)
 body json
 {
-  "username": "teknisi1",
-  "password": "123456",
-  "role": "TEKNISI"
+  "username": "teknisi",
+  "password": "tesing123",
+  "role": "TEKNISI",
+  "email": "teknisi_CHANGED@bibit.net",
+  "telepon": "08987654321",
+  "alamat": "bandung",
+  "telegramId": "99999"
 }
 
 respon json
@@ -153,10 +117,54 @@ respon json
   "success": true,
   "message": "USER_CREATED",
   "data": {
-    "id": "cmqayjncd0000g18fp8va3paj",
-    "username": "teknisi1",
+    "id": "cmqffbynf0000g195unqibin3",
+    "username": "teknisi",
     "role": "TEKNISI",
-    "createdAt": "2026-06-12T13:23:56.267Z"
+    "email": "teknisi_CHANGED@bibit.net",
+    "telepon": "08987654321",
+    "alamat": "bandung",
+    "telegramId": "99999",
+    "createdAt": "2026-06-15T16:24:55.851Z",
+    "updatedAt": "2026-06-15T16:24:55.851Z"
+  }
+}
+```
+
+## get all users
+```json
+GET /api/users
+Authorize: Bearer token
+
+respons
+{
+  "success": true,
+  "message": "USERS_FOUND",
+  "data": [
+    {
+      "id": "cmqbb7s1q0001g1tv4ppokpip",
+      "username": "teknisi",
+      "role": "TEKNISI",
+      "email": "teknisi@bibit.net",
+      "telepon": "08987654321",
+      "alamat": "bogor",
+      "telegramId": "222222",
+      "createdAt": "2026-06-12T19:18:37.503Z",
+      "updatedAt": "2026-06-15T14:44:36.672Z"
+    },
+    {
+      "id": "cmpjs042x0000g137cp23tlpk",
+      "username": "owner",
+      "role": "OWNER",
+      "email": "admin@bibit.net",
+      "telepon": "08123456789",
+      "alamat": "jakarta",
+      "telegramId": "111111",
+      "createdAt": "2026-05-24T12:51:00.394Z",
+      "updatedAt": "2026-06-15T14:44:36.672Z"
+    }
+  ],
+  "meta": {
+    "total": 2
   }
 }
 ```
@@ -166,23 +174,31 @@ GET /api/users/:id
 ```json
 respon json
 {
-  "id": "cmqayjncd0000g18fp8va3paj",
-  "username": "teknisi1",
-  "role": "TEKNISI",
-  "createdAt": "2026-06-12T13:23:56.267Z",
-  "updatedAt": "2026-06-12T13:23:56.267Z"
+  "success": true,
+  "message": "USER_FOUND",
+  "data": {
+    "id": "cmpjs042x0000g137cp23tlpk",
+    "username": "owner",
+    "role": "OWNER",
+    "createdAt": "2026-05-24T12:51:00.394Z",
+    "updatedAt": "2026-06-15T14:44:36.672Z"
+  }
 }
 ```
 
-## patch user
+## patch user (OWNER only)
 /api/users/:id
 ```json
-Authorize Bearer token
+Authorize: Bearer token
 
 body json
 {
-  "username": "teknisi2",
-  "role": "OWNER"
+  "username": "teknisi",
+  "role": "TEKNISI",
+  "email": "teknisi_CHANGED@bibit.net",
+  "telepon": "08987654321",
+  "alamat": "bandung",
+  "telegramId": "99999"
 }
 
 respon json
@@ -190,22 +206,49 @@ respon json
   "success": true,
   "message": "USER_UPDATED",
   "data": {
-    "id": "cmqayjncd0000g18fp8va3paj",
-    "username": "teknisi2",
-    "role": "OWNER"
+    "id": "cmqbb7s1q0001g1tv4ppokpip",
+    "username": "teknisi",
+    "role": "TEKNISI",
+    "email": "teknisi_CHANGED@bibit.net",
+    "telepon": "08987654321",
+    "alamat": "bandung",
+    "telegramId": "99999",
+    "createdAt": "2026-06-12T19:18:37.503Z",
+    "updatedAt": "2026-06-15T16:20:17.921Z"
   }
 }
 ```
 
-## user delete
+## reset password (OWNER only)
+```
+PATCH /api/users/:id/reset-password
+Authorize: Bearer token
+
+```json
+
+body
+{
+  "password": "admin123"
+}
+
+response
+{
+  "success": true,
+  "message": "PASSWORD_RESET",
+  "data": null
+}
+```
+
+## user delete (OWNER only)
 DELETE /api/users/:id
 ```json
-Authorize Bearer token
+Authorize: Bearer token
 
 respon json
 {
   "success": true,
-  "message": "USER_DELETED"
+  "message": "USER_DELETED",
+  "data": null
 }
 
 respon jika owner terakhir di hapus
@@ -235,4 +278,4 @@ DELETE /users/:id
 Protection
 ────────────────────
 ✅ Prevent deleting last OWNER
-``
+```

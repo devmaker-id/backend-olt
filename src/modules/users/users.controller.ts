@@ -15,313 +15,174 @@ import {
   deleteUser,
 } from './users.service'
 
-import type { CreateUserDto } from './dto/create-user.dto'
-import type { UpdateUserDto } from './dto/update-user.dto'
-
-import type {
-  UpdateProfileDto,
-} from './dto/update-profile.dto'
-
-import type {
-  ChangePasswordDto,
-} from './dto/change-password.dto'
-import type { ResetPasswordDto } from './dto/reset-password.tdo'
+import { createUserSchema } from './schemas/create-user.schema'
+import { create, list, ok } from '../../core/http/response'
+import { updateUserSchema } from './schemas/update-user.schema'
+import { userIdParamSchema } from './schemas/update-id-param.schema'
+import { updateProfileSchema } from './schemas/update-profile.schema'
+import { changePasswordSchema } from './schemas/change-password.schema'
+import { resetPasswordSchema } from './schemas/reset-password.schema'
 
 export async function createUserController(
   req: FastifyRequest,
   reply: FastifyReply,
 ) {
-
-  try {
-
-    const body =
-      req.body as CreateUserDto
-
-    const result =
-      await createUser(
-        body,
-      )
-
-    return reply.send(
-      result,
+  const body = createUserSchema.parse(
+    req.body
+  )
+  const user = await createUser(body)
+  return reply.send(
+    create(
+      user,
+      'USER_CREATED'
     )
-
-  }
-
-  catch (
-    error: any
-  ) {
-
-    return reply
-      .code(400)
-      .send({
-
-        success: false,
-
-        message:
-          error.message,
-
-      })
-
-  }
-
+  )
 }
+
 export async function updateUserController(
   req: FastifyRequest,
   reply: FastifyReply,
 ) {
+  const params = userIdParamSchema.parse(
+    req.params
+  )
+  const body = updateUserSchema.parse(
+    req.body
+  )
+  const user = await updateUser(
+    params.id,
+    body
+  )
 
-  try {
-
-    const {
-      id,
-    } = req.params as {
-      id: string
-    }
-
-    const body =
-      req.body as UpdateUserDto
-
-    const result =
-      await updateUser(
-        id,
-        body,
-      )
-
-    return reply.send(
-      result,
+  return reply.send(
+    ok(
+      user,
+      'USER_UPDATED'
     )
-
-  }
-
-  catch (
-    error: any
-  ) {
-
-    return reply
-      .code(400)
-      .send({
-
-        success: false,
-
-        message:
-          error.message,
-
-      })
-
-  }
-
+  )
 }
-export async function getUsersController() {
+export async function getUsersController(
+  _: FastifyRequest,
+  reply: FastifyReply
+) {
 
-  return getUsers()
+  const users = await getUsers()
+  return reply.send(
+    list(
+      users,
+      users.length,
+      'USERS_FOUND'
+    )
+  )
 
 }
 export async function getUserByIdController(
-  req: FastifyRequest
+  req: FastifyRequest,
+  reply: FastifyReply
 ) {
-
-  const {
-    id,
-  } = req.params as {
-    id: string
-  }
-
-  return getUserById(
-    id,
+  const params = userIdParamSchema.parse(
+    req.params
   )
-
+  const user = await getUserById(
+    params.id
+  )
+  return reply.send(
+    ok(
+      user,
+      'USER_FOUND'
+    )
+  )
 }
 
 export async function getCurrentUserController(
   req: FastifyRequest,
   reply: FastifyReply,
 ) {
-
-  try {
-
-    const result =
-      await getCurrentUser(
-        req.user.id,
-      )
-
-    return reply.send(
-      result,
+  const user = await getCurrentUser(
+    req.user.id
+  )
+  return reply.send(
+    ok(
+      user,
+      'CURRENT_USER_FOUND'
     )
-
-  }
-
-  catch ( error: any ) {
-    return reply.status(400).send({
-        success: false,
-        message: error.message,
-      })
-
-  }
-
+  )
 }
 
 export async function updateProfileController(
   req: FastifyRequest,
   reply: FastifyReply,
 ) {
-
-  try {
-
-    const body =
-      req.body as
-      UpdateProfileDto
-
-    const result =
-      await updateProfile(
-        req.user.id,
-        body,
-      )
-
-    return reply.send({
-      success: true,
-      data: result,
-    })
-
-  }
-
-  catch (error: any) {
-    return reply.status(400).send({
-        success: false,
-        message: error.message,
-      })
-
-  }
-
+  const body = updateProfileSchema.parse(
+    req.body
+  )
+  const user = await updateProfile(
+    req.user.id,
+    body
+  )
+  return reply.send(
+    ok(
+      user,
+      'USER_UPDATED'
+    )
+  )
 }
 
 export async function changePasswordController(
   req: FastifyRequest,
   reply: FastifyReply,
 ) {
+  const body = changePasswordSchema.parse(
+    req.body
+  )
+  await changePassword(
+    req.user.id,
+    body
+  )
 
-  try {
-
-    const body =
-      req.body as
-      ChangePasswordDto
-
-    const result =
-      await changePassword(
-        req.user.id,
-        body,
-      )
-
-    return reply.send(
-      result,
+  return reply.send(
+    ok(
+      null,
+      'PASSWORD_CHANGED'
     )
-
-  }
-
-  catch ( error: any ) {
-
-    return reply
-      .status(400)
-      .send({
-
-        success: false,
-
-        message:
-          error.message,
-
-      })
-
-  }
+  )
 
 }
 export async function resetPasswordController(
   req: FastifyRequest,
   reply: FastifyReply,
 ) {
-
-  try {
-
-    const {
-      id,
-    } = req.params as {
-      id: string
-    }
-
-    const body =
-      req.body as ResetPasswordDto
-
-    const result =
-      await resetUserPassword(
-
-        id,
-
-        body.password,
-
-      )
-
-    return reply.send(
-      result,
+  const params = userIdParamSchema.parse(
+    req.params
+  )
+  const body = resetPasswordSchema.parse(
+    req.body
+  )
+  await resetUserPassword(
+    params.id,
+    body.password
+  )
+  return reply.send(
+    ok(
+      null,
+      'PASSWORD_RESET'
     )
-
-  }
-
-  catch (
-    error: any
-  ) {
-
-    return reply
-      .code(400)
-      .send({
-
-        success: false,
-
-        message:
-          error.message,
-
-      })
-
-  }
-
+  )
 }
 export async function deleteUserController(
   req: FastifyRequest,
   reply: FastifyReply,
 ) {
-
-  try {
-
-    const {
-      id,
-    } = req.params as {
-      id: string
-    }
-
-    const result =
-      await deleteUser(
-        id,
-      )
-
-    return reply.send(
-      result,
+  const params = userIdParamSchema.parse(
+    req.params
+  )
+  await deleteUser(
+    params.id
+  )
+  return reply.send(
+    ok(
+      null,
+      'USER_DELETED'
     )
-
-  }
-
-  catch (
-    error: any
-  ) {
-
-    return reply
-      .code(400)
-      .send({
-
-        success: false,
-
-        message:
-          error.message,
-
-      })
-
-  }
-
+  )
 }

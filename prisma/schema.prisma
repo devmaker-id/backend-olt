@@ -92,10 +92,15 @@ enum SyslogEventType {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  username  String   @unique
-  password  String
-  role      Role     @default(TEKNISI)
+  id          String   @id @default(cuid())
+  username    String   @unique
+  password    String
+  role        Role     @default(TEKNISI)
+  email       String
+  telepon     String
+  alamat      String
+  telegramId  String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

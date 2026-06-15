@@ -1,16 +1,12 @@
 import bcrypt from 'bcrypt'
 
 import { prisma } from "../../config/prisma"
+import { Role } from '@prisma/client'
 
-import type {
-  UpdateProfileDto,
-} from './dto/update-profile.dto'
-import type { CreateUserDto } from './dto/create-user.dto'
-
-import type {
-  ChangePasswordDto,
-} from './dto/change-password.dto'
-import type { UpdateUserDto } from './dto/update-user.dto'
+import { UpdateProfileDto } from './schemas/update-profile.schema'
+import type { CreateUserDto } from './schemas/create-user.schema'
+import type { ChangePasswordDto } from './schemas/change-password.schema'
+import type { UpdateUserDto } from './schemas/update-user.schema'
 
 import {
   validateExistingUser,
@@ -19,267 +15,105 @@ import {
   validateUsername,
 } from './validation/users.validation'
 
+import { ValidationError } from '../../core/errors/validation.error'
+import { NotFoundError } from '../../core/errors/not-found.error'
+import { USER_SELECT } from './users.constants'
+
 export async function createUser(
   data: CreateUserDto,
 ) {
+  validateUsername(data.username)
 
-  const existingUser =
-    await prisma.user.findUnique({
-
-      where: {
-        username:
-          data.username,
-      },
-
-    })
-
-  if (existingUser) {
-
-    throw new Error(
-      'USERNAME_ALREADY_EXISTS',
-    )
-
-  }
-
-  const hashedPassword =
-    await bcrypt.hash(
+  const hashedPassword = await bcrypt.hash(
       data.password,
       10,
     )
 
-  const user =
-    await prisma.user.create({
-
+  return prisma.user.create({
       data: {
-
-        username:
-          data.username,
-
-        password:
-          hashedPassword,
-
-        role:
-          data.role,
-
+        username: data.username,
+        password: hashedPassword,
+        role: data.role,
+        email: data.email,
+        telepon: data.telepon,
+        alamat: data.alamat,
+        telegramId: data.telegramId
       },
-
-      select: {
-
-        id: true,
-
-        username: true,
-
-        role: true,
-
-        createdAt: true,
-
-      },
-
+      select: USER_SELECT,
     })
-
-  return {
-
-    success: true,
-
-    message:
-      'USER_CREATED',
-
-    data: user,
-
-  }
 
 }
 export async function updateUser(
   id: string,
   data: UpdateUserDto,
 ) {
+  const user = await validateExistingUser(id)
 
-  const user =
-    await prisma.user.findUnique({
-
-      where: {
-        id,
-      },
-
-    })
-
-  if (!user) {
-
-    throw new Error(
-      'USER_NOT_FOUND',
-    )
-
+  if (data.username && data.username !== user.username) {
+    await validateUniqueUsername(data.username)
   }
 
-  if (
-    data.username &&
-    data.username !==
-      user.username
-  ) {
-
-    const existingUser =
-      await prisma.user.findUnique({
-
-        where: {
-          username:
-            data.username,
-        },
-
-      })
-
-    if (existingUser) {
-
-      throw new Error(
-        'USERNAME_ALREADY_EXISTS',
-      )
-
-    }
-
-  }
-
-  const updatedUser =
-    await prisma.user.update({
-
-      where: {
-        id,
-      },
-
+  return prisma.user.update({
+      where: {id},
       data: {
-
-        username:
-          data.username,
-
-        role:
-          data.role,
-
+        username: data.username,
+        role: data.role,
+        email: data.email,
+        telepon: data.telepon,
+        alamat: data.alamat,
+        telegramId: data.telegramId,
       },
-
-      select: {
-
-        id: true,
-
-        username: true,
-
-        role: true,
-
-        createdAt: true,
-
-        updatedAt: true,
-
-      },
-
+      select: USER_SELECT,
     })
-
-  return {
-
-    success: true,
-
-    message:
-      'USER_UPDATED',
-
-    data:
-      updatedUser,
-
-  }
 
 }
+
 export async function getUsers() {
-
   return prisma.user.findMany({
-
     orderBy: {
       createdAt: 'desc',
     },
-
-    select: {
-
-      id: true,
-
-      username: true,
-
-      role: true,
-
-      createdAt: true,
-
-      updatedAt: true,
-
-    },
-
+    select: USER_SELECT,
   })
-
 }
 
 export async function getUserById(
   id: string,
 ) {
 
-  return prisma.user.findUnique({
-
+  const user = await prisma.user.findUnique({
     where: {
       id,
     },
-
-    select: {
-
-      id: true,
-
-      username: true,
-
-      role: true,
-
-      createdAt: true,
-
-      updatedAt: true,
-
-    },
-
+    select: USER_SELECT,
   })
-
+  if(!user){
+    throw new NotFoundError(
+      'USER_NOT_FOUND'
+    )
+  }
+  return user
 }
 
 export async function deleteUser(
   id: string,
 ) {
 
-  const user =
-    await prisma.user.findUnique({
+  const user = await validateExistingUser(id)
 
-      where: {
-        id,
-      },
+  if (user.role === Role.OWNER) {
 
-    })
-
-  if (!user) {
-
-    throw new Error(
-      'USER_NOT_FOUND',
-    )
-
-  }
-
-  if (
-    user.role ===
-    'OWNER'
-  ) {
-
-    const ownerCount =
-      await prisma.user.count({
-
+    const ownerCount = await prisma.user.count({
         where: {
-          role: 'OWNER',
+          role: Role.OWNER,
         },
-
       })
-
     if (
       ownerCount <= 1
     ) {
-
-      throw new Error(
+      throw new ValidationError(
         'LAST_OWNER_CANNOT_BE_DELETED',
       )
-
     }
 
   }
@@ -292,37 +126,23 @@ export async function deleteUser(
 
   })
 
-  return {
-
-    success: true,
-
-    message:
-      'USER_DELETED',
-
-  }
+  return null
 
 }
 
 export async function getCurrentUser(
   id: string,
 ) {
-
-  const user =
-    await validateExistingUser(
-      id,
+  const user = await prisma.user.findUnique({
+    where: {id},
+    select: USER_SELECT
+  })
+  if(!user) {
+    throw new NotFoundError(
+      'USER_NOT_FOUND'
     )
-
-  return {
-    id: user.id,
-    username:
-      user.username,
-    role:
-      user.role,
-    createdAt:
-      user.createdAt,
-    updatedAt:
-      user.updatedAt,
   }
+  return user
 }
 
 export async function updateProfile(
@@ -330,20 +150,11 @@ export async function updateProfile(
   data: UpdateProfileDto,
 ) {
 
-  const user =
-    await validateExistingUser(
-      id,
-    )
+  const user = await validateExistingUser(id)
 
-  if (
-    data.username &&
-    data.username !==
-      user.username
-  ) {
+  if (data.username && data.username !== user.username) {
 
-    validateUsername(
-      data.username,
-    )
+    validateUsername(data.username)
 
     await validateUniqueUsername(
       data.username,
@@ -352,34 +163,20 @@ export async function updateProfile(
 
   }
 
-  const updatedUser =
-    await prisma.user.update({
+  return prisma.user.update({
       where: {
         id: user.id,
       },
 
       data: {
-        username:
-          data.username,
+        username: data.username,
+        telepon: data.telepon,
+        email: data.email,
+        alamat: data.alamat,
+        telegramId: data.telegramId
       },
+      select: USER_SELECT
     })
-
-  return {
-    id:
-      updatedUser.id,
-
-    username:
-      updatedUser.username,
-
-    role:
-      updatedUser.role,
-
-    createdAt:
-      updatedUser.createdAt,
-
-    updatedAt:
-      updatedUser.updatedAt,
-  }
 }
 
 export async function changePassword(
@@ -387,30 +184,20 @@ export async function changePassword(
   data: ChangePasswordDto,
 ) {
 
-  const user =
-    await validateExistingUser(
-      id,
-    )
+  const user = await validateExistingUser(id)
 
-  const isValidPassword =
-    await bcrypt.compare(
+  const isValidPassword = await bcrypt.compare(
       data.oldPassword,
       user.password,
     )
 
-  if (
-    !isValidPassword
-  ) {
-
-    throw new Error(
+  if (!isValidPassword) {
+    throw new ValidationError(
       'INVALID_OLD_PASSWORD',
     )
-
   }
 
-  validatePassword(
-    data.newPassword,
-  )
+  validatePassword(data.newPassword)
 
   const hashedPassword =
     await bcrypt.hash(
@@ -422,69 +209,30 @@ export async function changePassword(
     where: {
       id: user.id,
     },
-
     data: {
-      password:
-        hashedPassword,
-    },
+      password: hashedPassword,
+    }
   })
 
-  return {
-    success: true,
-    message:
-      'PASSWORD_UPDATED',
-  }
+  return null
 }
 export async function resetUserPassword(
   id: string,
   password: string,
 ) {
 
-  const user =
-    await prisma.user.findUnique({
+  await validateExistingUser(id)
 
-      where: {
-        id,
-      },
-
-    })
-
-  if (!user) {
-
-    throw new Error(
-      'USER_NOT_FOUND',
-    )
-
-  }
-
-  const hashedPassword =
-    await bcrypt.hash(
+  const hashedPassword = await bcrypt.hash(
       password,
       10,
     )
 
   await prisma.user.update({
-
-    where: {
-      id,
-    },
-
+    where: {id},
     data: {
-
-      password:
-        hashedPassword,
-
-    },
-
+      password: hashedPassword,
+    }
   })
-
-  return {
-
-    success: true,
-
-    message:
-      'PASSWORD_RESET',
-
-  }
-
+  return null
 }

@@ -4,8 +4,10 @@ import {
 
 export interface CreateUserDto {
   username: string
-
   password: string
-
-  role?: Role
+  role: Role
+  email: string
+  telepon: string
+  alamat: string
+  telegramId: string
 }

@@ -1,10 +1,7 @@
-import type {
-  FastifyInstance,
-} from 'fastify'
+import type { FastifyInstance } from 'fastify'
+import { Role } from '@prisma/client'
 
-import {
-  authMiddleware,
-} from '../../middleware/auth.middleware'
+import { authMiddleware } from '../../middleware/auth.middleware'
 import { roleMiddleware } from '../../middleware/role.middleware'
 
 import {
@@ -24,10 +21,20 @@ usersRoutes(
   app: FastifyInstance,
 ) {
 
+  const ownerOnly = [
+    authMiddleware,
+    roleMiddleware(
+      Role.OWNER
+    )
+  ]
+  const authenticated = [
+    authMiddleware
+  ]
+
   app.get(
     '/me',
     {
-      preHandler: authMiddleware,
+      preHandler: authenticated,
     },
     getCurrentUserController,
   )
@@ -35,7 +42,7 @@ usersRoutes(
   app.patch(
     '/me',
     {
-      preHandler: authMiddleware,
+      preHandler: authenticated,
     },
     updateProfileController,
   )
@@ -43,80 +50,56 @@ usersRoutes(
   app.patch(
     '/password',
     {
-      preHandler: authMiddleware,
+      preHandler: authenticated,
     },
     changePasswordController,
   )
-  app.get(
-    '/',
-    {
-      preHandler: authMiddleware,
-    },
-    getUsersController,
-  )
-
+  
   /*
    * Management
    * OWNER Only
    */
 
   app.get(
+    '/',
+    {
+      preHandler: ownerOnly,
+    },
+    getUsersController,
+  )
+
+  app.get(
     '/:id',
     {
-      preHandler: [
-        authMiddleware,
-        roleMiddleware(
-          'OWNER'
-        )
-      ],
+      preHandler: ownerOnly,
     },
     getUserByIdController,
   )
   app.post(
     '/',
     {
-      preHandler: [
-        authMiddleware,
-        roleMiddleware(
-          'OWNER'
-        )
-      ],
+      preHandler: ownerOnly,
     },
     createUserController,
   )
   app.patch(
     '/:id',
     {
-      preHandler: [
-        authMiddleware,
-        roleMiddleware(
-          'OWNER'
-        )
-      ],
+      preHandler: ownerOnly,
     },
     updateUserController,
   )
   app.patch(
     '/:id/reset-password',
     {
-      preHandler: [
-        authMiddleware,
-        roleMiddleware(
-          'OWNER',
-        ),
-      ],
+      preHandler: ownerOnly,
     },
     resetPasswordController,
   )
   app.delete(
     '/:id',
     {
-      preHandler: [
-        authMiddleware,
-        roleMiddleware(
-          'OWNER'
-        )
-      ],
+      preHandler: ownerOnly,
     },
     deleteUserController,
   )
