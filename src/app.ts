@@ -1,6 +1,12 @@
 import Fastify from 'fastify'
+import { logger } from './core/logger'
+
 import cors from '@fastify/cors'
 import jwtPlugin from './plugins/jwt'
+
+import { registerErrorHandler } from './core/http/error-handler'
+
+import { telegramRouter } from './services/telegram/telegram.router'
 import { authRoutes } from './modules/auth/auth.routes'
 import { usersRoutes } from './modules/users/users.routes'
 import { oltRoutes } from './modules/olt/olt.routes'
@@ -11,7 +17,7 @@ import { telegramBotRoutes } from './modules/telegram-bot/telegram-bot.routes'
 import { onuReplacementRoutes } from './modules/onu-replacement/onu-replacement.routes'
 
 const app = Fastify({
-  logger: true
+  loggerInstance: logger
 })
 
 app.register(cors, {
@@ -22,6 +28,11 @@ app.register(cors, {
 
 app.register(jwtPlugin)
 
+registerErrorHandler(app)
+
+app.register(telegramRouter, {
+  prefix: '/api/webhook'
+})
 app.register(authRoutes, {
   prefix: '/api/auth'
 })

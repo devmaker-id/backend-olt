@@ -11,9 +11,9 @@ export class SyslogServer {
 
     this.server.on('listening', () => {
       const address = this.server.address()
-      console.log(
-        `SYSLOG SERVER RUNNING ${address.address}:${address.port}`
-      )
+      console.log(JSON.stringify({
+        syslogListen: `${address.address}:${address.port}`
+      }))
     })
 
     this.server.on('message',

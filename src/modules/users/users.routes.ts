@@ -27,8 +27,7 @@ usersRoutes(
   app.get(
     '/me',
     {
-      preHandler:
-        authMiddleware,
+      preHandler: authMiddleware,
     },
     getCurrentUserController,
   )
@@ -36,8 +35,7 @@ usersRoutes(
   app.patch(
     '/me',
     {
-      preHandler:
-        authMiddleware,
+      preHandler: authMiddleware,
     },
     updateProfileController,
   )
@@ -45,16 +43,14 @@ usersRoutes(
   app.patch(
     '/password',
     {
-      preHandler:
-        authMiddleware,
+      preHandler: authMiddleware,
     },
     changePasswordController,
   )
   app.get(
     '/',
     {
-      preHandler:
-        authMiddleware,
+      preHandler: authMiddleware,
     },
     getUsersController,
   )

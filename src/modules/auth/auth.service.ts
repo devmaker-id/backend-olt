@@ -1,28 +1,35 @@
 import bcrypt from 'bcrypt'
 
 import { prisma } from '../../config/prisma'
+import { LoginDto } from './schemas/login.schema'
+
+import { NotFoundError } from '../../core/errors/not-found.error'
+import { UnauthorizedError } from '../../core/errors/unauthorized.error'
 
 export async function login(
-  username: string,
-  password: string
+  payload: LoginDto
 ) {
   const user = await prisma.user.findUnique({
     where: {
-      username
+      username: payload.username
     }
   })
 
   if (!user) {
-    throw new Error('USER_NOT_FOUND')
+    throw new NotFoundError(
+      'USER_NOT_FOUND'
+    )
   }
 
   const valid = await bcrypt.compare(
-    password,
+    payload.password,
     user.password
   )
 
   if (!valid) {
-    throw new Error('INVALID_PASSWORD')
+    throw new UnauthorizedError(
+      'INVALID_PASSWORD'
+    )
   }
 
   return {

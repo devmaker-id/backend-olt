@@ -58,11 +58,15 @@ Not Required
 
 ```json
 {
-  "token": "JWT_TOKEN",
-  "user": {
-    "id": "clxxxx",
-    "username": "admin",
-    "role": "OWNER"
+  "success": true,
+  "message": "LOGIN_SUCCESS",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcGpzMDQyeDAwMDBnMTM3Y3AyM3RscGsiLCJyb2xlIjoiT1dORVIiLCJpYXQiOjE3ODE1Mjc1NzksImV4cCI6MTc4MTYxMzk3OX0._76hO2DUl1ZtJDzF3MwH9ihQWoHgDE0D19P9_xn61YA",
+    "user": {
+      "id": "cmpjs042x0000g137cp23tlpk",
+      "username": "owner",
+      "role": "OWNER"
+    }
   }
 }
 ```
@@ -74,11 +78,12 @@ Not Required
 ### User Not Found
 
 ```http
-401 Unauthorized
+404 Not Found
 ```
 
 ```json
 {
+  "success": false,
   "message": "USER_NOT_FOUND"
 }
 ```
@@ -91,9 +96,11 @@ Not Required
 
 ```json
 {
+  "success": false,
   "message": "INVALID_PASSWORD"
 }
 ```
+
 
 ---
 

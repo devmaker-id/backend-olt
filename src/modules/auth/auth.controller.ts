@@ -4,31 +4,32 @@ import {
 } from 'fastify'
 
 import { login } from './auth.service'
+import { ok } from '../../core/http/response'
+import { loginSchema } from './schemas/login.schema'
 
 export async function loginController(
   req: FastifyRequest,
   reply: FastifyReply
 ) {
-  try {
-    const body = req.body as any
-
-    const user = await login(
-      body.username,
-      body.password
+    const body = loginSchema.parse(
+      req.body
     )
+
+    const user = await login(body)
 
     const token = await reply.jwtSign({
       id: user.id,
       role: user.role
     })
 
-    return reply.send({
-      token,
-      user
-    })
-  } catch (error: any) {
-    return reply.code(401).send({
-      message: error.message
-    })
-  }
+    return reply.send(
+      ok(
+        {
+          token,
+          user
+        },
+        'LOGIN_SUCCESS'
+      )
+    )
+
 }

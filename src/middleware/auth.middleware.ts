@@ -1,14 +1,14 @@
-import { FastifyReply, FastifyRequest } from 'fastify'
+import { FastifyRequest } from 'fastify'
+import { UnauthorizedError } from '../core/errors/unauthorized.error'
 
 export async function authMiddleware(
-  req: FastifyRequest,
-  reply: FastifyReply
+  req: FastifyRequest
 ) {
   try {
     await req.jwtVerify()
-  } catch (err) {
-    return reply.code(401).send({
-      message: 'Unauthorized'
-    })
+  } catch {
+    throw new UnauthorizedError(
+      'UNAUTHORIZED'
+    )
   }
 }

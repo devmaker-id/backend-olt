@@ -1,20 +1,19 @@
-import {
-  FastifyReply,
-  FastifyRequest,
-} from 'fastify'
+import { FastifyRequest } from 'fastify'
+import { Role } from '@prisma/client'
+import { ForbiddenError } from '../core/errors/forbidden.error'
 
 export function roleMiddleware(
-  ...roles: string[]
+  ...roles: Role[]
 ) {
   return async (
-    req: FastifyRequest,
-    reply: FastifyReply
+    req: FastifyRequest
   ) => {
-    const user = req.user as any
-    if (!roles.includes(user.role)) {
-      return reply.code(403).send({
-          message: 'Forbidden',
-        })
+    if (!roles.includes(
+      req.user.role
+    )) {
+      throw new ForbiddenError(
+        'INSUFFICIENT_PERMISSION'
+      )
     }
   }
 }
