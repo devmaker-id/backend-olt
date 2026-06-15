@@ -187,7 +187,22 @@ const app = Fastify({
   loggerInstance: logger
 })
 ```
+RULE #7
+setelah gunakan PINO
+```
+Dilarang menggunakan:
 
+console.log
+console.error
+console.warn
+
+Gunakan:
+
+logger.info
+logger.warn
+logger.error
+logger.debug
+```
 ---
 
 # JWT

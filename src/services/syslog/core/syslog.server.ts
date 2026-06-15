@@ -1,19 +1,27 @@
 import dgram from 'dgram'
 import { env } from '../../../config/env'
+import { logger } from '../../../core/logger'
 import { SyslogIpFilter } from './syslog-ip-filter'
 import { SyslogDispatcher } from './syslog.dispatcher'
 
 export class SyslogServer {
   private server = dgram.createSocket('udp4')
+  private readonly allowedIps = env.syslogAllowedIps.split(',').map(
+    ip => ip.trim()
+  ).filter(Boolean)
+
   start(
     port: number
   ) {
 
     this.server.on('listening', () => {
       const address = this.server.address()
-      console.log(JSON.stringify({
-        syslogListen: `${address.address}:${address.port}`
-      }))
+      logger.info(
+        {
+          syslogListen: `${address.address}:${address.port}`
+        },
+        'Syslog server startted'
+      )
     })
 
     this.server.on('message',
@@ -24,29 +32,36 @@ export class SyslogServer {
 
       try {
         const log = message.toString()
-        const allowedIps = env.syslogAllowedIps.split(',').map(
-          ip => ip.trim()
-        ).filter(Boolean)
         if(!SyslogIpFilter.isAllowed(
           remote.address,
-          allowedIps
+          this.allowedIps
         )) {
-          console.log(`SYSLOG BLOCKED ${remote.address}`)
+          logger.warn(
+            {
+              ip: remote.address
+            },
+            'Syslog Blocked!'
+          )
           return
         }
-        console.log(
-          `SYSLOG FROM ${remote.address}\n`
+        logger.debug(
+          {
+            ip: remote.address
+          },
+          'Syslog received'
         )
-        console.log(log)
         await SyslogDispatcher.dispatch(
           log,
           remote.address
         )
       }
       catch (error) {
-        console.error(
-          'SYSLOG ERROR',
-          error
+        logger.error(
+          {
+            err: error,
+            ip: remote.address
+          },
+          'Syslog procesing failed'
         )
       }
     })
