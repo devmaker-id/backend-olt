@@ -18,15 +18,17 @@ export function registerErrorHandler(
             request: FastifyRequest,
             reply: FastifyReply
         ) => {
-            if(error instanceof AppError) {
-                return reply.status(
-                    error.statusCode
-                ).send(
+            if ( (error as any).code === 'FST_ERR_CTP_EMPTY_JSON_BODY' ) {
+                return reply.status(400).send(
                     fail(
-                        error.code,
-                        error.details,
-                    ),
-                );
+                    'VALIDATION_ERROR',
+                    {
+                        body: [
+                        'REQUEST_BODY_REQUIRED'
+                        ]
+                    }
+                    )
+                )
             }
             if(error instanceof ZodError) {
                 return reply.status(400).send(
@@ -37,20 +39,21 @@ export function registerErrorHandler(
                 )
             }
 
-            logger.error(
-                {
-                    err: error,
-                    url: request.url,
-                    method: request.method
-                },
-                "Unhandled error",
-            );
+            if(error instanceof AppError) {
+                return reply.status(
+                    error.statusCode
+                ).send(
+                    fail(
+                        error.code,
+                        error.details,
+                    ),
+                );
+            }
 
             logger.error({
-                error,
-                name: error.name,
-                message: error.message,
-                constructor: error.constructor.name,
+                type: error.constructor.name,
+                code: (error as any).code,
+                message: error.message
             })
 
             return reply.status(500).send(

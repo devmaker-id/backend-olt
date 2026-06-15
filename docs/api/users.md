@@ -1,19 +1,132 @@
-# User API
+# Users API
+Devmaker-id, 16 Juni 2026
 
-Base URL
 
-```json
+## Base URL
+
+```text
 /api/users
 ```
 
-Authentication Required: Yes (JWT)
+## Authentication
 
-## get me (user login)
+Semua endpoint membutuhkan JWT Bearer Token.
+
+```http
+Authorization: Bearer <token>
+```
+
+---
+
+# Standard Success Response
+
 ```json
-GET /api/users/me
-Authorize: Bearer token
+{
+  "success": true,
+  "message": "MESSAGE_CODE",
+  "data": {}
+}
+```
 
-respon json
+---
+
+# Standard Error Response
+
+## Validation Error
+
+```json
+{
+  "success": false,
+  "message": "VALIDATION_ERROR",
+  "errors": {
+    "fieldErrors": {
+      "username": [
+        "Required"
+      ]
+    }
+  }
+}
+```
+
+## Business Error
+
+```json
+{
+  "success": false,
+  "message": "USERNAME_ALREADY_EXISTS"
+}
+```
+
+## Unauthorized
+
+```json
+{
+  "success": false,
+  "message": "UNAUTHORIZED"
+}
+```
+
+## Forbidden
+
+```json
+{
+  "success": false,
+  "message": "INSUFFICIENT_PERMISSION"
+}
+```
+
+## Internal Server Error
+
+```json
+{
+  "success": false,
+  "message": "INTERNAL_SERVER_ERROR"
+}
+```
+
+---
+
+# User Object
+
+```json
+{
+  "id": "cmpjs042x0000g137cp23tlpk",
+  "username": "owner",
+  "role": "OWNER",
+  "email": "admin@bibit.net",
+  "telepon": "08123456789",
+  "alamat": "Jakarta",
+  "telegramId": "111111",
+  "createdAt": "2026-05-24T12:51:00.394Z",
+  "updatedAt": "2026-06-15T17:02:02.980Z"
+}
+```
+
+> Password tidak pernah dikembalikan oleh API.
+
+---
+
+# Self Service
+
+Endpoint yang dapat diakses semua user yang sudah login.
+
+---
+
+## Get Current User
+
+```http
+GET /api/users/me
+```
+
+### Authorization
+
+```text
+Required
+```
+
+### Success Response
+
+```json
 {
   "success": true,
   "message": "CURRENT_USER_FOUND",
@@ -23,71 +136,86 @@ respon json
     "role": "OWNER",
     "email": "admin@bibit.net",
     "telepon": "08123456789",
-    "alamat": "jakarta",
+    "alamat": "Jakarta",
     "telegramId": "111111",
-    "createdAt": "2026-05-24T12:51:00.394Z",
-    "updatedAt": "2026-06-15T16:28:48.728Z"
-  }
-}
-```
-
-## update profile (user login)
-```json
-PATCH /api/users/me
-Authorize: Bearer token
-
-filed dalm update
-username -> opsional
-telepon -> opsional
-email -> opsional
-alamat -> opsional
-telegram -> opsional
-
-body
-{
-  "username": "teknisi1234",
-  "telepon": "09876543123",
-  "email": "changed@bibit.net",
-  "alamat": "bondowoso",
-  "telegramId": "12121212"
-}
-
-respon
-{
-  "success": true,
-  "message": "USER_UPDATED",
-  "data": {
-    "id": "cmpjs042x0000g137cp23tlpk",
-    "username": "teknisi1234",
-    "role": "OWNER",
-    "email": "changed@bibit.net",
-    "telepon": "09876543123",
-    "alamat": "bondowoso",
-    "telegramId": "12121212",
     "createdAt": "2026-05-24T12:51:00.394Z",
     "updatedAt": "2026-06-15T17:02:02.980Z"
   }
 }
+```
 
-jika username already
+---
+
+## Update Profile
+
+```http
+PATCH /api/users/me
+```
+
+### Authorization
+
+```text
+Required
+```
+
+### Request Body
+
+| Field      | Type   | Required |
+| ---------- | ------ | -------- |
+| username   | string | No       |
+| email      | string | No       |
+| telepon    | string | No       |
+| alamat     | string | No       |
+| telegramId | string | No       |
+
+### Example
+
+```json
 {
-  "success": false,
-  "message": "VALIDATION_ERROR",
-  "errors": "USERNAME_ALREADY_EXISTS"
+  "username": "owner123",
+  "email": "owner@bibit.net",
+  "telepon": "08123456789",
+  "alamat": "Bandung",
+  "telegramId": "999999"
 }
 ```
-## change password (user login)
+
+### Success Response
+
 ```json
-PATCH /api/users/password
-Authorize: Bearer token
-
-body
 {
-  "oldPassword": "owner123456",
-  "newPassword": "owner123"
+  "success": true,
+  "message": "USER_UPDATED",
+  "data": {}
 }
+```
 
-response
+---
+
+## Change Password
+
+```http
+PATCH /api/users/password
+```
+
+### Authorization
+
+```text
+Required
+```
+
+### Request Body
+
+```json
+{
+  "oldPassword": "admin123",
+  "newPassword": "admin123456"
+}
+```
+
+### Success Response
+
+```json
 {
   "success": true,
   "message": "PASSWORD_CHANGED",
@@ -95,143 +223,165 @@ response
 }
 ```
 
-## create user
-POST /api/users
-```json
-Authorize Bearer token
+### Possible Errors
 
-semua field wajib di isi (required)
-body json
-{
-  "username": "teknisi",
-  "password": "tesing123",
-  "role": "TEKNISI",
-  "email": "teknisi_CHANGED@bibit.net",
-  "telepon": "08987654321",
-  "alamat": "bandung",
-  "telegramId": "99999"
-}
-
-respon json
-{
-  "success": true,
-  "message": "USER_CREATED",
-  "data": {
-    "id": "cmqffbynf0000g195unqibin3",
-    "username": "teknisi",
-    "role": "TEKNISI",
-    "email": "teknisi_CHANGED@bibit.net",
-    "telepon": "08987654321",
-    "alamat": "bandung",
-    "telegramId": "99999",
-    "createdAt": "2026-06-15T16:24:55.851Z",
-    "updatedAt": "2026-06-15T16:24:55.851Z"
-  }
-}
+```text
+INVALID_OLD_PASSWORD
 ```
 
-## get all users
-```json
-GET /api/users
-Authorize: Bearer token
+---
 
-respons
+# User Management (OWNER Only)
+
+Endpoint berikut hanya dapat diakses role OWNER.
+
+---
+
+## Get All Users
+
+```http
+GET /api/users
+```
+
+### Success Response
+
+```json
 {
   "success": true,
   "message": "USERS_FOUND",
-  "data": [
-    {
-      "id": "cmqbb7s1q0001g1tv4ppokpip",
-      "username": "teknisi",
-      "role": "TEKNISI",
-      "email": "teknisi@bibit.net",
-      "telepon": "08987654321",
-      "alamat": "bogor",
-      "telegramId": "222222",
-      "createdAt": "2026-06-12T19:18:37.503Z",
-      "updatedAt": "2026-06-15T14:44:36.672Z"
-    },
-    {
-      "id": "cmpjs042x0000g137cp23tlpk",
-      "username": "owner",
-      "role": "OWNER",
-      "email": "admin@bibit.net",
-      "telepon": "08123456789",
-      "alamat": "jakarta",
-      "telegramId": "111111",
-      "createdAt": "2026-05-24T12:51:00.394Z",
-      "updatedAt": "2026-06-15T14:44:36.672Z"
-    }
-  ],
+  "data": [],
   "meta": {
     "total": 2
   }
 }
 ```
 
-## get user by id
+---
+
+## Get User By ID
+
+```http
 GET /api/users/:id
+```
+
+### Success Response
+
 ```json
-respon json
 {
   "success": true,
   "message": "USER_FOUND",
-  "data": {
-    "id": "cmpjs042x0000g137cp23tlpk",
-    "username": "owner",
-    "role": "OWNER",
-    "createdAt": "2026-05-24T12:51:00.394Z",
-    "updatedAt": "2026-06-15T14:44:36.672Z"
-  }
+  "data": {}
 }
 ```
 
-## patch user (OWNER only)
-/api/users/:id
-```json
-Authorize: Bearer token
+### Possible Errors
 
-body json
+```text
+USER_NOT_FOUND
+```
+
+---
+
+## Create User
+
+```http
+POST /api/users
+```
+
+### Request Body
+
+| Field      | Type            | Required |
+| ---------- | --------------- | -------- |
+| username   | string          | Yes      |
+| password   | string          | Yes      |
+| role       | OWNER | TEKNISI | Yes      |
+| email      | string          | Yes      |
+| telepon    | string          | Yes      |
+| alamat     | string          | Yes      |
+| telegramId | string          | Yes      |
+
+### Example
+
+```json
+{
+  "username": "teknisi",
+  "password": "admin123",
+  "role": "TEKNISI",
+  "email": "teknisi@bibit.net",
+  "telepon": "08123456789",
+  "alamat": "Bandung",
+  "telegramId": "222222"
+}
+```
+
+### Success Response
+
+```json
+{
+  "success": true,
+  "message": "USER_CREATED",
+  "data": {}
+}
+```
+
+### Possible Errors
+
+```text
+USERNAME_ALREADY_EXISTS
+```
+
+---
+
+## Update User
+
+```http
+PATCH /api/users/:id
+```
+
+### Request Body
+
+Semua field bersifat optional.
+
+```json
 {
   "username": "teknisi",
   "role": "TEKNISI",
-  "email": "teknisi_CHANGED@bibit.net",
-  "telepon": "08987654321",
-  "alamat": "bandung",
-  "telegramId": "99999"
+  "email": "updated@bibit.net",
+  "telepon": "089999999",
+  "alamat": "Surabaya",
+  "telegramId": "333333"
 }
+```
 
-respon json
+### Success Response
+
+```json
 {
   "success": true,
   "message": "USER_UPDATED",
-  "data": {
-    "id": "cmqbb7s1q0001g1tv4ppokpip",
-    "username": "teknisi",
-    "role": "TEKNISI",
-    "email": "teknisi_CHANGED@bibit.net",
-    "telepon": "08987654321",
-    "alamat": "bandung",
-    "telegramId": "99999",
-    "createdAt": "2026-06-12T19:18:37.503Z",
-    "updatedAt": "2026-06-15T16:20:17.921Z"
-  }
+  "data": {}
 }
 ```
 
-## reset password (OWNER only)
-```
+---
+
+## Reset Password
+
+```http
 PATCH /api/users/:id/reset-password
-Authorize: Bearer token
+```
+
+### Request Body
 
 ```json
-
-body
 {
   "password": "admin123"
 }
+```
 
-response
+### Success Response
+
+```json
 {
   "success": true,
   "message": "PASSWORD_RESET",
@@ -239,43 +389,102 @@ response
 }
 ```
 
-## user delete (OWNER only)
-DELETE /api/users/:id
-```json
-Authorize: Bearer token
+---
 
-respon json
+## Delete User
+
+```http
+DELETE /api/users/:id
+```
+
+### Success Response
+
+```json
 {
   "success": true,
   "message": "USER_DELETED",
   "data": null
 }
-
-respon jika owner terakhir di hapus
-respon json
-{
-  "success": false,
-  "message": "LAST_OWNER_CANNOT_BE_DELETED"
-}
 ```
 
-## flow map
-```prisma
-Users Self Service
-────────────────────
+### Possible Errors
+
+```text
+USER_NOT_FOUND
+
+LAST_OWNER_CANNOT_BE_DELETED
+```
+
+---
+
+# Roles
+
+```text
+OWNER
+TEKNISI
+```
+
+---
+
+# Message Codes
+
+## Success
+
+```text
+CURRENT_USER_FOUND
+USERS_FOUND
+USER_FOUND
+
+USER_CREATED
+USER_UPDATED
+USER_DELETED
+
+PASSWORD_CHANGED
+PASSWORD_RESET
+```
+
+## Error
+
+```text
+USER_NOT_FOUND
+
+USERNAME_ALREADY_EXISTS
+
+INVALID_OLD_PASSWORD
+
+LAST_OWNER_CANNOT_BE_DELETED
+
+UNAUTHORIZED
+
+INSUFFICIENT_PERMISSION
+
+VALIDATION_ERROR
+
+INTERNAL_SERVER_ERROR
+```
+
+---
+
+# Route Map
+
+## Self Service
+
+```text
 GET    /users/me
 PATCH  /users/me
 PATCH  /users/password
+```
 
-Users Management
-────────────────────
+## Management (OWNER)
+
+```text
 GET    /users
 GET    /users/:id
-POST   /users
-PATCH  /users/:id
-DELETE /users/:id
 
-Protection
-────────────────────
-✅ Prevent deleting last OWNER
+POST   /users
+
+PATCH  /users/:id
+PATCH  /users/:id/reset-password
+
+DELETE /users/:id
 ```
