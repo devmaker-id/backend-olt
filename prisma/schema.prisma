@@ -51,6 +51,11 @@ enum EndpointType {
   BACKHAUL
 }
 
+enum PackageType {
+  HOTSPOT
+  PPP
+}
+
 enum AlarmType {
   ONU_LINKUP
   ONU_LINKDOWN
@@ -182,27 +187,40 @@ model OnuReplacement {
 model Endpoint {
   id           String           @id @default(cuid())
   type         EndpointType
+
   internetNo   String           @unique
   name         String
-  code         String?          @unique
-  address      String?
+  email        String           @unique
+  telepon      String
+  address      String
+
   latitude     Float?
   longitude    Float?
   description  String?
+
+  packageId    String?
+  package      Package?         @relation(fields: [packageId], references: [id])
+
   onus         Onu[]
   replacements OnuReplacement[]
+
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
 }
 
 model Package {
   id           String   @id @default(cuid())
+  type         PackageType
   name         String
   speed        String
   price        Int
   normalDevice String?
+  
+  endpoints    Endpoint[]
   onus         Onu[]
+
   createdAt    DateTime @default(now())
+  updatedAt    DateTime         @updatedAt
 }
 
 model UnauthorizedOnu {

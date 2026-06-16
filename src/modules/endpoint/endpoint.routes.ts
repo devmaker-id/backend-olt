@@ -35,18 +35,18 @@ export async function endpointRoutes(
   )
 
   app.get(
-    '/internet/:internetNo',
-    getEndpointByInetController
-  )
-
-  app.get(
     '/:id',
     getEndpointByIdController
   )
-
   app.put(
     '/:id',
     updateEndpointController
+  )
+  
+
+  app.get(
+    '/internet/:internetNo',
+    getEndpointByInetController
   )
 
   app.delete(

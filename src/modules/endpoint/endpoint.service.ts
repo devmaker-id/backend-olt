@@ -4,21 +4,32 @@ import { TelnetTransport } from '../../services/network/hisfocus/telnet.transpor
 import { HisfocusAdapter } from '../../services/network/hisfocus/hisfocus.adapter'
 import { classifyRxPower } from '../../utils/classify-rx-power'
 
-import {
-  CreateEndpointDto,
-  UpdateEndpointDto
-} from './endpoint.types'
+import { CreateEndpointDto } from './schemas/create-endpoint.schema'
+import { UpdateEndpointDto } from './schemas/update-endpoint.schema'
 
-import { validateDuplicateEndpoint } from './endpoint.validation'
+import {
+  validateUniqueInternetNo,
+  validatePackageExists,
+  validateEmailUnique,
+} from './validation/endpoint.validation'
+
+import { ENDPOINT_INCLUDE } from './endpoint-constants'
 
 export async function createEndpoint(
   data: CreateEndpointDto
 ) {
-
-  await validateDuplicateEndpoint(
-    data
+  await validateUniqueInternetNo(
+    data.internetNo
   )
-
+  await validateEmailUnique(
+    data.email
+  )
+  if(data.packageId) {
+    await validatePackageExists(
+      data.packageId
+    )
+  }
+  
   return prisma.endpoint.create({
     data
   })
@@ -27,10 +38,7 @@ export async function createEndpoint(
 export async function getEndpoints() {
 
   return prisma.endpoint.findMany({
-    include: {
-      onus: true
-    },
-
+    include: ENDPOINT_INCLUDE,
     orderBy: {
       createdAt: 'desc'
     }
@@ -38,145 +46,162 @@ export async function getEndpoints() {
 }
 
 export async function getEndpointByInet(
-  internetNo?: string
+  internetNo: string,
 ) {
 
-  if (!internetNo) {
-
-    return {
-      success: false,
-      message: 'Nomor internet wajib diisi'
-    }
-  }
-
-  const endpoint =
-    await prisma.endpoint.findUnique({
-
+  const endpoint = await prisma.endpoint.findUnique({
       where: {
-        internetNo
+        internetNo,
       },
 
       include: {
+        package: true,
+
         onus: {
           include: {
-            olt: true
-          }
-        }
-      }
+            olt: true,
+          },
+        },
+      },
     })
 
   if (!endpoint) {
-
-    return {
-      success: false,
-      message:
-        `Nomor internet ${internetNo} tidak terdaftar`
-    }
+    return null
   }
 
-  const onu = endpoint.onus[0]
-
-  if (!onu) {
-
+  if (endpoint.onus.length === 0) {
     return {
-      success: false,
-      message: 'ONU tidak ditemukan'
+      internetNo: endpoint.internetNo,
+      name: endpoint.name,
+      type: endpoint.type,
+      address: endpoint.address,
+      package: endpoint.package,
+      onus: [],
     }
   }
-
-  const transport = new TelnetTransport()
-
-  await transport.connect({
-    host: onu.olt.ipAddress,
-    port: onu.olt.managementPort
-  })
-
-  const session = new TelnetSession( transport )
-  await session.login({
-    username: onu.olt.username,
-    password: onu.olt.password
-  })
-
-  const adapter = new HisfocusAdapter( session )
-
-  try {
-
-    const realtime = await adapter.getCompleteOnuInfo(
-        onu.eponPort,
-        onu.onuId
-      )
-
-    const signalStatus = classifyRxPower( realtime.optical?.rxpower )
-
-    return {
-      success: true,
-      data: {
-        internetNo: endpoint.internetNo,
-        name: endpoint.name,
-        type: endpoint.type,
-        address: endpoint.address,
+  const realtimeOnus = []
+  for (const onu of endpoint.onus) {
+    const transport = new TelnetTransport()
+    try {
+      await transport.connect({
+        host: onu.olt.ipAddress,
+        port: onu.olt.managementPort,
+      })
+      const session = new TelnetSession(
+          transport
+        )
+      await session.login({
+        username: onu.olt.username,
+        password: onu.olt.password,
+      })
+      const adapter =
+        new HisfocusAdapter(
+          session
+        )
+      const realtime =
+        await adapter.getCompleteOnuInfo(
+          onu.eponPort,
+          onu.onuId,
+        )
+      realtimeOnus.push({
+        id: onu.id,
         olt: {
-          name: onu.olt.name
+          id: onu.olt.id,
+          name: onu.olt.name,
         },
-        onu: {
-          name: realtime.onu.onu_name,
-          status: realtime.onu.connectionState,
-          signalStatus,
-          port: `${onu.eponPort}:${onu.onuId}`,
-          model: realtime.onu.model_string,
-          rxPower: realtime.optical?.rxpower,
-          txPower: realtime.optical?.txpower,
-          temperature: realtime.optical?.temperature,
-          offlineCount: realtime.onu.offline_event_count,
-          firstUptime: realtime.onu.first_uptime,
-          lastOfftime: realtime.onu.last_offtime
-        }
-      }
+        port: `${onu.eponPort}:${onu.onuId}`,
+        name: realtime.onu.onu_name,
+        status: realtime.onu.connectionState,
+        signalStatus:
+          classifyRxPower(
+            realtime.optical?.rxpower,
+          ),
+        model: realtime.onu.model_string,
+        rxPower: realtime.optical?.rxpower,
+        txPower: realtime.optical?.txpower,
+        temperature: realtime.optical?.temperature,
+        offlineCount: realtime.onu.offline_event_count,
+        firstUptime: realtime.onu.first_uptime,
+        lastOfftime: realtime.onu.last_offtime,
+      })
+    } catch (error) {
+      realtimeOnus.push({
+        id: onu.id,
+        olt: {
+          id: onu.olt.id,
+          name: onu.olt.name,
+        },
+        port: `${onu.eponPort}:${onu.onuId}`,
+        status: 'ERROR',
+        error: error instanceof Error ? error.message : 'UNKNOWN_ERROR',
+      })
+    } finally {
+      await transport.disconnect()
     }
   }
-
-  finally {
-
-    await transport.disconnect()
+  return {
+    internetNo: endpoint.internetNo,
+    name: endpoint.name,
+    type: endpoint.type,
+    address: endpoint.address,
+    description: endpoint.description,
+    package: endpoint.package,
+    onuCount: realtimeOnus.length,
+    onus: realtimeOnus,
   }
+
 }
 
 export async function getEndpointById(
   id: string
 ) {
-
-  return prisma.endpoint.findUnique({
-    where: {
-      id
-    },
-
-    include: {
-      onus: true
-    }
+  const endpoint = await prisma.endpoint.findUnique({
+    where: {id},
+    include: ENDPOINT_INCLUDE
   })
+
+  return endpoint
 }
 
 export async function updateEndpoint(
   id: string,
   data: UpdateEndpointDto
 ) {
-
-  return prisma.endpoint.update({
+  let userPackage;
+  if(data.packageId) {
+    const result = await validatePackageExists(data.packageId)
+    userPackage = result.id ? true : false
+  }
+  
+  const endpoint = await prisma.endpoint.update({
     where: {
       id
     },
+    data,
+    include: {
 
-    data
+      package: userPackage
+    }
   })
+
+  return endpoint
 }
 
 export async function deleteEndpoint(
   id: string
 ) {
-
-  return prisma.endpoint.delete({
+  const del = await prisma.endpoint.delete({
     where: {
       id
+    },
+    include: {
+      onus: {
+        select: {
+          id: true
+        }
+      },
+      package: true
     }
   })
+  return del
 }

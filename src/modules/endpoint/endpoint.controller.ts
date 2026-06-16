@@ -3,6 +3,8 @@ import {
   FastifyRequest
 } from 'fastify'
 
+import { createEndpointSchema } from './schemas/create-endpoint.schema'
+
 import {
   createEndpoint,
   getEndpoints,
@@ -12,87 +14,142 @@ import {
   deleteEndpoint
 } from './endpoint.service'
 
+import { list, ok, create } from '../../core/http/response'
+import { NotFoundError } from '../../core/errors/not-found.error'
 import {
-  CreateEndpointDto,
-  UpdateEndpointDto,
-  EndpointParams
-} from './endpoint.types'
+  endpointIdParamSchema,
+  endpointInternetNoParamSchema
+} from './schemas/endpoint-params'
+import { updateEndpointSchema } from './schemas/update-endpoint.schema'
 
 export async function createEndpointController(
   req: FastifyRequest,
   reply: FastifyReply
 ) {
-
-  try {
-
-    const body =
-      req.body as CreateEndpointDto
-
-    const endpoint =
-      await createEndpoint(body)
-
-    return reply.send({
-      success: true,
-      data: endpoint
-    })
-
-  }
-
-  catch (error: any) {
-
-    return reply.code(400).send({
-      success: false,
-      message: error.message
-    })
-  }
+  const body = createEndpointSchema.parse(
+    req.body
+  )
+  const endpoint = await createEndpoint(body)
+  return reply.send(
+    create(
+      endpoint,
+      'CREATED_ENDPOINT'
+    )
+  )
 }
 
-export async function getEndpointsController() {
-
-  return getEndpoints()
-}
-
-export async function getEndpointByInetController(
-  request: FastifyRequest<{
-    Params: {
-      internetNo: string
-    }
-  }>,
+export async function getEndpointsController(
+  _: FastifyRequest,
   reply: FastifyReply
 ) {
-  const result = await getEndpointByInet( request.params.internetNo )
-  return reply.send({result})
+  const endpoints = await getEndpoints()
+
+  if(!endpoints){
+    throw new NotFoundError(
+      'ENDPOINT_NOT_FOUND'
+    )
+  }
+  return reply.send(
+    list(
+      endpoints,
+      endpoints.length,
+      'ENDPOINTS_FOUND'
+    )
+  )
 }
 
 export async function getEndpointByIdController(
-  req: FastifyRequest
+  req: FastifyRequest,
+  reply: FastifyReply
 ) {
+  const params = endpointIdParamSchema.parse(
+    req.params
+  )
+  const endpoint = await getEndpointById(params.id)
 
-  const { id } =
-    req.params as EndpointParams
+  if(!endpoint){
+    throw new NotFoundError(
+      'ENDPOINT_NOT_FOUND'
+    )
+  }
 
-  return getEndpointById(id)
+  return reply.send(
+    ok(
+      endpoint,
+      'ENDPOINT_FOUND'
+    )
+  )
+}
+
+export async function getEndpointByInetController(
+  req: FastifyRequest,
+  reply: FastifyReply
+) {
+  const params = endpointInternetNoParamSchema.parse(
+    req.params
+  )
+
+  const endpoint = await getEndpointByInet(params.internetNo)
+  
+  if(!endpoint){
+    throw new NotFoundError(
+      'ENDPOINT_NOT_FOUND'
+    )
+  }
+
+  return reply.send(
+    ok(
+      endpoint,
+      'ENDPOINT_FOUND'
+    )
+  )
 }
 
 export async function updateEndpointController(
-  req: FastifyRequest
+  req: FastifyRequest,
+  reply: FastifyReply
 ) {
+  const params = endpointIdParamSchema.parse(
+    req.params
+  )
+  const body = updateEndpointSchema.parse(
+    req.body
+  )
 
-  const { id } =
-    req.params as EndpointParams
+  const endpoint = await updateEndpoint(
+    params.id,
+    body
+  )
 
-  const body =
-    req.body as UpdateEndpointDto
-
-  return updateEndpoint(id, body)
+  return reply.send(
+    ok(
+      endpoint,
+      'ENDPOINT_UPDATED'
+    )
+  )
 }
 
 export async function deleteEndpointController(
-  req: FastifyRequest
+  req: FastifyRequest,
+  reply: FastifyReply
 ) {
+  const params = endpointIdParamSchema.parse(
+    req.params
+  )
+  const endpoint = await getEndpointById(params.id)
+  
+  if(!endpoint){
+    throw new NotFoundError(
+      'ENDPOINT_NOT_FOUND'
+    )
+  }
 
-  const { id } =
-    req.params as EndpointParams
+  const delEndpoint = await deleteEndpoint(params.id)
 
-  return deleteEndpoint(id)
+  return reply.send(
+    ok(
+      delEndpoint,
+      'ENDPOINT_DELETED'
+    )
+  )
 }
