@@ -13,7 +13,7 @@ export class SyslogEventLogProcessor {
                 type: event.type,
                 sourceIp: event.sourceIp,
                 oltName: event.oltName,
-                eponPort: event.eponPort,
+                portId: event.portId,
                 onuId: event.onuId,
                 onuMac: event.onuMac,
                 serialNumber: event.serialNumber,

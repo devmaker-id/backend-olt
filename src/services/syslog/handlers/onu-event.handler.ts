@@ -127,22 +127,12 @@ implements SyslogEventHandler {
       ) {
 
         await createOnuEvent({
-
           onuId: onu.id,
-
           event: isOnline ? 'LINK_UP' : 'LINK_DOWN',
-
-          oldState:
-            oldState ??
-            undefined,
-
+          oldState: oldState ?? undefined,
           newState,
-
           source: 'SYSLOG',
-
-          description:
-            event.rawLog
-
+          description: event.rawLog
         })
 
       }

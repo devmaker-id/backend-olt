@@ -1,45 +1,23 @@
-## NOD_ENV
-```
-#development
-NOD_ENV=development
+## EVN MODULE .env
+```bash
+APP_NAME=OLT-BACKEND
 
-#production
-NOD_ENV=production
+NODE_ENV=development
+LOG_LEVEL=debug
 
-#testing
-NOD_ENV=test
-```
+IP_ADDRESS=0.0.0.0
+PORT=8000
 
-## IP_ADDRESS default(0.0.0.0)
-app ini akan berjalan di IP
-```txt
-;example
-IP_ADDRESS=127.0.0.1
-```
-akan menjadi ```http://127.0.0.1```
+SYSLOG_STRICT_MODE=false
+SYSLOG_BIND_ADDRESS=0.0.0.0
+SYSLOG_PORT=514
+SYSLOG_ALLOWED_IPS=
 
-## PORT default(8000)
-app ini akan berjalan di port berapa
-```txt
-;example
-PORT=8080
-```
-akan menjadi ```http://127.0.0.1:8080```
-
-## LOG_LEVEL
-```txt
-#loging
-LOG_LEVEL=info
-
-#development
-LOG_ENV=debug
-
-#production
-LOG_ENV=warn | error
-```
-
-## SCHEDULER default(false)
-module reconsile onu OLT update, nilainya true|false
-```txt
 SCHEDULER=false
+
+DATABASE_URL="postgresql://db_user:db_pass@localhost:5432/db_name"
+JWT_SECRET=SUPER_SECRET_KEY
+
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
 ```

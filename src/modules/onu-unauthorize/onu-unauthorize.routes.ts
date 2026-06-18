@@ -2,8 +2,11 @@ import { FastifyInstance } from "fastify";
 import { authMiddleware } from "../../middleware/auth.middleware";
 import {
     createUnauthorizeOnuController,
+    deleteUnauthorizeOnuController,
     getOnusUnauthorizeController,
     getUnauthorizeOnuIdController,
+    getUnauthorizeOnuMacController,
+    getUnauthorizeOnuSnController,
 } from "./onu-unauthorize.controller";
 
 export async function unauthorizeOnuRoutes(
@@ -25,5 +28,17 @@ export async function unauthorizeOnuRoutes(
     app.get(
         '/:id',
         getUnauthorizeOnuIdController
+    )
+    app.get(
+        '/mac/:macAddress',
+        getUnauthorizeOnuMacController
+    )
+    app.get(
+        '/sn/:serialNumber',
+        getUnauthorizeOnuSnController
+    )
+    app.delete(
+        '/:id',
+        deleteUnauthorizeOnuController
     )
 }

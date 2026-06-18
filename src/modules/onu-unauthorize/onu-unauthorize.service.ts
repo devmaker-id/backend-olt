@@ -25,3 +25,31 @@ export async function getUnauthorizeOnuById(
         }
     })
 }
+export async function getUnauthorizeOnuByMacAddress(
+    macAddress: string
+) {
+    return prisma.unauthorizedOnu.findFirst({
+        where: {
+            macAddress
+        }
+    })
+}
+export async function getUnauthorizeOnuBySerialNumber(
+    serialNumber: string
+) {
+    return prisma.unauthorizedOnu.findFirst({
+        where: {
+            serialNumber
+        }
+    })
+}
+export async function deleteUnauthorizeOnu(
+    id: string
+) {
+    const response = await prisma.unauthorizedOnu.delete({
+        where: {
+            id
+        }
+    })
+    return response
+}

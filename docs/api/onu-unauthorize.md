@@ -1,4 +1,5 @@
 # ONU UNAUTHORIZE ENDPOINT API
+
 semua request wajib JWT token
 ```json
 HEADER
@@ -100,14 +101,22 @@ GET /api/onu-unauthorize
 
 ## GET AUTHORIZE ONU BY [field]
 1. GET /api/onu-unauthorize/:id
-2. GET /api/onu-unauthorize/:mac
-3. GET /api/onu-unauthorize/:sn
+2. GET /api/onu-unauthorize/mac/:mac
+3. GET /api/onu-unauthorize/sn/:sn
 
 ## 404
 ```json
 {
   "success": false,
-  "message": "ONU_UNAUTHORIZE_NOT_FOUND"
+  "message": "ONU_UNAUTHORIZE_ID_NOT_FOUND"
+}
+{
+  "success": false,
+  "message": "ONU_UNAUTHORIZE_MAC_NOT_FOUND"
+}
+{
+  "success": false,
+  "message": "ONU_UNAUTHORIZE_SN_NOT_FOUND"
 }
 ```
 
@@ -131,3 +140,37 @@ GET /api/onu-unauthorize
   }
 }
 ```
+
+## DELETE UNAUTHORIZE ONU
+DELETE /api/onu-unauthorize/:id
+
+## respon NOT_FOUND
+```json
+{
+  "success": false,
+  "message": "AUTHORIZE_ONU_NOT_FOUND"
+}
+```
+
+## response delete success
+```json
+{
+  "success": true,
+  "message": "UNAUTHORIZE_ONU_DELETED",
+  "data": {
+    "id": "cmpr6i42p0017g15wdf8n5ayr",
+    "oltId": "cmpkutl6y0000g1qfqww5pk0e",
+    "onuComtName": "tobari_cuping",
+    "onuName": "Tobari - Cuping",
+    "status": "Up",
+    "serialNumber": null,
+    "macAddress": "20:28:3E:7E:73:04",
+    "portId": null,
+    "onuId": "4",
+    "discoveredAt": "2026-05-29T17:11:18.049Z",
+    "createdAt": "2026-05-29T17:11:18.049Z"
+  }
+}
+```
+
+[⬆ Kembali ke Atas](#onu-unauthorize-endpoint-api)

@@ -1,5 +1,10 @@
 # Backend OLT / ISP NMS
 
+### MODULE PROJEK DOCS
+1. [⬆⬆ LIHAT INSTALLASI PROJEK](./docs/INSTALLATION.md)
+2. [⬆⬆ .ENV PROJEK](./docs/ENV.md)
+3. [⬆⬆ LIHAT API PROJEK](./docs/api/index.md)
+
 ## Project Overview
 
 Backend OLT adalah Network Management System (NMS) untuk ISP berbasis EPON.
@@ -115,11 +120,11 @@ Saat ini sudah tersedia di schema Prisma tetapi frontend belum sepenuhnya menggu
 Mencatat histori penggantian ONU.
 
 Relasi:
-
+```tree
 Endpoint
 ├── Old ONU
 └── New ONU
-
+```
 Digunakan untuk audit perangkat pelanggan.
 
 ---
@@ -156,139 +161,3 @@ Contoh:
 * LOS
 * Dying Gasp
 * Unauthorized ONU
-
----
-
-# Frontend Architecture
-
-Menggunakan pendekatan feature-based modules.
-
-Struktur:
-
-modules/
-├── auth
-├── dashboard
-├── endpoint
-├── olt
-├── onu
-├── onu-replacement
-├── telegram
-├── telegram-bot
-└── system-logs
-
-Setiap module umumnya terdiri dari:
-
-pages/
-components/
-hooks/
-api/
-types/
-routes.tsx
-
----
-
-# Shared Components
-
-Saat ini sedang dilakukan refactor menuju reusable design system.
-
-## Layout
-
-shared/components/
-
-* page-container
-* page-header
-
-## States
-
-* loading-state
-* empty-state
-* error-state
-
-## Data Table
-
-shared/components/data-table/
-
-* search-input
-* action-buttons
-* status-badge
-* data-table-pagination
-* page-size-select
-
-## Dialog
-
-* confirm-delete
-
----
-
-# Current Progress
-
-## Backend
-
-Status: Stabil
-
-Sudah tersedia:
-
-* Authentication
-* OLT CRUD
-* Endpoint CRUD
-* ONU Authorization
-* ONU Monitoring
-* ONU Replacement
-* Telegram Bot
-* Telegram User
-* Logging
-
-## Frontend
-
-Status: Refactor Ongoing
-
-Sudah dimigrasikan sebagian ke:
-
-* PageContainer
-* PageHeader
-* Shared DataTable Components
-* Dialog Pattern
-* Sheet Pattern
-
----
-
-# Current Refactor Goal
-
-Menyatukan seluruh halaman ke pola:
-
-PageContainer
-├── PageHeader
-├── Toolbar
-├── Table / Card
-├── Pagination
-└── Dialog / Sheet
-
-Target:
-
-* Konsisten Desktop & Mobile
-* Mengurangi duplikasi komponen
-* Memperkuat shared design system
-
----
-
-# Next Priority
-
-1. Selesaikan shared components
-2. Refactor ONU Replacement
-3. Refactor Endpoint Module
-4. Integrasi Package Module
-5. Mobile Responsive Pattern
-6. Detail Sheet Standardization
-
----
-
-# Notes For Future ChatGPT Sessions
-
-Saat melanjutkan proyek:
-
-* Perlakukan Endpoint sebagai entity utama bisnis.
-* ONU adalah perangkat yang menempel ke Endpoint.
-* Frontend sedang migrasi ke reusable component architecture.
-* Gunakan TypeScript strict mode.
-* Prioritaskan shared components daripada membuat komponen baru per module.
-* Hindari duplikasi Search, Pagination, Loading, Empty State, dan Detail View.
