@@ -31,7 +31,7 @@ export interface SyslogEvent {
   sourceIp: string
   timestamp: Date
   rawLog: string
-  eponPort?: string
+  portId?: string
   onuId?: string
   onuMac?: string
   serialNumber?: string

@@ -24,7 +24,7 @@ export async function onuRoutes(
   )
 
   app.get(
-    '/unregistered',
+    '/unauthorize',
     getUnauthorizedOnusController
   )
 

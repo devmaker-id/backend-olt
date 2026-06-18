@@ -23,6 +23,7 @@ export class EventHandlerRegistry {
     ) {
 
       case 'ONU_LINKUP':
+        return new OnuEventHandler()
 
       case 'ONU_LINKDOWN':
         return new OnuEventHandler()
@@ -35,6 +36,7 @@ export class EventHandlerRegistry {
         return new WebEventHandler()
 
       case 'ONU_ONLINE':
+        return new OnuEventHandler()
       
       case 'ONU_OFFLINE':
         return new OnuEventHandler()

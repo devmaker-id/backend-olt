@@ -10,8 +10,7 @@ from '../../cache/event.cooldown'
 import { buildOnuAlertMessage }
 from '../../telegram/messages/build-onu-alert'
 
-import { createOnuEvent }
-from '../../../modules/onu/reconciliation/onu-event.service'
+import { createOnuEvent } from '../../../modules/onu/reconciliation/onu-event.service'
 
 import { AlarmProcessor }
 from '../processors/alarm.prosessor'
@@ -19,8 +18,7 @@ from '../processors/alarm.prosessor'
 import { NotificationProcessor }
 from '../processors/notification.processor'
 
-import { UnauthorizedOnuProcessor }
-from '../processors/unauthorize-onu.prosessor'
+import { UnauthorizedOnuProcessor } from '../processors/unauthorize-onu.prosessor'
 
 import { SyslogEvent }
 from '../core/syslog-event'
@@ -34,10 +32,10 @@ implements SyslogEventHandler {
   async handle(
     event: SyslogEvent
   ): Promise<void> {
-
     const macAddress = event.onuMac ? normalizeMac(event.onuMac) : null
-
     const cooldownKey = `${event.onuMac}-${event.type}`
+    const isOnline = event.type === 'ONU_LINKUP' || event.type === 'ONU_ONLINE'
+    const newState = isOnline ? 'ONLINE' : 'OFFLINE'
 
     if (
       EventCooldown.isBlocked(
@@ -53,8 +51,7 @@ implements SyslogEventHandler {
     const olt =
       await prisma.olt.findUnique({
         where: {
-          syslogName:
-            event.oltName
+          syslogName: event.oltName
         }
       })
 
@@ -89,8 +86,7 @@ implements SyslogEventHandler {
 
     }
 
-    const onu =
-    event.serialNumber
+    const onu = event.serialNumber
       ? await prisma.onu.findFirst({
         where: {
           serialNumber: event.serialNumber
@@ -100,7 +96,7 @@ implements SyslogEventHandler {
         }
       })
       : macAddress
-      ? await prisma.onu.findUnique({
+      ? await prisma.onu.findFirst({
         where: {
           onuMac: macAddress
         },
@@ -113,14 +109,7 @@ implements SyslogEventHandler {
       : null
 
     if (onu) {
-
-      const isOnline = event.type === 'ONU_LINKUP' || event.type === 'ONU_ONLINE'
-
-      const oldState =
-        onu.connectionState
-
-      const newState = isOnline ? 'ONLINE' : 'OFFLINE'
-
+      const oldState = onu.connectionState
       await prisma.onu.update({
 
         where: {
@@ -128,8 +117,7 @@ implements SyslogEventHandler {
         },
 
         data: {
-          connectionState:
-            newState
+          connectionState: newState
         }
 
       })
@@ -160,55 +148,23 @@ implements SyslogEventHandler {
       }
 
       await AlarmProcessor.create({
-
-        oltId:
-          onu.oltId,
-
-        onuId:
-          onu.id,
-
-        type:
-          isOnline
-            ? 'ONU_LINKUP'
-            : 'ONU_LINKDOWN',
-
-        message:
-          `ONU ${event.onuMac} ${event.type}`,
-
-        sourceIp:
-          event.sourceIp,
-
-        rawLog:
-          event.rawLog
-
+        oltId: onu.oltId,
+        onuId: onu.id,
+        type: isOnline ? 'ONU_LINKUP' : 'ONU_LINKDOWN',
+        message: `ONU ${event.onuMac} ${event.type}`,
+        sourceIp: event.sourceIp,
+        rawLog: event.rawLog
       })
 
-      const message =
-        buildOnuAlertMessage(
-
-          isOnline
-            ? 'ONLINE'
-            : 'OFFLINE',
-
+      const message = buildOnuAlertMessage(
+          isOnline ? 'ONLINE' : 'OFFLINE',
           {
-
-            name:
-              onu.endpoint?.name,
-
-            internetNo:
-              onu.endpoint?.internetNo!,
-
-            address:
-              onu.endpoint?.address!,
-
-            oltName:
-              event.oltName,
-
-            port:
-              `${event.eponPort}:${event.onuId}`
-
+            name: onu.endpoint?.name,
+            internetNo: onu.endpoint?.internetNo!,
+            address: onu.endpoint?.address!,
+            oltName: event.oltName,
+            port: `${event.portId}:${event.onuId}`
           }
-
         )
 
       await NotificationProcessor.send(
@@ -220,42 +176,26 @@ implements SyslogEventHandler {
 
     }
 
-    if(macAddress) {
-      await UnauthorizedOnuProcessor.upsert({
-
-        oltId: olt.id,
-
-        macAddress,
-
-        eponPort:
-          event.eponPort!,
-
-        onuId:
-          event.onuId!
-
-      })
-    }
+    // create, update unauthorize onu
+    await UnauthorizedOnuProcessor.upsert({
+      oltId: olt.id,
+      onuName: event.onuName!,
+      status: newState == "ONLINE" ? "LINKUP" : "LINKDOWN",
+      serialNumber: event.serialNumber!,
+      macAddress: event.onuMac!,
+      portId: event.portId!,
+      onuId: event.onuId!
+    })
 
     let msg = ''
-
-    msg +=
-      '🚨 <b>ONU UNREGISTERED</b>\n'
-
-    msg +=
-      '======================\n'
-
-    msg +=
-      `🛰 OLT: ${event.oltName}\n`
-
-    msg +=
-      `🔌 PORT: ${event.eponPort}:${event.onuId}\n`
-
+    msg += '🚨 <b>ONU UNREGISTERED</b>\n'
+    msg += '======================\n'
+    msg += `🛰 OLT: ${event.oltName}\n`
+    msg += `🔌 PORT: ${event.portId}:${event.onuId}\n`
     macAddress
     ? msg += `📶 MAC: <code>${macAddress}</code>\n\n`
     : msg += `📶 SN: <code>${event.serialNumber}</code>\n\n`
-
-    msg +=
-      '⚠️ ONU baru terdeteksi dan belum di-authorize.'
+    msg += '⚠️ ONU baru terdeteksi dan belum di-authorize.'
 
     await NotificationProcessor.send(
       env.telegramChatId,

@@ -11,6 +11,7 @@ import { authRoutes } from './modules/auth/auth.routes'
 import { usersRoutes } from './modules/users/users.routes'
 import { oltRoutes } from './modules/olt/olt.routes'
 import { onuRoutes } from './modules/onu/onu.routes'
+import { unauthorizeOnuRoutes } from './modules/onu-unauthorize/onu-unauthorize.routes'
 import { endpointRoutes } from './modules/endpoint/endpoint.routes'
 import { modulesTelegramRoutes } from './modules/telegram/telegram.routes'
 import { telegramBotRoutes } from './modules/telegram-bot/telegram-bot.routes'
@@ -44,6 +45,9 @@ app.register(oltRoutes, {
 })
 app.register(onuRoutes, {
   prefix: '/api/onu'
+})
+app.register(unauthorizeOnuRoutes, {
+  prefix: '/api/onu-unauthorize'
 })
 app.register( endpointRoutes, {
   prefix: '/api/endpoint'

@@ -138,10 +138,13 @@ model Onu {
   endpoint         Endpoint?        @relation(fields: [endpointId], references: [id])
   packageId        String?
   package          Package?         @relation(fields: [packageId], references: [id])
-  onuId            String
-  eponPort         String
+
+  onuId            String?
+  portId           String?
+
   serialNumber     String?
-  onuMac           String           @unique
+  onuMac           String?
+
   onuName          String?
   onuComtName      String?
   onuType          String?
@@ -164,7 +167,7 @@ model Onu {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([oltId, eponPort, onuId])
+  @@unique([oltId, portId, onuId])
   @@index([oltId])
   @@index([endpointId])
   @@index([onuMac])
@@ -230,9 +233,13 @@ model UnauthorizedOnu {
   onuComtName  String?
   onuName      String?
   status       String?
-  macAddress   String   @unique
-  eponPort     String
-  onuId        String
+
+  serialNumber String?
+  macAddress   String?
+
+  portId       String?
+  onuId        String?
+
   discoveredAt DateTime @default(now())
   createdAt    DateTime @default(now())
 }
@@ -329,8 +336,10 @@ model SyslogEventLog {
   type            SyslogEventType
   sourceIp        String
   oltName         String?
-  eponPort        String?
+
+  portId          String?
   onuId           String?
+
   onuMac          String?
   serialNumber    String?
   onuName         String?

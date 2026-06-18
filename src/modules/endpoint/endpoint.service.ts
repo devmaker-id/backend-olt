@@ -100,8 +100,8 @@ export async function getEndpointByInet(
         )
       const realtime =
         await adapter.getCompleteOnuInfo(
-          onu.eponPort,
-          onu.onuId,
+          onu.portId!,
+          onu.onuId!,
         )
       realtimeOnus.push({
         id: onu.id,
@@ -109,7 +109,7 @@ export async function getEndpointByInet(
           id: onu.olt.id,
           name: onu.olt.name,
         },
-        port: `${onu.eponPort}:${onu.onuId}`,
+        port: `${onu.portId}:${onu.onuId}`,
         name: realtime.onu.onu_name,
         status: realtime.onu.connectionState,
         signalStatus:
@@ -131,7 +131,7 @@ export async function getEndpointByInet(
           id: onu.olt.id,
           name: onu.olt.name,
         },
-        port: `${onu.eponPort}:${onu.onuId}`,
+        port: `${onu.portId}:${onu.onuId}`,
         status: 'ERROR',
         error: error instanceof Error ? error.message : 'UNKNOWN_ERROR',
       })

@@ -1,5 +1,5 @@
 import { EndpointType } from '@prisma/client'
-import { nullable, z } from 'zod'
+import { z } from 'zod'
 
 export const createEndpointSchema =
   z.object({
