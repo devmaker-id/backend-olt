@@ -1,59 +1,88 @@
 import { FastifyReply, FastifyRequest } from "fastify"
-import { authorizeOnu, getUnauthorizedOnus } from "./onu.service"
-import { AuthorizeOnuDto } from "./onu.types"
+
+import {
+  getAllOnu,
+  authorizeOnu,
+} from "./onu.service"
+import { OnuStatus } from "@prisma/client"
+
+import {
+  paramsCreateOnuSchema,
+} from "./schemas/create-onu.schema"
+
+import { ok, list } from "../../core/http/response"
+import { NotFoundError } from "../../core/errors/not-found.error"
+import { getUnauthorizeOnuById } from "../onu-unauthorize/onu-unauthorize.service"
+import { ValidationError } from "../../core/errors/validation.error"
+
+export async function getOnusController(
+  _: FastifyRequest,
+  reply: FastifyReply
+) {
+  const onus = await getAllOnu()
+  if(!onus){
+    throw new NotFoundError(
+      'ONUS_NOT_FOUND'
+    )
+  }
+  return reply.send(
+    list(
+      onus,
+      onus.length,
+      'ONUS_FOUND'
+    )
+  )
+}
 
 export async function authorizeOnuController(
   req: FastifyRequest,
   reply: FastifyReply
 ) {
-
-  try {
-
-    const body = req.body as AuthorizeOnuDto
-    const result = await authorizeOnu(body)
-
-    if(!result.success) {
-      return reply.status(400).send(result)
-    }
-
-    return reply.send(
-      result
+  const body = paramsCreateOnuSchema.parse(
+    req.body
+  )
+  const unauthorizeOnu = await getUnauthorizeOnuById(body.unauthorizeId)
+  if(!unauthorizeOnu){
+    throw new NotFoundError(
+      'UNAUTHORIZ_ONU_ONT_FOUND'
     )
-
+    }
+  if (!unauthorizeOnu.portId) {
+    throw new ValidationError(
+      'ONU_PORT_NOT_FOUND'
+    )
+  }
+  if(!unauthorizeOnu.onuName){
+    throw new ValidationError(
+      'ONU_NAME_NOT_FOUND'
+    )
   }
 
-  catch (error: any) {
-
-    return reply.code(400).send({
-      success: false,
-      message: error.message
-    })
-  }
-}
-
-export async function getUnauthorizedOnusController(
-  req: FastifyRequest,
-  reply: FastifyReply
-) {
-
-  try {
-
-    const data =
-      await getUnauthorizedOnus()
-
-    return reply.send({
-      success: true,
-      total: data.length,
-      data
-    })
-
+  if (!unauthorizeOnu.onuId) {
+    throw new ValidationError(
+      'ONU_ID_NOT_FOUND'
+    )
   }
 
-  catch (error: any) {
-
-    return reply.code(500).send({
-      success: false,
-      message: error.message
-    })
+  const params = {
+    oltId: unauthorizeOnu.oltId,
+    endpointId: body.endpointId,
+    unauthorizeId: unauthorizeOnu.id,
+    portId: unauthorizeOnu.portId,
+    onuId: unauthorizeOnu.onuId,
+    serialNumber: unauthorizeOnu.serialNumber ?? undefined,
+    onuMac: unauthorizeOnu.macAddress ?? undefined,
+    onuName: unauthorizeOnu.onuName,
+    status: OnuStatus.ACTIVE,
+    isActive: true
   }
+
+  const result = await authorizeOnu(params)
+  
+  return reply.send(
+    ok(
+      result,
+      'ONU_CREATED_SUCCESS'
+    )
+  )
 }

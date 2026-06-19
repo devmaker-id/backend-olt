@@ -8,7 +8,7 @@ import {
 
 import {
   authorizeOnuController,
-  getUnauthorizedOnusController
+  getOnusController,
 } from './onu.controller'
 import {
   onuInventoryRoutes
@@ -24,12 +24,12 @@ export async function onuRoutes(
   )
 
   app.get(
-    '/unauthorize',
-    getUnauthorizedOnusController
+    '/',
+    getOnusController
   )
 
   app.post(
-    '/authorize',
+    '/',
     authorizeOnuController
   )
 

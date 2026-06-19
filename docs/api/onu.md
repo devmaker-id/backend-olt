@@ -9,50 +9,73 @@ Base URL
 Authentication Required: Yes (JWT)
 
 ---
-
-# Get Unauthorized ONU List
-
-Mengambil seluruh ONU yang ditemukan di OLT tetapi belum diregistrasi ke sistem.
-
-## Endpoint
-
-```http
-GET /api/onu/unregistered
-```
-
-## Success Response
-
+## GET ALL ONUS DATA
+GET /api/onu
+## respon success
 ```json
 {
   "success": true,
-  "total": 2,
+  "message": "ONUS_FOUND",
   "data": [
     {
-      "id": "clxxxx",
-      "macAddress": "FC1234567890",
-      "eponPort": "1/1",
-      "onuId": "1",
-      "onuName": "ONU-BUDI",
-      "status": "Up",
-      "discoveredAt": "2025-01-01T00:00:00.000Z",
-      "olt": {
-        "id": "clxxxx",
-        "name": "OLT-BDG-01",
-        "syslogName": "OLT_BDG_01",
-        "vendor": "Hisfocus",
-        "location": "Bandung"
-      }
+      "id": "cmpqmmz4l0006g19fzxv16oja",
+      "oltId": "cmpjspt4d0000g19839kspwrt",
+      "endpointId": "cmpr7142n0004g18ykyy4img0",
+      "onuId": "2",
+      "portId": null,
+      "serialNumber": null,
+      "onuMac": "8C:E5:EF:F3:8B:7E",
+      "onuName": "Asep Fahru",
+      "onuComtName": "asep_fahru",
+      "onuType": "SFU",
+      "model": "45H5",
+      "firmware": "3230",
+      "status": "ACTIVE",
+      "connectionState": "ONLINE",
+      "temperature": "56.00 C",
+      "voltage": "3.00  V",
+      "txBias": "21.00 mA",
+      "txPower": "1.98 dBm",
+      "rxPower": "-14.44 dBm",
+      "isActive": true,
+      "createdAt": "2026-05-29T07:55:12.597Z",
+      "updatedAt": "2026-06-16T18:49:12.809Z"
+    },
+    {
+      "id": "cmpr2q3nr0002g14zazpfvik6",
+      "oltId": "cmpkutl6y0000g1qfqww5pk0e",
+      "endpointId": "cmpr6l8d4005mg15wz7d7mez8",
+      "onuId": "17",
+      "portId": null,
+      "serialNumber": null,
+      "onuMac": "F4:E4:AD:82:18:48",
+      "onuName": "umriah",
+      "onuComtName": "uum_malangnengah",
+      "onuType": "SFU",
+      "model": "F460",
+      "firmware": "0101",
+      "status": "ACTIVE",
+      "connectionState": "OFFLINE",
+      "temperature": "47.00 C",
+      "voltage": "3.00  V",
+      "txBias": "17.00 mA",
+      "txPower": "1.69 dBm",
+      "rxPower": "-15.51 dBm",
+      "isActive": true,
+      "createdAt": "2026-05-29T15:25:32.295Z",
+      "updatedAt": "2026-06-16T18:55:29.414Z"
     }
-  ]
+  ],
+  "meta": {
+    "total": 2
+  }
 }
 ```
-
-## Error Response
-
+## respon not_found data onus
 ```json
 {
   "success": false,
-  "message": "ERROR_MESSAGE"
+  "message": "ONUS_NOT_FOUND"
 }
 ```
 
@@ -75,234 +98,26 @@ Proses yang dilakukan:
 ## Endpoint
 
 ```http
-POST /api/onu/authorize
+POST /api/onu
 ```
+body table
+| field             | type    | required |
+| ----------------- | ------- | -------- |
+| unauthorizeId     | String  | Yes      |
+| endpointId        | String  | Yes      |
 
-## Request
-
-```json
-{
-  "macAddress": "FC1234567890",
-  "endpoint": {
-    "type": "CUSTOMER",
-    "name": "Budi",
-    "code": "BDG001",
-    "address": "Bandung",
-    "description": "Customer FTTH",
-    "latitude": -6.917,
-    "longitude": 107.619
-  },
-  "packageId": "clxxxx"
-}
-```
-
-## Endpoint Types
-
-```text
-CUSTOMER
-RESELLER
-POP
-BACKHAUL
-```
-
-## Fields
-
-### Root
-
-| Field | Type | Required |
-|---------|---------|---------|
-| macAddress | string | Yes |
-| endpoint | object | Yes |
-| packageId | string | No |
-
-### Endpoint
-
-| Field | Type | Required |
-|---------|---------|---------|
-| type | EndpointType | Yes |
-| name | string | Yes |
-| code | string | No |
-| address | string | No |
-| description | string | No |
-| latitude | number | No |
-| longitude | number | No |
-
-## Success Response
-
+## RESPON SUCCESS
 ```json
 {
   "success": true,
-  "message": "ONU BERHAIL DI REGISTRASI",
+  "message": "ONU_CREATED_SUCCESS",
   "data": {
-    "internetNo": "ISP000001",
-    "name": "Budi",
+    "internetNo": "1998300526004",
+    "name": "pak mamay",
     "type": "CUSTOMER",
-    "macAddress": "FC1234567890",
-    "port": "1/1:1"
+    "serialNumber": null,
+    "macAddress": "1C:27:04:B0:B3:AF",
+    "port": "0/4:26"
   }
 }
-```
-
-## Error Responses
-
-### ONU Already Registered
-
-```json
-{
-  "success": false,
-  "message": "ONU_ALREADY_REGISTERED"
-}
-```
-
-### Unauthorized ONU Not Found
-
-```json
-{
-  "success": false,
-  "message": "UNAUTHORIZED_ONU_NOT_FOUND"
-}
-```
-
-### OLT Not Found
-
-```json
-{
-  "success": false,
-  "message": "OLT_NOT_FOUND"
-}
-```
-
----
-
-# ONU Inventory API
-
-Base URL
-
-```text
-/api/onu/inventory
-```
-
-Authentication Required: Yes (JWT)
-
----
-
-# Get Inventory Summary
-
-Mengambil statistik seluruh ONU dalam sistem.
-
-## Endpoint
-
-```http
-GET /api/onu/inventory/summary
-```
-
-## Success Response
-
-```json
-{
-  "data": {
-    "total": 500,
-    "registered": 480,
-    "unregistered": 20,
-    "online": 430,
-    "offline": 25,
-    "powerOff": 10,
-    "fiberLos": 5,
-    "authFailed": 2,
-    "unknown": 8
-  }
-}
-```
-
-## Response Fields
-
-| Field | Description |
-|---------|---------|
-| total | Total ONU |
-| registered | ONU terdaftar |
-| unregistered | ONU belum terdaftar |
-| online | ONU online |
-| offline | ONU offline |
-| powerOff | ONU mati |
-| fiberLos | Fiber LOS |
-| authFailed | Auth gagal |
-| unknown | Status tidak diketahui |
-
----
-
-# ONU Reconcile Service
-
-Saat ini belum memiliki REST API.
-
-Digunakan oleh Scheduler internal.
-
-## Scheduler
-
-```text
-*/5 * * * *
-```
-
-Dijalankan setiap 5 menit.
-
-## Functions
-
-### reconcileOltWithSession()
-
-Sinkronisasi status ONU database dengan status ONU pada OLT.
-
-### reconcileOnu()
-
-Mengambil profil ONU realtime dari OLT.
-
-### reconcileOlt()
-
-Melakukan reconcile seluruh ONU pada OLT.
-
----
-
-# ONU Event
-
-Digunakan untuk mencatat perubahan status ONU.
-
-## Event Example
-
-```json
-{
-  "event": "RECONCILE_STATE_CHANGE",
-  "oldState": "ONLINE",
-  "newState": "OFFLINE",
-  "source": "RECONCILE",
-  "description": "DB=ONLINE OLT=OFFLINE"
-}
-```
-
----
-
-# ONU Connection States
-
-```text
-ONLINE
-OFFLINE
-ONU_POWER_OFF
-FIBER_LOS
-ONU_AUTH_FAILED
-UNKNOWN
-```
-
----
-
-# ONU Error Codes
-
-```text
-ONU_ALREADY_REGISTERED
-
-ONU_ALREADY_REGISTERD
-
-UNAUTHORIZED_ONU_NOT_FOUND
-
-ONU_AVAILABLE_REGISTERD
-
-OLT_NOT_FOUND
-
-ONU_NOT_FOUND
 ```

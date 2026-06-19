@@ -33,7 +33,7 @@ export class OnuParser {
 
       timestamp: new Date(match[2]),
 
-      eponPort: match[3],
+      portId: match[3],
 
       onuId: match[4],
 

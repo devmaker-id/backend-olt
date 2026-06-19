@@ -43,25 +43,15 @@ export async function validateUnauthorizedOnu(
 
 export async function validateExistingOnu(
   oltId: string,
-  eponPort: string,
+  portId: string,
   onuId: string
 ) {
 
-  const onu =
-    await prisma.onu.findFirst({
-
-      where: {
-        oltId,
-        eponPort,
-        onuId
-      }
-    })
-
-  if (onu) {
-
-    return {
-      success: false,
-      message: 'ONU_ALREADY_REGISTERD'
+  return prisma.onu.findFirst({
+    where: {
+      oltId,
+      portId,
+      onuId
     }
-  }
+  })
 }

@@ -27,6 +27,10 @@ import { TelnetTransport } from '../../services/network/hisfocus/telnet.transpor
 import { TelnetSession } from '../../services/network/hisfocus/telnet.session'
 import { HisfocusAdapter } from '../../services/network/hisfocus/hisfocus.adapter'
 
+import {paramsOltById} from './schemas/params-olt.schema'
+import { ok } from '../../core/http/response'
+
+
 export async function createOltController(
   req: FastifyRequest<{
     Body: CreateOltDto
@@ -54,11 +58,22 @@ export async function getOltOpticalPortsController(
 }
 
 export async function getOltByIdController(
-  req: FastifyRequest
+  req: FastifyRequest,
+  reply: FastifyReply
 ) {
-  const { id } = req.params as any
+  const params = paramsOltById.parse(
+    req.params
+  )
 
-  return getOltById(id)
+  const result = await getOltById(params.id)
+
+  return reply.send(
+    ok(
+      result,
+      'OLT_FOUND'
+    )
+  )
+
 }
 
 export async function updateOltController(

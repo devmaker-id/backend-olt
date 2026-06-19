@@ -1,7 +1,7 @@
 # ONU UNAUTHORIZE ENDPOINT API
 
 semua request wajib JWT token
-```json
+```text
 HEADER
 
 Authorize: Beare <token>
@@ -9,10 +9,8 @@ Authorize: Beare <token>
 
 ## create data unauthoreze
 POST /api/onu-unauthorize
-```body table
-_________________________________________
 | field        |   type     | reqiured  |
------------------------------------------
+| ------------ | ---------- | --------- |
 | oltId        | String     |    Yes    |
 | onuComtName  | String     |    Yes    |
 | onuName      | String     |    Yes    |
@@ -23,8 +21,7 @@ _________________________________________
 | onuId        | String     |    Yes    |
 | discoveredAt | Datetime   |   default |
 | createdAt    | Datetime   |   default |
------------------------------------------
-```
+
 Sebenarnya saya tidak rekomendasi create data ini, karna create di lakukan oleh Syslog
 ## Documenttation
 - [Syslog Docs](../syslogs/project-status-2026-06-14.md)
@@ -173,4 +170,4 @@ DELETE /api/onu-unauthorize/:id
 }
 ```
 
-[⬆ Kembali ke Atas](#onu-unauthorize-endpoint-api)
+[⬆ Kembali ke Atas](#onu-unauthorize-endpoint-api) | [⮕ Onu API](./onu.md)

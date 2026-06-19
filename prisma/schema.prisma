@@ -136,11 +136,9 @@ model Onu {
   olt              Olt              @relation(fields: [oltId], references: [id], onDelete: Cascade)
   endpointId       String?
   endpoint         Endpoint?        @relation(fields: [endpointId], references: [id])
-  packageId        String?
-  package          Package?         @relation(fields: [packageId], references: [id])
 
-  onuId            String?
-  portId           String?
+  onuId            String
+  portId           String
 
   serialNumber     String?
   onuMac           String?
@@ -170,7 +168,6 @@ model Onu {
   @@unique([oltId, portId, onuId])
   @@index([oltId])
   @@index([endpointId])
-  @@index([onuMac])
   @@index([connectionState])
 }
 
@@ -220,7 +217,6 @@ model Package {
   normalDevice String?
   
   endpoints    Endpoint[]
-  onus         Onu[]
 
   createdAt    DateTime @default(now())
   updatedAt    DateTime         @updatedAt
