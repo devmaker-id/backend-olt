@@ -15,7 +15,7 @@ export class SyslogDispatcher {
     if(!oltName) {
       return
     }
-    const olt = await prisma.olt.findUnique({
+    const olt = await prisma.olt.findFirst({
         where: {
           syslogName: oltName
         }

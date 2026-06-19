@@ -112,8 +112,8 @@ model User {
 
 model Olt {
   id               String            @id @default(cuid())
-  name             String            @unique
-  syslogName       String            @unique
+  name             String
+  syslogName       String
   ipAddress        String            @unique
   managementPort   Int               @default(23)
   username         String
@@ -121,7 +121,7 @@ model Olt {
   vendor           String
   platform         OltPlatform
   connectionType   OltConnectionType
-  location         String?
+  location         String
   onus             Onu[]
   alarmLogs        AlarmLog[]
   createdAt        DateTime          @default(now())

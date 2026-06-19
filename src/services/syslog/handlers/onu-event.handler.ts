@@ -49,7 +49,7 @@ implements SyslogEventHandler {
     }
 
     const olt =
-      await prisma.olt.findUnique({
+      await prisma.olt.findFirst({
         where: {
           syslogName: event.oltName
         }

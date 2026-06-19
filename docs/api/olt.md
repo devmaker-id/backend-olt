@@ -11,75 +11,52 @@ Authentication Required: Yes (JWT)
 ---
 
 # Create OLT
-
-## Endpoint
-
 ```http
 POST /api/olt
 ```
-
-## Request
-
-```json
-{
-  "name": "OLT-BDG-01",
-  "syslogName": "OLT_BDG_01",
-  "ipAddress": "192.168.1.1",
-  "telnetPort": 23,
-  "username": "admin",
-  "password": "admin",
-  "vendor": "Hisfocus",
-  "location": "Bandung"
-}
-```
-
-## Fields
-
-| Field | Type | Required |
-|---------|---------|---------|
-| name | string | Yes |
-| syslogName | string | Yes |
-| ipAddress | string | Yes |
-| telnetPort | number | No |
-| username | string | Yes |
-| password | string | Yes |
-| vendor | string | Yes |
-| location | string | No |
+## table required
+| field          | type                   | required    |
+| -------------- | ---------------------- | ----------- |
+| name           | String                 | Yes         |
+| syslogName     | String                 | Yes         |
+| ipAddress      | String                 | Yes @unique |
+| managementPort | Number                 | Yes         |
+| username       | String                 | Yes         |
+| password       | String                 | Yes         |
+| vendor         | String                 | Yes         |
+| platform       | [Enum](../enum/olt.md) | Yes         |
+| connectionType | [Enum](../enum/olt.md) | Yes         |
+| location       | String                 | Yes         |
 
 ## Success Response
 
 ```json
 {
-  "id": "clxxxx",
-  "name": "OLT-BDG-01",
-  "syslogName": "OLT_BDG_01",
-  "ipAddress": "192.168.1.1"
+  "success": true,
+  "message": "OLT_CREATED",
+  "data": {
+    "id": "cmql71iwz0000g1sgwm7subwi",
+    "name": "olt-tes",
+    "syslogName": "test",
+    "ipAddress": "192.168.1.1",
+    "managementPort": 23,
+    "username": "admin",
+    "password": "admin",
+    "vendor": "test-vendor",
+    "platform": "HIOSO",
+    "connectionType": "TELNET",
+    "location": "negri konoha",
+    "createdAt": "2026-06-19T17:19:29.028Z",
+    "updatedAt": "2026-06-19T17:19:29.028Z"
+  }
 }
 ```
-
-## Error Responses
-
-### Duplicate Name
-
+## already registered
 ```json
 {
-  "message": "OLT_NAME_ALREADY_EXISTS"
-}
-```
-
-### Duplicate Syslog Name
-
-```json
-{
-  "message": "OLT_SYSLOG_NAME_ALREADY_EXISTS"
-}
-```
-
-### Duplicate IP
-
-```json
-{
-  "message": "OLT_IP_ALREADY_EXISTS"
+  "success": false,
+  "message": "VALIDATION_ERROR",
+  "errors": "OLT_ALREADY_REGISTERED"
 }
 ```
 
@@ -96,14 +73,30 @@ GET /api/olt
 ## Success Response
 
 ```json
-[
-  {
-    "id": "clxxxx",
-    "name": "OLT-BDG-01",
-    "ipAddress": "192.168.1.1",
-    "vendor": "Hisfocus"
+{
+  "success": true,
+  "message": "OLT_LIST_FOUND",
+  "data": [
+    {
+      "id": "cmql71iwz0000g1sgwm7subwi",
+      "name": "olt-tes",
+      "syslogName": "test",
+      "ipAddress": "192.168.1.1",
+      "managementPort": 23,
+      "username": "admin",
+      "password": "admin",
+      "vendor": "test-vendor",
+      "platform": "HIOSO",
+      "connectionType": "TELNET",
+      "location": "negri konoha",
+      "createdAt": "2026-06-19T17:19:29.028Z",
+      "updatedAt": "2026-06-19T17:19:29.028Z"
+    }
+  ],
+  "meta": {
+    "total": 1
   }
-]
+}
 ```
 
 ---
@@ -120,10 +113,113 @@ GET /api/olt/:id
 
 ```json
 {
-  "id": "clxxxx",
-  "name": "OLT-BDG-01",
-  "ipAddress": "192.168.1.1",
-  "vendor": "Hisfocus"
+  "success": true,
+  "message": "OLT_FOUND",
+  "data": {
+    "id": "cmql71iwz0000g1sgwm7subwi",
+    "name": "olt-tes",
+    "syslogName": "test",
+    "ipAddress": "192.168.1.1",
+    "managementPort": 23,
+    "username": "admin",
+    "password": "admin",
+    "vendor": "test-vendor",
+    "platform": "HIOSO",
+    "connectionType": "TELNET",
+    "location": "negri konoha",
+    "createdAt": "2026-06-19T17:19:29.028Z",
+    "updatedAt": "2026-06-19T17:19:29.028Z"
+  }
+}
+```
+
+# GET OPTICAL OLT INFO
+## Endpoint
+```http
+GET /api/olt/:id/optical
+```
+
+## respon success
+### contoh pertama
+```json
+{
+  "success": true,
+  "message": "OPTICAL_INFO_PORT",
+  "data": [
+    {
+      "port": "0/1",
+      "status": "ONLINE",
+      "temperature": "45.00 C",
+      "voltage": "3.00  V",
+      "txBias": "25.00 mA",
+      "txPower": "6.98 dBm"
+    },
+    {
+      "port": "0/2",
+      "status": "ONLINE",
+      "temperature": "45.00 C",
+      "voltage": "3.00  V",
+      "txBias": "29.00 mA",
+      "txPower": "10.17 dBm"
+    },
+    {
+      "port": "0/3",
+      "status": "ONLINE",
+      "temperature": "47.00 C",
+      "voltage": "3.00  V",
+      "txBias": "25.00 mA",
+      "txPower": "9.94 dBm"
+    },
+    {
+      "port": "0/4",
+      "status": "ONLINE",
+      "temperature": "44.00 C",
+      "voltage": "3.00  V",
+      "txBias": "23.00 mA",
+      "txPower": "6.62 dBm"
+    }
+  ]
+}
+```
+### contoh kedua
+```json
+{
+  "success": true,
+  "message": "OPTICAL_INFO_PORT",
+  "data": [
+    {
+      "port": "0/1",
+      "status": "ONLINE",
+      "temperature": "42.00 C",
+      "voltage": "3.00  V",
+      "txBias": "29.00 mA",
+      "txPower": "11.06 dBm"
+    },
+    {
+      "port": "0/2",
+      "status": "NO_MODULE",
+      "temperature": "255.00 C",
+      "voltage": "6.00  V",
+      "txBias": "131.00 mA",
+      "txPower": "32.27 dBm"
+    },
+    {
+      "port": "0/3",
+      "status": "NO_MODULE",
+      "temperature": "255.00 C",
+      "voltage": "6.00  V",
+      "txBias": "131.00 mA",
+      "txPower": "32.27 dBm"
+    },
+    {
+      "port": "0/4",
+      "status": "NO_MODULE",
+      "temperature": "255.00 C",
+      "voltage": "6.00  V",
+      "txBias": "131.00 mA",
+      "txPower": "32.27 dBm"
+    }
+  ]
 }
 ```
 
@@ -136,36 +232,48 @@ GET /api/olt/:id
 ```http
 PUT /api/olt/:id
 ```
+## table required
+| field          | type                   | required    |
+| -------------- | ---------------------- | ----------- |
+| name           | String                 | Yes         |
+| syslogName     | String                 | Yes         |
+| managementPort | Number                 | Yes         |
+| username       | String                 | Yes         |
+| password       | String                 | Yes         |
+| vendor         | String                 | Yes         |
+| platform       | [Enum](../enum/olt.md) | Yes         |
+| connectionType | [Enum](../enum/olt.md) | Yes         |
+| location       | String                 | Yes         |
 
-## Request
-
-```json
-{
-  "name": "OLT-BDG-02",
-  "location": "Jakarta"
-}
-```
-
-## Available Fields
-
-```json
-{
-  "name": "string",
-  "ipAddress": "string",
-  "telnetPort": 23,
-  "username": "string",
-  "password": "string",
-  "vendor": "string",
-  "location": "string"
-}
-```
 
 ## Success Response
 
 ```json
 {
-  "id": "clxxxx",
-  "name": "OLT-BDG-02"
+  "success": true,
+  "message": "OLT_UPDATED",
+  "data": {
+    "id": "cmql71iwz0000g1sgwm7subwi",
+    "name": "olt-tes",
+    "syslogName": "test",
+    "ipAddress": "192.168.1.1",
+    "managementPort": 23,
+    "username": "admin",
+    "password": "updatePassword",
+    "vendor": "HISFOCUS",
+    "platform": "HIOSO",
+    "connectionType": "TELNET",
+    "location": "negri konoha",
+    "createdAt": "2026-06-19T17:19:29.028Z",
+    "updatedAt": "2026-06-19T19:16:45.659Z"
+  }
+}
+```
+## 404
+```json
+{
+  "success": false,
+  "message": "OLT_NOT_FOUND"
 }
 ```
 
@@ -205,22 +313,19 @@ GET /api/olt/:id/connect
 ```json
 {
   "success": true,
+  "message": "OLT_CONNECTED",
   "data": {
-    "systemName": "...",
-    "hardwareVersion": "...",
-    "softwareVersion": "..."
+    "mac": "78:5c:72:a4:5b:bc",
+    "name": "OLT_BIBITNET",
+    "description": "Pt. Bibit Networks Indonesia",
+    "location": "bibitnet.web.id",
+    "model": "OLT",
+    "software": "V2.2.67",
+    "revisiondate": "20240513",
+    "hardware": "V6.0",
+    "sn": "SNxxx-xx-xxxx",
+    "uptime": "1 days 4 hours 9 minites 54 seconds"
   }
-}
-```
-
-## Error Response
-
-### OLT Not Found
-
-```json
-{
-  "success": false,
-  "message": "OLT_NOT_FOUND"
 }
 ```
 
@@ -229,10 +334,14 @@ GET /api/olt/:id/connect
 ```json
 {
   "success": false,
-  "message": "FAILED_CONNECT_OLT",
-  "error": "Connection timeout",
-  "host": "192.168.1.1",
-  "port": 23
+  "message": "FAILED_CONNET_OLT",
+  "errors": {
+    "errno": -60,
+    "code": "ETIMEDOUT",
+    "syscall": "connect",
+    "address": "192.168.77.254",
+    "port": 23
+  }
 }
 ```
 
@@ -258,15 +367,6 @@ GET /api/olt/:id/system
     "hardwareVersion": "...",
     "softwareVersion": "..."
   }
-}
-```
-
-## Error Response
-
-```json
-{
-  "success": false,
-  "message": "FAILED_GET_SYSTEM_INFO"
 }
 ```
 

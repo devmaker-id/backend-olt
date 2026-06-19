@@ -1,13 +1,17 @@
+import { OltConnectionType, OltPlatform } from '@prisma/client'
 import { prisma } from '../../config/prisma'
+import { NotFoundError } from '../../core/errors/not-found.error'
 import { HisfocusAdapter } from '../../services/network/hisfocus/hisfocus.adapter'
 import { TelnetSession } from '../../services/network/hisfocus/telnet.session'
 import { TelnetTransport } from '../../services/network/hisfocus/telnet.transport'
 
-import { CreateOltDto } from './olt.types'
-import { validateDuplicateOlt } from './olt.validation'
+import { createOltDto } from './schemas/create-olt.schema'
+import { ForbiddenError } from '../../core/errors/forbidden.error'
+import { updateOltDto } from './schemas/update-olt.schema'
 
-export async function createOlt(data: CreateOltDto) {
-  await validateDuplicateOlt(data)
+export async function createOlt(
+  data: createOltDto
+) {
   return prisma.olt.create({data})
 }
 
@@ -22,37 +26,43 @@ export async function getOlts() {
 export async function getOltOpticalPorts(
   id: string
 ) {
-  const olt =
-    await prisma.olt.findUnique({
+  const olt = await prisma.olt.findUnique({
       where: { id }
     })
   if (!olt) {
-    return {
-      success: false,
-      message: 'OLT tidak ditemukan'
+    throw new NotFoundError(
+      'OLT_NOT_FOUND'
+    )
+  }
+
+  if(olt.connectionType === OltConnectionType.TELNET){
+    if(olt.platform === OltPlatform.HIOSO){
+      const transport = new TelnetTransport()
+      await transport.connect({
+        host: olt.ipAddress,
+        port: olt.managementPort
+      })
+      const session = new TelnetSession( transport )
+      await session.login({
+        username: olt.username,
+        password: olt.password
+      })
+      const adapter = new HisfocusAdapter( session )
+      try {
+        const ponOlt = await adapter.getOltOpticalPorts()
+        return ponOlt
+      }
+      finally {
+        await transport.disconnect()
+      }
     }
+    throw new ForbiddenError(
+      'IS_DEVELOPMENT_SORRY'
+    )
   }
-  const transport = new TelnetTransport()
-  await transport.connect({
-    host: olt.ipAddress,
-    port: olt.managementPort
-  })
-  const session = new TelnetSession( transport )
-  await session.login({
-    username: olt.username,
-    password: olt.password
-  })
-  const adapter = new HisfocusAdapter( session )
-  try {
-    const ports = await adapter.getOltOpticalPorts()
-    return {
-      success: true,
-      data: ports
-    }
-  }
-  finally {
-    await transport.disconnect()
-  }
+  throw new ForbiddenError(
+    'IS_DEVELOPMENT_SORRY'
+  )
 }
 
 export async function getOltById(id: string) {
@@ -65,7 +75,7 @@ export async function getOltById(id: string) {
 
 export async function updateOlt(
   id: string,
-  data: any
+  data: updateOltDto
 ) {
   return prisma.olt.update({
     where: {
