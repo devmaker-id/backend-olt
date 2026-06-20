@@ -10,7 +10,7 @@ import {
   getOltById,
   updateOlt,
   deleteOlt,
-  testOnuList,
+  getOnuListByPortOlt,
   getOltOpticalPorts
 } from './olt.service'
 import {
@@ -29,12 +29,40 @@ import { HisfocusAdapter } from '../../services/network/hisfocus/hisfocus.adapte
 
 import {paramsOltById} from './schemas/params-olt.schema'
 import { list, ok } from '../../core/http/response'
-import { validateReadyOlt, validationDuplicate } from './validation/olt.validation'
+import { validateOnuDetail, validateReadyOlt, validationDuplicate } from './validation/olt.validation'
 import { updateOltSchema } from './schemas/update-olt.schema'
 import { NotFoundError } from '../../core/errors/not-found.error'
 import { OltConnectionType, OltPlatform } from '@prisma/client'
 import { ForbiddenError } from '../../core/errors/forbidden.error'
+import { onuQuerySchema, queryOnuLists } from './schemas/query-olt.schema'
+import { bodyOltAsyncSchema } from './schemas/body-olt.schema'
 
+
+export async function syncOltInventoryController(
+  req: FastifyRequest,
+  reply: FastifyReply
+) {
+  const body = bodyOltAsyncSchema.parse(
+    req.body
+  )
+  try {
+    const result = await syncOltInventory(
+        body.oltId,
+        body.portId
+      )
+    return reply.send(
+      ok(
+        result,
+        'SYNC_OLT_TO_DB'
+      )
+    )
+  } catch (error: any) {
+    throw new ForbiddenError(
+      'CONNECTION_FAILED',
+      error
+    )
+  }
+}
 
 export async function createOltController(
   req: FastifyRequest,
@@ -230,11 +258,10 @@ export async function getSystemInfoController(
         })
       } catch (error: any) {
         await transport.disconnect()
-        return reply.code(500).send({
-          success: false,
-          message: 'FAILED_GET_SYSTEM_INFO',
-          error: error.message
-        })
+        throw new ForbiddenError(
+          'FAILED_GET_SYSTEM_INFO',
+          error
+        )
       } finally {
         await transport.disconnect()
       }
@@ -253,106 +280,81 @@ export async function getOnuInfoController(
   reply: FastifyReply
 ) {
 
-  const { id } =
-    req.params as {
-      id: string
-    }
+  const params = paramsOltById.parse(
+    req.params
+  )
+  const query = onuQuerySchema.parse(
+    req.query
+  )
+  const data = await validateOnuDetail(
+    params.id,
+    query.portid,
+    query.onuid
+  )
+  if(data.olt.connectionType === OltConnectionType.TELNET){
+    if(data.olt.platform === OltPlatform.HIOSO){
+      const transport = new TelnetTransport()
+      try {
+        await transport.connect({
+          host: data.olt.ipAddress,
+          port: data.olt.managementPort
+        })
+        const session = new TelnetSession(transport)
+        await session.login({
+          username: data.olt.username,
+          password: data.olt.password
+        })
+        const adapter = new HisfocusAdapter(session)
+        const result = await adapter.getCompleteOnuInfo(
+              query.portid,
+              query.onuid
+            )
+        return reply.send({
+          success: true,
+          data: result
+        })
 
-  const {
-    epon,
-    onuId
-  } = req.query as {
-    epon: string
-    onuId: string
-  }
-
-  const olt =
-    await prisma.olt.findUnique({
-      where: {
-        id
-      }
-    })
-
-  if (!olt) {
-    return reply.code(404).send({
-      success: false,
-      message: 'OLT_NOT_FOUND'
-    })
-  }
-
-  const transport = new TelnetTransport()
-  try {
-    await transport.connect({
-      host: olt.ipAddress,
-      port: olt.managementPort
-    })
-    const session = new TelnetSession(transport)
-    await session.login({
-      username: olt.username,
-      password: olt.password
-    })
-    const adapter = new HisfocusAdapter(session)
-    const result = await adapter.getCompleteOnuInfo(
-          epon,
-          onuId
+      } catch (error: any) {
+        await transport.disconnect()
+        throw new ForbiddenError(
+          'FAILED_GET_ONU_INFO',
+          error
         )
-
-    return reply.send({
-      success: true,
-      data: result
-    })
-
-  } catch (error: any) {
-    await transport.disconnect()
-    return reply.code(500).send({
-      success: false,
-      message: 'FAILED_GET_ONU_INFO',
-      error: error.message
-    })
-  } finally {
-    await transport.disconnect()
+      } finally {
+        await transport.disconnect()
+      }
+    }
+    throw new ForbiddenError(
+      'IS_DEVELOPMENT_SORRY'
+    )
   }
+  throw new ForbiddenError(
+    'IS_DEVELOPMENT_SORRY'
+  )
 }
 
 export async function getOnuListController(
-  request: FastifyRequest<{
-    Params: { id: string }
-    Querystring: { port: string }
-  }>,
+  req: FastifyRequest,
   reply: FastifyReply
 ) {
+  const params = paramsOltById.parse(
+    req.params
+  )
+  const query = queryOnuLists.parse(
+    req.query
+  )
   try {
-    const result = await testOnuList(
-        request.params.id,
-        request.query.port
+    const result = await getOnuListByPortOlt(
+        params.id,
+        query.portid
       )
-    return reply.send(result)
-  } catch (error: any) {
-    return reply.status(500).send({
-      success: false,
-      message: error.message
-    })
-  }
-}
-
-export async function syncOltInventoryController(
-  request: FastifyRequest<{
-    Body: {
-      oltId: string
-      port: string
-    }
-  }>,
-  reply: FastifyReply
-) {
-  try {
-    const result = await syncOltInventory(
-        request.body.oltId,
-        request.body.port
+    return reply.send(
+      list(
+        result,
+        result.length,
+        'ONUS_LISTED'
       )
-    return reply.send({
-      success: true,
-      ...result
-    })
+    )
   } catch (error: any) {
     return reply.status(500).send({
       success: false,

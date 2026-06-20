@@ -8,6 +8,7 @@ import { TelnetTransport } from '../../services/network/hisfocus/telnet.transpor
 import { createOltDto } from './schemas/create-olt.schema'
 import { ForbiddenError } from '../../core/errors/forbidden.error'
 import { updateOltDto } from './schemas/update-olt.schema'
+import { validateReadyOlt } from './validation/olt.validation'
 
 export async function createOlt(
   data: createOltDto
@@ -93,54 +94,44 @@ export async function deleteOlt(id: string) {
   })
 }
 
-export async function testOnuList(
+export async function getOnuListByPortOlt(
   oltId: string,
   port: string
 ) {
 
-  const olt = await prisma.olt.findUnique({
-      where: {
-        id: oltId
-      }
-    })
+  const olt = await validateReadyOlt(oltId)
+  if(olt.connectionType === OltConnectionType.TELNET){
+    if(olt.platform === OltPlatform.HIOSO){
+      const transport = new TelnetTransport()
+      try {
+        await transport.connect({
+          host: olt.ipAddress,
+          port: olt.managementPort
+        })
+        const session = new TelnetSession(transport)
+        await session.login({
+          username: olt.username,
+          password: olt.password
+        })
+        const adapter = new HisfocusAdapter(session)
+        const result = await adapter.getOnuList(port)
 
-  if (!olt) {
-    throw new Error(
-      'OLT_NOT_FOUND'
+        return result
+      } catch(error) {
+        await transport.disconnect()
+        throw new ForbiddenError(
+          'CONNECTION_FILED',
+          error
+        )
+      } finally {
+        await transport.disconnect()
+      }
+    }
+    throw new ForbiddenError(
+      'IS_DEVELOPMENT_SORRY'
     )
   }
-  const transport = new TelnetTransport()
-  try {
-    await transport.connect({
-      host: olt.ipAddress,
-      port: olt.managementPort
-    })
-    const session = new TelnetSession(transport)
-    await session.login({
-      username: olt.username,
-      password: olt.password
-    })
-    const adapter = new HisfocusAdapter(session)
-    const result = await adapter.getOnuList(port)
-
-    const online = result.filter( onu => onu.status === 'Up' ).length
-    const offline = result.length - online
-    return {
-      success: true,
-      data: {
-        total: result.length,
-        online,
-        offline
-      }
-    }
-  } catch(error) {
-    await transport.disconnect()
-    console.log(error)
-    return {
-      success: false,
-      data: null
-    }
-  } finally {
-    await transport.disconnect()
-  }
+  throw new ForbiddenError(
+    'IS_DEVELOPMENT_SORRY'
+  )
 }

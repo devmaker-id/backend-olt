@@ -347,31 +347,6 @@ GET /api/olt/:id/connect
 
 ---
 
-# Get System Information
-
-Mengambil informasi sistem OLT secara realtime.
-
-## Endpoint
-
-```http
-GET /api/olt/:id/system
-```
-
-## Success Response
-
-```json
-{
-  "success": true,
-  "data": {
-    "systemName": "...",
-    "hardwareVersion": "...",
-    "softwareVersion": "..."
-  }
-}
-```
-
----
-
 # Get ONU Information
 
 Mengambil informasi lengkap ONU dari OLT.
@@ -379,15 +354,15 @@ Mengambil informasi lengkap ONU dari OLT.
 ## Endpoint
 
 ```http
-GET /api/olt/:id/onu?epon=1/1&onuId=1
+GET /api/olt/:id/onu?portid=1/1&onuid=1
 ```
 
 ## Query Parameters
 
 | Parameter | Required |
 |------------|------------|
-| epon | Yes |
-| onuId | Yes |
+| portid | Yes |
+| onuid | Yes |
 
 ## Success Response
 
@@ -395,19 +370,48 @@ GET /api/olt/:id/onu?epon=1/1&onuId=1
 {
   "success": true,
   "data": {
-    "onu": {},
-    "optical": {},
-    "ethernet": {}
+    "onu": {
+      "onu_id": "0/4:26",
+      "onu_mac": "1c:27:04:b0:b3:af",
+      "onu_name": "pak_mamay",
+      "online_status": "Up",
+      "activate_status": "Activated",
+      "firmware_version": "0101",
+      "chip_id": "9127",
+      "model_string": "F663",
+      "onu_type": "SFU",
+      "ge_number": "1",
+      "fe_number": "3",
+      "pots_number": "1",
+      "wifi": "1",
+      "catv": "0",
+      "ctc_autoneg": "CtcNegDone",
+      "connectionState": "ONLINE",
+      "is_online": true,
+      "first_uptime": "2026-06-06 21:15:42",
+      "last_uptime": "2026-06-18 22:20:55",
+      "last_offtime": "2026-06-18 22:20:11",
+      "online_time": "2H17M25S",
+      "offline_event_count": "4"
+    },
+    "optical": {
+      "status": "OK",
+      "temperature": "55.00 C",
+      "voltage": "3.00  V",
+      "txbias": "12.00 mA",
+      "txpower": "2.34 dBm",
+      "rxpower": "-20.32 dBm"
+    }
   }
 }
 ```
-
+respon akan suksess jika onu telah di daftarkan ke database, meskipun di olt sudah ada porId dan onuId yang sesuai, jika kamu belum regiskan ke database maka akan di tolak
 ## Error Response
 
 ```json
 {
   "success": false,
-  "message": "FAILED_GET_ONU_INFO"
+  "message": "REQUIRED_FALID_PORID_ONUID_EXIST"
 }
 ```
 
@@ -420,7 +424,7 @@ Mengambil jumlah ONU online dan offline pada port tertentu.
 ## Endpoint
 
 ```http
-GET /api/olt/:id/onus?port=1/1
+GET /api/olt/:id/onus?portid=0/1
 ```
 
 ## Success Response
@@ -428,49 +432,29 @@ GET /api/olt/:id/onus?port=1/1
 ```json
 {
   "success": true,
-  "data": {
-    "total": 64,
-    "online": 58,
-    "offline": 6
-  }
-}
-```
-
-## Error Response
-
-```json
-{
-  "success": false,
-  "message": "OLT_NOT_FOUND"
-}
-```
-
----
-
-# Get Optical Ports
-
-Mengambil daftar port optical pada OLT.
-
-## Endpoint
-
-```http
-GET /api/olt/:id/optical
-```
-
-## Success Response
-
-```json
-{
-  "data": {
-    "success": true,
-    "data": [
-      {
-        "port": "1/1"
-      },
-      {
-        "port": "1/2"
-      }
-    ]
+  "message": "ONUS_LISTED",
+  "data": [
+    {
+      "port": "0/4",
+      "onuId": "1",
+      "macAddress": "A4:F3:3B:77:96:87",
+      "status": "Up",
+      "ctcStatus": "CtcNegDone",
+      "onuComtName": "ibu_neni",
+      "name": "ibu_neni"
+    },
+    {
+      "port": "0/4",
+      "onuId": "2",
+      "macAddress": "70:2E:22:2B:87:F3",
+      "status": "Up",
+      "ctcStatus": "CtcNegDone",
+      "onuComtName": "subhi_nurpadilah",
+      "name": "Subhi_nurpadilah"
+    }
+  ],
+  "meta": {
+    "total": 2
   }
 }
 ```
@@ -499,7 +483,7 @@ POST /api/olt/sync
 ```json
 {
   "oltId": "clxxxx",
-  "port": "1/1"
+  "portId": "0/1"
 }
 ```
 
@@ -554,16 +538,17 @@ POST /api/olt/sync
 
 ---
 
-# OLT Error Codes
-
-```text
-OLT_NAME_ALREADY_EXISTS
-OLT_SYSLOG_NAME_ALREADY_EXISTS
-OLT_IP_ALREADY_EXISTS
-
-OLT_NOT_FOUND
-
-FAILED_CONNECT_OLT
-FAILED_GET_SYSTEM_INFO
-FAILED_GET_ONU_INFO
+# OLT Module 20, Juni 2026 Only
+1. Connection Type TELNET
+2. Platform HIOSO
+```json
+{
+  "success": false,
+  "message": "CONNECTION_FAILED",
+  "errors": {
+    "statusCode": 403,
+    "code": "IS_DEVELOPMENT_SORRY",
+    "name": "ForbiddenError"
+  }
+}
 ```

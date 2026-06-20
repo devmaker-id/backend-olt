@@ -43,6 +43,7 @@ export interface ParsedOnuList {
   onuId: string
   macAddress: string
   status: string
+  ctcStatus?: string
   onuComtName?: String
   name?: string
 }

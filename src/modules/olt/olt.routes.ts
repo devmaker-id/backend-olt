@@ -60,11 +60,6 @@ export async function oltRoutes(
   )
 
   app.get(
-    '/:id/system',
-    getSystemInfoController
-  )
-
-  app.get(
     '/:id/onu',
     getOnuInfoController
   )

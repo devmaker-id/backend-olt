@@ -1,6 +1,6 @@
 import { ConnectionState } from '@prisma/client'
 import { HisfocusOpticalInfo } from './hisfocus.types'
-import { generateNameOnu } from '../../../utils/normalize-onu'
+import { generateNameOnu, normalizeMac } from '../../../utils/normalize-onu'
 import type {
   ParsedOnuList,
   OltOpticalInfo
@@ -149,9 +149,14 @@ export class HisfocusParser {
   
     const result: ParsedOnuList[] = []
   
-    output =
-      output.replace(
+    output = output.replace(
         /\x1B\[[0-9;]*[A-Za-z]/g,
+        ''
+      ).replace(
+        /\x1B\[[0-9;]*[A-Za-z]/g,
+        ''
+      ).replace(
+        /---\s*Enter Key To Continue\s*----/gi,
         ''
       )
   
@@ -190,8 +195,9 @@ export class HisfocusParser {
       result.push({
         port,
         onuId,
-        macAddress: parts[1],
+        macAddress: normalizeMac(parts[1]),
         status: parts[2],
+        ctcStatus: parts[8],
         onuComtName: generateNameOnu(onuName),
         name: onuName
       })

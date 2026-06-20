@@ -73,7 +73,7 @@ async function reconcileOnuWithAdapter(
 
   const profile =
     await adapter.getCompleteOnuInfo(
-      onu.eponPort,
+      onu.portId,
       onu.onuId
     )
 
@@ -175,7 +175,7 @@ export async function reconcileOnu(onuId: string) {
 
       const adapter = new HisfocusAdapter(session)
       const result =  await adapter.getCompleteOnuInfo(
-        onu.eponPort,
+        onu.portId,
         onu.onuId
       )
       return result

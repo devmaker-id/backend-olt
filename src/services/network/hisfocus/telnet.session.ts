@@ -78,7 +78,6 @@ export class TelnetSession {
         )
         while(true){
             const buffer = this.transport.getBuffer()
-            //selesai
             if(this.PROMPT.test(buffer)){
                 return buffer
             }
