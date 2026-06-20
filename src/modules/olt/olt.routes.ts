@@ -15,6 +15,8 @@ import {
   syncOltInventoryController,
   getOltOpticalPortsController
 } from './olt.controller'
+import { roleMiddleware } from '../../middleware/role.middleware'
+import { Role } from '@prisma/client'
 
 
 export async function oltRoutes(
@@ -24,6 +26,10 @@ export async function oltRoutes(
     'preHandler',
     authMiddleware
   )
+  //semua fiture ini khusus owner
+  app.addHook('preHandler', roleMiddleware(
+    Role.OWNER
+  ))
 
   app.post(
     '/',

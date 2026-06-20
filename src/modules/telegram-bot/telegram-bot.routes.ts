@@ -1,6 +1,8 @@
 import { FastifyInstance } from 'fastify'
+import { Role } from '@prisma/client'
 
 import { authMiddleware } from '../../middleware/auth.middleware'
+import { roleMiddleware } from '../../middleware/role.middleware'
 
 import {
   createTelegramBotController,
@@ -18,66 +20,59 @@ import {
 } from './telegram-bot.controller'
 
 export async function telegramBotRoutes(
-  fastify: FastifyInstance
+  app: FastifyInstance
 ) {
 
-  fastify.addHook(
-    'preHandler',
-    authMiddleware
-  )
+  app.addHook('preHandler', authMiddleware)
 
-  fastify.post(
+  //semua fiture ini khusus owner
+  app.addHook('preHandler', roleMiddleware(
+    Role.OWNER
+  ))
+
+  app.post(
     '/',
     createTelegramBotController
   )
-
-  fastify.get(
+  app.get(
     '/',
     getTelegramBotsController
   )
-
-  fastify.get(
+  app.get(
     '/:id',
     getTelegramBotByIdController
   )
-
-  fastify.patch(
+  app.patch(
     '/:id',
     updateTelegramBotController
   )
-
-  fastify.delete(
+  app.delete(
     '/:id',
     deleteTelegramBotController
   )
-
-  fastify.post(
+  app.post(
     '/:id/test',
     sendTestMessageController
   )
-
-
-  fastify.get(
+  app.get(
     '/:id/webhook-info',
     getWebhookInfoController
   )
-
-  fastify.post(
+  app.post(
     '/:id/set-webhook',
     setWebhookController
   )
-
-  fastify.delete(
+  app.delete(
     '/:id/webhook',
     deleteWebhookController
   )
 
   //ROUTE TELEGRAM ACCESS LOG
-  fastify.get(
+  app.get(
     '/access-logs',
     getTelegramAccessLogsController
   )
-  fastify.delete(
+  app.delete(
     '/access-logs/:id',
     deleteTelegramAccessLogsController
   )

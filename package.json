@@ -1,6 +1,10 @@
 {
   "name": "backend-olt",
-  "version": "1.0.0",
+  "version": "1.5.0",
+  "author": {
+    "name": "devmaker-id",
+    "url": "https://github.com/devmaker-id/backend-olt"
+  },
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",

@@ -8,35 +8,42 @@ import {
   updateTelegramUserController,
   deleteTelegramUserController
 } from './telegram.controller'
+import { roleMiddleware } from '../../middleware/role.middleware'
+import { Role } from '@prisma/client'
 
-export async function
-modulesTelegramRoutes( fastify: FastifyInstance ) {
-    fastify.addHook(
-        'preHandler',
-        authMiddleware
-    )
+export async function modulesTelegramRoutes(
+  app: FastifyInstance
+) {
+  app.addHook(
+    'preHandler',
+    authMiddleware
+  )
+  //semua fiture ini khusus owner
+  app.addHook('preHandler', roleMiddleware(
+    Role.OWNER
+  ))
 
-  fastify.post(
+  app.post(
     '/',
     createTelegramUserController
   )
 
-  fastify.get(
+  app.get(
     '/',
     getTelegramUsersController
   )
 
-  fastify.get(
+  app.get(
     '/:id',
     getTelegramUserByIdController
   )
 
-  fastify.patch(
+  app.patch(
     '/:id',
     updateTelegramUserController
   )
 
-  fastify.delete(
+  app.delete(
     '/:id',
     deleteTelegramUserController
   )

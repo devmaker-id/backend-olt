@@ -34,11 +34,11 @@ POST /api/telegram
 ## Fields
 
 | Field | Type | Required |
-|---------|---------|---------|
+| --------- | --------- | --------- |
 | telegramId | string | Yes |
 | username | string | No |
 | fullName | string | No |
-| role | TelegramRole | No |
+| role | TelegramRole | Yes |
 
 ## Telegram Roles
 
@@ -159,7 +159,7 @@ PATCH /api/telegram/:id
 ## Available Fields
 
 | Field | Type |
-|---------|---------|
+| ------- | ------- |
 | username | string |
 | fullName | string |
 | role | TelegramRole |

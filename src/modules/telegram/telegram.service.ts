@@ -1,18 +1,15 @@
 import { prisma } from '../../config/prisma'
 
 import {
+  createTelegramSchema,
+  updateTelegramSchemaDto,
 
-  CreateTelegramUserDto,
+} from './schemas/telegram.schema'
 
-  UpdateTelegramUserDto
+import { validateDuplicateTelegramUser } from './validation/telegram.validation'
 
-} from './telegram.types'
-
-import { validateDuplicateTelegramUser } from './telegram.validation'
-
-export async function
-createTelegramUser(
-  data: CreateTelegramUserDto
+export async function createTelegramUser(
+  data: createTelegramSchema
 ) {
   await validateDuplicateTelegramUser(
     data
@@ -22,73 +19,52 @@ createTelegramUser(
   })
 }
 
-export async function
-getTelegramUsers() {
-
+export async function getTelegramUsers() {
   return prisma.telegramUser.findMany({
-
     orderBy: {
       createdAt: 'desc'
     }
   })
 }
 
-export async function
-getTelegramUserById(
+export async function getTelegramUserById(
   id: string
 ) {
-
   return prisma.telegramUser.findUnique({
-
     where: {
       id
     }
   })
 }
 
-export async function
-updateTelegramUser(
-
+export async function updateTelegramUser(
   id: string,
-
-  data: UpdateTelegramUserDto
+  data: updateTelegramSchemaDto
 ) {
-
   return prisma.telegramUser.update({
-
     where: {
       id
     },
-
     data
   })
 }
 
-export async function
-deleteTelegramUser(
+export async function deleteTelegramUser(
   id: string
 ) {
-
   return prisma.telegramUser.delete({
-
     where: {
       id
     }
   })
 }
 
-export async function
-validateTelegramUser(
-
+export async function validateTelegramUser(
   telegramId: string
 ) {
-
   return prisma.telegramUser.findFirst({
-
     where: {
-
       telegramId,
-
       isActive: true
     }
   })

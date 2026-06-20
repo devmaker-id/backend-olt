@@ -1,22 +1,0 @@
-show onu info epon 0/3 all
-
-OnuId  MacAddress        Status  Firmware ChipId Ge Fe Pots CtcStatus      CtcVer Activate Uptime           Name 
-===================================================================================================================
-0/3:1  c8:3a:35:4b:05:40 Up      102      9607   1  1  0    CtcNegDone     30     Yes      1D8H43M4S        teh_risna_cigelis 
-0/3:2  a4:f3:3b:65:ac:7d Up      101      9127   1  3  1    CtcNegDone     30     Yes      1D8H43M59S       teh_neneng 
-0/3:3  94:25:33:d5:27:af Up      3230     6301   4  0  2    CtcNegDone     30     Yes      1D4H32M29S       ibu_iis_cigelis 
-0/3:4  f8:6c:e1:5e:e4:30 Up      101      9127   1  3  1    CtcNegDone     30     Yes      1D8H44M1S        k_uyang 
-0/3:5  a4:f3:3b:7d:3e:93 Up      101      9127   1  3  1    CtcNegDone     30     Yes      23H51M4S         ibu_acih_cigelis 
-0/3:6  fc:f2:9f:fa:a2:18 Up      101      9127   1  3  1    CtcNegDone     30     Yes      1D8H43M59S       k_ncup_mlh 
-0/3:8  64:58:ad:06:0c:20 Down    101      9127   1  3  1    --             30     Yes      0H0M0S           Mamah Bedah - Malangnengah 
-0/3:9  c0:d0:ff:ff:93:48 Down    101      9127   1  3  1    --             30     Yes      0H0M0S           Bpk Muadzin - Malangnengah 
-0/3:10 6c:d2:b2:e7:7d:1f Up      101      5b     1  3  1    CtcNegDone     30     Yes      7H36M46S         bengkel_pian 
-0/3:11 fc:f2:9f:a9:23:70 Up      101      9127   1  3  1    CtcNegDone     30     Yes      12H26M56S        rizal_buah 
-                                               0/3:12 1c:27:04:af:72:57 Up      101      9127   1  3  1    CtcNegDone     30     Yes      1D8H44M1S        heru_paket 
-                                               0/3:13 a4:f3:3b:63:bc:be Up      101      9127   1  3  1    CtcNegDone     30     Yes      1D8H43M59S       samsiah_mlh 
-                                               0/3:14 a4:f3:3b:79:db:9c Up      101      9127   1  3  1    CtcNegDone     30     Yes      1D8H43M59S       ibu_ike_kibadu 
-                                               0/3:16 f8:6c:e1:67:5e:58 Down    101      9127   1  3  1    --             30     Yes      0H0M0S           warung_jarsiti_mlh 
-                                               0/3:17 f4:e4:ad:82:18:48 Up      101      9100   1  3  1    CtcNegDone     30     Yes      1D8H44M0S        umriah_mlh 
-                                               0/3:19 6c:d2:ba:4d:fd:55 Up      101      9127   1  3  1    CtcNegDone     30     Yes      1D8H44M0S        nani_mlh 
-                                               0/3:20 f8:6c:e1:6c:54:97 Up      101      9127   1  3  1    CtcNegDone     30     Yes      1D8H44M1S        bpk_mandra_mlh 
-                                               OLT_BIBITNET# 
