@@ -1,3 +1,10 @@
 # Daftar isi projek api
 1. [⮕ Auth](./auth.md)
-1. [⮕ Users](./users.md)
+2. [⮕ Users](./users.md)
+3. [⮕ Endpoint](./endpoint.md)
+4. [⮕ Olt](./olt.md)
+5. [⮕ Onu Unauthorize](./onu-unauthorize.md)
+6. [⮕ Onu](./onu.md)
+7. [⮕ Replacement](./replacement.md)
+8. [⮕ Telegram Bot](./telegram-bot.md)
+9. [⮕ Telegram Manage User](./telegram.md)

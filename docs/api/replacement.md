@@ -24,44 +24,14 @@ GET /api/onu-replacement
 
 ```json
 {
-  "data": [
-    {
-      "id": "clxxxx",
-
-      "endpoint": {
-        "id": "clxxxx",
-        "internetNo": "ISP000001",
-        "name": "Budi",
-        "address": "Bandung"
-      },
-
-      "oldOnu": {
-        "onuId": "1",
-        "onuMac": "FC1111111111",
-        "onuName": "Budi",
-        "model": "HG6245D"
-      },
-
-      "newOnu": {
-        "onuId": "2",
-        "onuMac": "FC2222222222",
-        "onuName": "Budi",
-        "model": "HG6245D"
-      },
-
-      "reason": "ONU Mati",
-      "createdAt": "2025-01-01T00:00:00.000Z"
-    }
-  ]
+  "success": true,
+  "message": "LIST_REPLACEMENTS",
+  "data": [],
+  "meta": {
+    "total": 0
+  }
 }
 ```
-
-Response diurutkan berdasarkan:
-
-```text
-createdAt DESC
-```
-
 ---
 
 # Get Replacement Detail
@@ -154,12 +124,12 @@ POST /api/onu-replacement
 
 ## Fields
 
-| Field | Type | Required |
-|---------|---------|---------|
-| endpointId | string | Yes |
-| unauthorizedOnuId | string | Yes |
-| reason | string | No |
-| replacedBy | string | No |
+| Field             | Type   | Required |
+| ----------------- | ------ | -------- |
+| endpointId        | string | Yes      |
+| unauthorizedOnuId | string | Yes      |
+| reason            | string | No       |
+| replacedBy        | string | No       |
 
 ---
 
@@ -167,59 +137,16 @@ POST /api/onu-replacement
 
 ```json
 {
+  "success": true,
+  "message": "ONU berhasil diganti",
   "data": {
-    "success": true,
-    "message": "ONU berhasil diganti",
-    "data": {
-      "internetNo": "ISP000001",
-      "oldOnuMac": "FC1111111111",
-      "newOnuMac": "FC2222222222",
-      "port": "1/1:2"
-    }
+    "internetNo": "1234567890",
+    "oldOnuMac": "xx:Xx:xx:xx:xx",
+    "newOnuMac": "ff:ff:Ff:Ff:ff",
+    "port": "0/1:2"
   }
 }
 ```
-
----
-
-## Error Response
-
-### Endpoint Not Found
-
-```json
-{
-  "data": {
-    "success": false,
-    "message": "endpoint ID tidak ditemukan",
-    "data": null
-  }
-}
-```
-
-### Active ONU Not Found
-
-```json
-{
-  "data": {
-    "success": false,
-    "message": "ONU tidak ditemukan",
-    "data": null
-  }
-}
-```
-
-### Unauthorized ONU Not Found
-
-```json
-{
-  "data": {
-    "success": false,
-    "message": "Unauthorize ONU tidak ditemukan",
-    "data": null
-  }
-}
-```
-
 ---
 
 # Data Updated During Replacement
@@ -230,8 +157,12 @@ Diubah menjadi:
 
 ```json
 {
-  "isActive": false,
-  "status": "REPLACED"
+  "success": true,
+  "message": "ONU berhasil diganti",
+  "data": {
+    "isActive": false,
+    "status": "REPLACED"
+  }
 }
 ```
 
@@ -277,32 +208,4 @@ Saat replacement berhasil maka sistem membuat record:
   "newOnuId": "clnewonu",
   "reason": "ONU Mati"
 }
-```
-
----
-
-# Side Effects
-
-Replacement akan:
-
-```text
-Rename ONU Baru
-Delete ONU Lama dari OLT
-Save Config OLT
-Disable ONU Lama
-Create ONU Baru
-Create Replacement History
-Delete Unauthorized ONU
-```
-
----
-
-# Error Codes
-
-```text
-endpoint ID tidak ditemukan
-
-ONU tidak ditemukan
-
-Unauthorize ONU tidak ditemukan
 ```

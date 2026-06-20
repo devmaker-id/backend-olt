@@ -291,8 +291,23 @@ DELETE /api/olt/:id
 
 ```json
 {
-  "id": "clxxxx",
-  "name": "OLT-BDG-01"
+  "success": true,
+  "message": "OLT_DELETED",
+  "data": {
+    "id": "cmql71iwz0000g1sgwm7subwi",
+    "name": "olt-tes",
+    "syslogName": "test",
+    "ipAddress": "192.168.1.1",
+    "managementPort": 23,
+    "username": "admin",
+    "password": "updatePassword",
+    "vendor": "HISFOCUS",
+    "platform": "HIOSO",
+    "connectionType": "TELNET",
+    "location": "negri konoha",
+    "createdAt": "2026-06-19T17:19:29.028Z",
+    "updatedAt": "2026-06-19T19:22:45.561Z"
+  }
 }
 ```
 
@@ -360,9 +375,9 @@ GET /api/olt/:id/onu?portid=1/1&onuid=1
 ## Query Parameters
 
 | Parameter | Required |
-|------------|------------|
-| portid | Yes |
-| onuid | Yes |
+| --------- | -------- |
+| portid    | Yes      |
+| onuid     | Yes      |
 
 ## Success Response
 
@@ -492,38 +507,51 @@ POST /api/olt/sync
 ```json
 {
   "success": true,
-  "summary": {
-    "total": 64,
-    "registered": 58,
-    "unauthorized": 6
-  },
-  "registered": [],
-  "unauthorize": []
-}
-```
-
-## Registered Item Example
-
-```json
-{
-  "port": "1/1",
-  "onuId": "1",
-  "macAddress": "FC1234567890",
-  "internetNo": "ISP000001",
-  "name": "Budi",
-  "type": "CUSTOMER"
-}
-```
-
-## Unauthorized Item Example
-
-```json
-{
-  "id": "clxxxx",
-  "port": "1/1",
-  "onuId": "2",
-  "macAddress": "FC9999999999",
-  "onuComtName": "ONU-BUDI"
+  "message": "SYNC_OLT_TO_DB",
+  "data": {
+    "summary": {
+      "total": 3,
+      "registered": 1,
+      "unauthorized": 2
+    },
+    "registered": [
+      {
+        "port": "0/3",
+        "onuId": "3",
+        "macAddress": "1C:27:04:B0:B3:AF",
+        "status": "Up",
+        "ctcStatus": "CtcNegDone",
+        "onuComtName": "pak_mamay",
+        "name": "pak mamay",
+        "type": "CUSTOMER",
+        "internetNo": "1998300526004",
+        "endPointId": "cmpr7142n0004g18ykyy4img0",
+        "dbId": "cmqkrygf80002g1gghxmehe5t"
+      }
+    ],
+    "unauthorize": [
+      {
+        "port": "0/3",
+        "onuId": "1",
+        "macAddress": "C8:3A:35:4B:05:40",
+        "status": "Up",
+        "ctcStatus": "CtcNegDone",
+        "onuComtName": "teh_risna",
+        "name": "Teh Risna",
+        "id": "cmqljxsvf0020g1k28m4g4d34"
+      },
+      {
+        "port": "0/3",
+        "onuId": "2",
+        "macAddress": "A4:F3:3B:65:AC:7D",
+        "status": "Up",
+        "ctcStatus": "CtcNegDone",
+        "onuComtName": "teh_neneng",
+        "name": "Teh Neneng",
+        "id": "cmqljxswp0022g1k29sx8rwr9"
+      }
+    ]
+  }
 }
 ```
 

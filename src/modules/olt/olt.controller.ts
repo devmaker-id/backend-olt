@@ -17,12 +17,6 @@ import {
   syncOltInventory
 } from './olt.sync.service'
 
-import {
-  OltParams,
-} from './olt.types'
-
-import { prisma } from '../../config/prisma'
-
 import { TelnetTransport } from '../../services/network/hisfocus/telnet.transport'
 import { TelnetSession } from '../../services/network/hisfocus/telnet.session'
 import { HisfocusAdapter } from '../../services/network/hisfocus/hisfocus.adapter'
