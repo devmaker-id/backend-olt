@@ -8,7 +8,10 @@ import { TelnetTransport } from '../../services/network/hisfocus/telnet.transpor
 import { createOltDto } from './schemas/create-olt.schema'
 import { ForbiddenError } from '../../core/errors/forbidden.error'
 import { updateOltDto } from './schemas/update-olt.schema'
-import { validateReadyOlt } from './validation/olt.validation'
+import {
+  validateReadyOlt,
+  validateReadyDeleteOlt
+} from './validation/olt.validation'
 
 export async function createOlt(
   data: createOltDto
@@ -87,6 +90,7 @@ export async function updateOlt(
 }
 
 export async function deleteOlt(id: string) {
+  await validateReadyDeleteOlt(id)
   return prisma.olt.delete({
     where: {
       id

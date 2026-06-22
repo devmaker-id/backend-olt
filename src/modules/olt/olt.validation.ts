@@ -1,4 +1,6 @@
 import { prisma } from '../../config/prisma'
+import { ForbiddenError } from '../../core/errors/forbidden.error'
+import { NotFoundError } from '../../core/errors/not-found.error'
 import { CreateOltDto } from './olt.types'
 
 export async function validateDuplicateOlt(

@@ -61,3 +61,56 @@ export async function validateOnuDetail(
     }
     return onu
 }
+
+export async function validateReadyDeleteOlt(
+  id: string,
+) {
+  const olt = await validateReadyOlt(id)
+  const [
+    unauthorizedOnuCount,
+    onuCount,
+    alarmLogCount,
+    syslogEventCount,
+  ] = await Promise.all([
+    prisma.unauthorizedOnu.count({
+      where: {
+        oltId: id,
+      },
+    }),
+    prisma.onu.count({
+      where: {
+        oltId: id,
+      },
+    }),
+    prisma.alarmLog.count({
+      where: {
+        oltId: id,
+      },
+    }),
+    prisma.syslogEventLog.count({
+      where: {
+        oltId: id,
+      },
+    }),
+  ])
+  const dependencies = {
+    unauthorizedOnu: unauthorizedOnuCount,
+    onus: onuCount,
+    alarmLogs: alarmLogCount,
+    syslogEvents: syslogEventCount,
+  }
+  const totalDependencies =
+    unauthorizedOnuCount +
+    onuCount +
+    alarmLogCount +
+    syslogEventCount
+  if (
+    totalDependencies > 0
+  ) {
+    throw new ForbiddenError(
+      'OLT_HAS_DEPENDENCIES',
+      dependencies,
+    )
+  }
+  return olt
+}

@@ -30,6 +30,7 @@ import { OltConnectionType, OltPlatform } from '@prisma/client'
 import { ForbiddenError } from '../../core/errors/forbidden.error'
 import { onuQuerySchema, queryOnuLists } from './schemas/query-olt.schema'
 import { bodyOltAsyncSchema } from './schemas/body-olt.schema'
+import { AppError } from '../../core/errors/app-error'
 
 
 export async function syncOltInventoryController(
@@ -212,11 +213,13 @@ export async function connectOltController(
         await transport.disconnect()
       }
     }
-    throw new ForbiddenError(
+    throw new AppError(
+      400,
       'IS_DEVELOPMENT_SORRY'
     )
   }
-  throw new ForbiddenError(
+  throw new AppError(
+    400,
     'IS_DEVELOPMENT_SORRY'
   )
 }
