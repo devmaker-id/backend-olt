@@ -8,6 +8,7 @@ import {
 
 import { validateDuplicateTelegramBot } from './telegram-bot.validation'
 import { extractTelegramMessage } from './telegram-bot.utils'
+import { AppError } from '../../core/errors/app-error'
 
 // SERVICE TELEGRAM ACCESS LOG
 export async function createTelegramAccessLog(
@@ -204,17 +205,16 @@ verifyTelegramBotToken(
   token: string
 ) {
 
-  const response =
-    await fetch(
+  const response = await fetch(
       `https://api.telegram.org/bot${token}/getMe`
     )
 
-  const result =
-    await response.json()
+  const result = await response.json()
 
   if (!result.ok) {
 
-    throw new Error(
+    throw new AppError(
+      404,
       'Token Telegram tidak valid'
     )
   }
