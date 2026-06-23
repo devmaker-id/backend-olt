@@ -25,8 +25,7 @@ export async function validateExistingOnu(
 export async function validDeleteOnu(
   id: string,
 ) {
-  const onu =
-    await prisma.onu.findUnique({
+  const onu = await prisma.onu.findUnique({
       where: {
         id,
       },
@@ -34,6 +33,16 @@ export async function validDeleteOnu(
   if (!onu) {
     throw new NotFoundError(
       'ONU_NOT_FOUND',
+    )
+  }
+  const replacement = await prisma.onuReplacement.findFirst({
+    where: {
+      oldOnuId: onu.id
+    }
+  })
+  if (replacement) {
+    throw new ForbiddenError(
+      'REPLACEMENT_USED_ONU_CANNOT_DELETE',
     )
   }
   if (onu.isActive) {

@@ -11,6 +11,7 @@ import {
   validateUniqueInternetNo,
   validatePackageExists,
   validateEmailUnique,
+  validReadyDeleteEndpoint,
 } from './validation/endpoint.validation'
 
 import { ENDPOINT_INCLUDE } from './endpoint-constants'
@@ -190,6 +191,7 @@ export async function updateEndpoint(
 export async function deleteEndpoint(
   id: string
 ) {
+  await validReadyDeleteEndpoint(id)
   const del = await prisma.endpoint.delete({
     where: {
       id

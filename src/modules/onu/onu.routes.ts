@@ -9,11 +9,11 @@ import {
 import {
   authorizeOnuController,
   getOnusController,
+  deleteOnuController
 } from './onu.controller'
 import {
   onuInventoryRoutes
 } from './inventory/onu-inventory.routes'
-import { deleteOltController } from '../olt/olt.controller'
 
 export async function onuRoutes(
   app: FastifyInstance
@@ -34,8 +34,8 @@ export async function onuRoutes(
     authorizeOnuController
   )
   app.delete(
-    '/',
-    deleteOltController
+    '/:id',
+    deleteOnuController
   )
 
   // INVENTORY ONU

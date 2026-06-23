@@ -125,12 +125,8 @@ body table
 ## Delete ONU isActive = false
 
 ```http
-DELETE /api/onu
+DELETE /api/onu/:id
 ```
-body table
-| field  | type    | required |
-| ------ | ------- | -------- |
-| id     | String  | Yes      |
 
 ## RESPON SUCCESS
 ```json
