@@ -257,7 +257,9 @@ BASE_URL="https://nms.domain.com"
 ## Generate Prisma Client
 
 ```bash
+npx prisma db push
 npx prisma generate
+npx prisma db seed
 ```
 
 ---
@@ -267,26 +269,6 @@ npx prisma generate
 ```bash
 npx prisma migrate deploy
 ```
-
----
-
-## Seed Database
-
-If available:
-karna aku telah konfigurasi 
-```bash
-{
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
-  }
-}
-
-jadi cukup
-
-npx prisma db seed
-```
-
----
 
 ## Build Backend
 
