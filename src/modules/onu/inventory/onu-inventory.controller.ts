@@ -8,12 +8,11 @@ import {
 } from './onu-inventory.service'
 
 export async function getInventorySummaryController(
-  request: FastifyRequest,
+  _: FastifyRequest,
   reply: FastifyReply
 ) {
 
-  const summary =
-    await getInventorySummary()
+  const summary = await getInventorySummary()
 
   return reply.send({
     data: summary

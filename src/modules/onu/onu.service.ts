@@ -3,10 +3,12 @@ import { TelnetTransport } from '../../services/network/hisfocus/telnet.transpor
 import { TelnetSession } from '../../services/network/hisfocus/telnet.session'
 import { HisfocusAdapter } from '../../services/network/hisfocus/hisfocus.adapter'
 
-import { validateExistingOnu } from '../onu/validation/onu.validation'
+import {
+  validateExistingOnu,
+  validDeleteOnu
+} from '../onu/validation/onu.validation'
 
 import { normalizeOnuName } from '../../utils/normalize-onu'
-import { generateInternetNo } from '../../utils/generate-internet-no'
 
 import { createOnuDto } from './schemas/create-onu.schema'
 import { NotFoundError } from '../../core/errors/not-found.error'
@@ -125,4 +127,15 @@ export async function authorizeOnu(
 
     await transport.disconnect()
   }
+}
+
+export async function deleteOnu(
+  id: string,
+) {
+  const onu = await validDeleteOnu(id)
+  return prisma.onu.delete({
+    where: {
+      id: onu.id,
+    },
+  })
 }

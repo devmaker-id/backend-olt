@@ -121,3 +121,45 @@ body table
   }
 }
 ```
+
+## Delete ONU isActive = false
+
+```http
+DELETE /api/onu
+```
+body table
+| field  | type    | required |
+| ------ | ------- | -------- |
+| id     | String  | Yes      |
+
+## RESPON SUCCESS
+```json
+{
+  "success": true,
+  "message": "ONU_DELETED",
+  "data": {
+      "id": "cmpr2q3nr0002g14zazpfvik6",
+      "oltId": "cmpkutl6y0000g1qfqww5pk0e",
+      "endpointId": "cmpr6l8d4005mg15wz7d7mez8",
+      "onuId": "17",
+      "portId": null,
+      "serialNumber": null,
+      "onuMac": "F4:E4:AD:82:18:48",
+      "onuName": "umriah",
+      "onuComtName": "uum_malangnengah",
+      "onuType": "SFU",
+      "model": "F460",
+      "firmware": "0101",
+      "status": "ACTIVE",
+      "connectionState": "OFFLINE",
+      "temperature": "47.00 C",
+      "voltage": "3.00  V",
+      "txBias": "17.00 mA",
+      "txPower": "1.69 dBm",
+      "rxPower": "-15.51 dBm",
+      "isActive": false,
+      "createdAt": "2026-05-29T15:25:32.295Z",
+      "updatedAt": "2026-06-16T18:55:29.414Z"
+    }
+}
+```

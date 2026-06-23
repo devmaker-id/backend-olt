@@ -3,6 +3,7 @@ import { FastifyReply, FastifyRequest } from "fastify"
 import {
   getAllOnu,
   authorizeOnu,
+  deleteOnu,
 } from "./onu.service"
 import { OnuStatus } from "@prisma/client"
 
@@ -14,6 +15,7 @@ import { ok, list } from "../../core/http/response"
 import { NotFoundError } from "../../core/errors/not-found.error"
 import { getUnauthorizeOnuById } from "../onu-unauthorize/onu-unauthorize.service"
 import { ValidationError } from "../../core/errors/validation.error"
+import { paramsOnuIdSchema } from "./schemas/params-onu.schema"
 
 export async function getOnusController(
   _: FastifyRequest,
@@ -83,6 +85,22 @@ export async function authorizeOnuController(
     ok(
       result,
       'ONU_CREATED_SUCCESS'
+    )
+  )
+}
+
+export async function deleteOnuController(
+  req: FastifyRequest,
+  reply: FastifyReply
+) {
+  const params = paramsOnuIdSchema.parse(
+    req.params
+  )
+  const onu = await deleteOnu(params.id)
+  return reply.send(
+    ok(
+      onu,
+      'ONU_DELETED'
     )
   )
 }
