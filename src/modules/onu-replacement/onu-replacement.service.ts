@@ -231,7 +231,8 @@ export async function replaceOnu(
                     endpointId: endpoint.id,
                     oldOnuId: oldOnu.id,
                     newOnuId: newOnu.id,
-                    reason: data.reason
+                    reason: data.reason,
+                    replacedBy: data.replacedBy
                 }
             })
 

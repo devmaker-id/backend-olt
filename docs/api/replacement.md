@@ -118,7 +118,8 @@ POST /api/onu-replacement
 {
   "endpointId": "clendpoint",
   "unauthorizedOnuId": "clunauthorized",
-  "reason": "ONU Mati"
+  "reason": "ONU Mati",
+  "replacedBy": "OWNER"
 }
 ```
 
@@ -206,6 +207,7 @@ Saat replacement berhasil maka sistem membuat record:
   "endpointId": "clendpoint",
   "oldOnuId": "cloldonu",
   "newOnuId": "clnewonu",
-  "reason": "ONU Mati"
+  "reason": "ONU Mati",
+  "replacedBy": "OWNER",
 }
 ```

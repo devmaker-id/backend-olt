@@ -48,7 +48,7 @@ export async function replaceOnuController(
   reply: FastifyReply
 ) {
   const body = replacementSchema.parse(req.body)
-  const result =await replaceOnu(body)
+  const result = await replaceOnu(body)
   return reply.send(
     ok(
       result,
