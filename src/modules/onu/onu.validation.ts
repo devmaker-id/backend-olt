@@ -3,7 +3,7 @@ import { prisma } from '../../config/prisma'
 export async function validateUnauthorizedOnu(
   macAddress: string
 ) {
-  const registered = await prisma.onu.findUnique({
+  const registered = await prisma.onu.findFirst({
     where: { onuMac: macAddress },
     include: {
       endpoint: {
@@ -22,7 +22,7 @@ export async function validateUnauthorizedOnu(
     }
   }
 
-  const unauthorize = await prisma.unauthorizedOnu.findUnique({
+  const unauthorize = await prisma.unauthorizedOnu.findFirst({
       where: { macAddress }
     })
 

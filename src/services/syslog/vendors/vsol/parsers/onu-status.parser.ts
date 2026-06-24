@@ -19,7 +19,7 @@ export class OnuStatusParser {
     return {
       type: status === 'ONLINE' ? 'ONU_ONLINE' : 'ONU_OFFLINE',
       oltName: match[1],
-      eponPort: match[3],
+      portId: match[3],
       onuId: match[4],
       serialNumber: match[5].toUpperCase(),
       sourceIp,

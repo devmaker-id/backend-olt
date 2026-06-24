@@ -153,21 +153,20 @@ Ketik:
     if ( text !== '/yes' ) {
       return
     }
-    const loading =
-    await TelegramService.sendMessage({
+    const loading = await TelegramService.sendMessage({
         chatId,
         text:`⏳ <b>AUTHORIZE ONU</b>\nSedang konfigurasi OLT...\nMohon tunggu\n\nJangan kirim apapun selama aku prosess..`
     })
 
-    const result =
-      await authorizeOnu({
-        macAddress: session.data.macAddress,
-        endpoint: {
-          name: session.data.name,
-          address: session.data.address,
-          type: session.data.type
-        }
-      })
+    const result = {
+      success: true,
+      message: "development",
+      data: {
+        internetNo: 1234567890,
+        name: session.data.name,
+        port: session.data.port
+      }
+    }
     TelegramSessionStore.delete(
       chatId
     )

@@ -23,7 +23,7 @@ export class OnuDeregisterParser {
       oltName:
         match[1],
 
-      eponPort:
+      portId:
         match[2],
 
       onuId:
