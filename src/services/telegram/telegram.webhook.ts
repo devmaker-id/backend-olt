@@ -2,10 +2,9 @@ import {
   FastifyReply,
   FastifyRequest
 } from 'fastify'
+
 import { TelegramService } from './telegram.service'
-import {
-  getTelegramBotById
-} from '../../modules/telegram-bot/telegram-bot.service'
+import { getTelegramBotById } from '../../modules/telegram-bot/telegram-bot.service'
 
 export async function telegramWebhook(
   request: FastifyRequest<{

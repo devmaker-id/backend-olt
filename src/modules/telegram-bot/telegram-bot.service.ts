@@ -9,6 +9,7 @@ import {
 import { validateDuplicateTelegramBot } from './telegram-bot.validation'
 import { extractTelegramMessage } from './telegram-bot.utils'
 import { AppError } from '../../core/errors/app-error'
+import { ForbiddenError } from '../../core/errors/forbidden.error'
 
 // SERVICE TELEGRAM ACCESS LOG
 export async function createTelegramAccessLog(
@@ -242,8 +243,7 @@ getWebhookInfo(
     )
   }
 
-  const response =
-    await fetch(
+  const response = await fetch(
       `https://api.telegram.org/bot${bot.token}/getWebhookInfo`
     )
 
@@ -251,35 +251,25 @@ getWebhookInfo(
 }
 export async function setWebhook(
   id: string,
-  url: string
+  domain: string
 ) {
 
   const bot = await prisma.telegramBot.findUnique({
-
-      where: {
-        id
-      }
+      where: {id}
     })
-
   if (!bot) {
-
-    throw new Error(
+    throw new ForbiddenError(
       'Bot tidak ditemukan'
     )
   }
-
   const response = await fetch(`https://api.telegram.org/bot${bot.token}/setWebhook`,
       {
         method: 'POST',
-
         headers: {
-          'Content-Type':
-            'application/json'
+          'Content-Type': 'application/json'
         },
-
-        body:
-          JSON.stringify({
-            url: `${url}/webhook/telegram/${bot.id}`
+        body: JSON.stringify({
+            url: `${domain}/api/webhook/telegram/${bot.id}`
           })
       }
     )
@@ -287,23 +277,19 @@ export async function setWebhook(
   const result = await response.json()
 
   if (result.ok) {
-
     await prisma.telegramBot.update({
-
       where: {
         id
       },
-
       data: {
-        webhookUrl: `${url}/webhook/telegram/${bot.id}`
+        webhookUrl: `${domain}/api/webhook/telegram/${bot.id}`
       }
     })
   }
 
   return result
 }
-export async function
-deleteWebhook(
+export async function deleteWebhook(
   id: string
 ) {
 

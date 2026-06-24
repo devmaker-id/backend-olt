@@ -11,8 +11,7 @@ import {
   getSignalIcon
 } from '../../../utils/classify-rx-power'
 
-export async function
-handleSignalCommand(
+export async function handleSignalCommand(
   body: any
 ) {
   const chatId = body.message.chat.id
@@ -25,8 +24,7 @@ handleSignalCommand(
     await TelegramService.sendMessage({
       chatId,
       replyToMessageId: messageId,
-      text:
-`
+      text: `
 ⚠️ <b>Nomor internet wajib diisi</b>
 
 Contoh:
@@ -37,48 +35,71 @@ Contoh:
   }
 
   const result = await getEndpointByInet(
-      internetNo
-    )
+    internetNo
+  )
 
-  if (!result.success) {
+  if (!result) {
     await TelegramService.sendMessage({
       chatId,
       replyToMessageId: messageId,
-      text: result.message!
+      text: 'nomor internet ga ada'
     })
     return
   }
 
-  const data = result.data!
-  const isOnline = data.onu.status === 'ONLINE'
-
-  const signal = isOnline ? classifyRxPower(data.onu.rxPower) : 'OFFLINE'
-  const signalIcon = getSignalIcon( signal )
+  const onus = result.onus ?? []
 
   let message = ''
-  message += '📡 <b>SIGNAL STATUS</b>\n'
 
+  message += '📡 <b>SIGNAL STATUS</b>\n'
   message += '━━━━━━━━━━━━━━\n\n'
 
-  message += `🆔 <code>${data.internetNo}</code>\n`
-  message += `👤 ${data.name}\n\n`
+  message += `🆔 <code>${result.internetNo}</code>\n`
+  message += `👤 ${result.name}\n\n`
 
-  message += `${isOnline ? '🟢' : '🔴'} STATUS: ${data.onu.status}\n`
-  message += `${signalIcon} SIGNAL: ${signal}\n\n`
+  if (onus.length === 0) {
+    message += '⚠️ Tidak memiliki ONU\n'
 
-  message += `🛰 OLT: ${data.olt.name}\n`
-  message += `🔌 PORT: ${data.onu.port}\n\n`
-  
-  if (isOnline) {
-  message += `📥 RX POWER: ${data.onu.rxPower}\n`
-  message += `📤 TX POWER: ${data.onu.txPower}\n`
-  message += `🌡 TEMPERATURE: ${data.onu.temperature}\n`
-  } else {
-  message += '📥 RX POWER: -\n'
-  message += '📤 TX POWER: -\n'
-  message += '🌡 TEMP: -\n'
+    await TelegramService.sendMessage({
+      chatId,
+      replyToMessageId: messageId,
+      text: message
+    })
+
+    return
   }
-  
+
+  message += `📶 <b>ONU (${onus.length})</b>\n`
+  message += '━━━━━━━━━━━━━━\n\n'
+
+  for (const [index, onu] of onus.entries()) {
+    const isOnline = onu.status === 'ONLINE'
+
+    const signal = isOnline
+      ? classifyRxPower(onu.rxPower)
+      : 'OFFLINE'
+
+    const signalIcon = getSignalIcon(signal)
+
+    message += `📶 <b>ONU #${index + 1}</b>\n`
+    message += `${isOnline ? '🟢' : '🔴'} STATUS: ${onu.status}\n`
+    message += `${signalIcon} SIGNAL: ${signal}\n`
+
+    message += `🛰 OLT: ${onu.olt?.name ?? '-'}\n`
+    message += `🔌 PORT: ${onu.port ?? '-'}\n`
+
+    if (isOnline) {
+      message += `📥 RX POWER: ${onu.rxPower ?? '-'}\n`
+      message += `📤 TX POWER: ${onu.txPower ?? '-'}\n`
+      message += `🌡 TEMPERATURE: ${onu.temperature ?? '-'}\n`
+    } else {
+      message += '📥 RX POWER: -\n'
+      message += '📤 TX POWER: -\n'
+      message += '🌡 TEMPERATURE: -\n'
+    }
+
+    message += '\n━━━━━━━━━━━━━━\n\n'
+  }
 
   await TelegramService.sendMessage({
     chatId,

@@ -49,15 +49,10 @@ export async function getEndpoints() {
 export async function getEndpointByInet(
   internetNo: string,
 ) {
-
   const endpoint = await prisma.endpoint.findUnique({
-      where: {
-        internetNo,
-      },
-
+      where: {internetNo},
       include: {
         package: true,
-
         onus: {
           include: {
             olt: true,
@@ -72,9 +67,11 @@ export async function getEndpointByInet(
 
   if (endpoint.onus.length === 0) {
     return {
+      type: endpoint.type,
       internetNo: endpoint.internetNo,
       name: endpoint.name,
-      type: endpoint.type,
+      telepon: endpoint.telepon,
+      email: endpoint.email,
       address: endpoint.address,
       package: endpoint.package,
       onus: [],
@@ -150,7 +147,6 @@ export async function getEndpointByInet(
     onuCount: realtimeOnus.length,
     onus: realtimeOnus,
   }
-
 }
 
 export async function getEndpointById(

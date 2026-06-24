@@ -171,23 +171,18 @@ export async function getWebhookInfoController(
   }
 }
 export async function setWebhookController(
-
   request: FastifyRequest<{
-
     Params: {
       id: string
     }
-
     Body: {
-      url: string
+      domain: string
     }
-
   }>
 ) {
-
   const result = await setWebhook(
       request.params.id,
-      request.body.url
+      request.body.domain
     )
 
   return {

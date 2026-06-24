@@ -54,7 +54,7 @@ handleOnuOfflineCommand(
 🏠 : ${onu.endpoint?.address || '-'}
 🆔 : <code>${onu.endpoint?.internetNo || '-'}</code>
 🛰 : ${onu.olt?.name || '-'}
-🔌 : ${onu.eponPort}:${onu.onuId}
+🔌 : ${onu.portId}:${onu.onuId}
 ===============\n
 `})
 

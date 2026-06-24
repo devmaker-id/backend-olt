@@ -48,6 +48,7 @@ export class TelegramService {
         const role = telegramUser.role
         const args = text.split(' ')
         const command = args[0]
+        
         console.log(
           '[TELEGRAM COMMAND]',
           command

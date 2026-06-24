@@ -1,11 +1,9 @@
+import { getEndpointByInet } from '../../../modules/endpoint/endpoint.service'
 import {
-  getEndpointByInet
-} from '../../../modules/endpoint/endpoint.service'
-import { classifyRxPower, getSignalIcon } from '../../../utils/classify-rx-power'
-
-import {
-  TelegramService
-} from '../telegram.service'
+  classifyRxPower,
+  getSignalIcon
+} from '../../../utils/classify-rx-power'
+import { TelegramService } from '../telegram.service'
 
 export async function
 handleInetCommand(
@@ -29,59 +27,95 @@ handleInetCommand(
 
   const result = await getEndpointByInet( internetNo )
 
-  if (!result.success) { 
+  if (!result) { 
     await TelegramService.sendMessage({
       chatId,
-      text: result.message!
+      text: 'Nomor internet ga ditemukan'
   })
     return
   }
 
-  const data = result.data!
-  const isOnline = data.onu.status === 'ONLINE'
-
-  const signal = isOnline ? classifyRxPower(data.onu.rxPower) : 'OFFLINE'
-  const signalIcon = getSignalIcon( signal )
+  const endpoint = {
+    type: result.type,
+    internetNo: result.internetNo,
+    name: result.name,
+    telepon: result.telepon,
+    email: result.email,
+    address: result.address,
+  }
 
   let message = ''
   message += '📡 <b>INTERNET DETAIL</b>\n'
   message += '━━━━━━━━━━━━━━\n\n'
-  message += '👤 <b>Customer Information</b>\n'
-  message += `🆔 ID: <code>${data.internetNo}</code>\n`
-  message += `👤 SITE: ${data.name}\n`
-  message += `📍 TYPE: ${data.type}\n`
-  message += `🏠 ADDRESS: ${data.address ?? '-'}\n\n`
+  message += '👤 <b>Endpoint Information</b>\n'
+  message += `🆔 ID: <code>${endpoint.internetNo}</code>\n`
+  message += `👤 SITE: ${escapeHtml(endpoint.name)}\n`
+  message += `📍 TYPE: ${endpoint.type}\n`
+  message += `📍 TELEPON: ${endpoint.telepon || '-'}\n`
+  message += `📍 EMAIL: ${endpoint.email || '-'}\n`
+  message += `🏠 ADDRESS: ${endpoint.address ?? '-'}\n\n`
 
-  message += '📶 <b>ONU Information</b>\n'
-  message += `${signalIcon} STATUS: ${data.onu.status}\n`
-  message += `📊 SIGNAL: ${data.onu.signalStatus}\n`
-  message += `📶 ONU: ${data.onu.name}\n`
-  message += `💻 MODEL: ${data.onu.model}\n`
-  message += `🔌 PORT: ${data.onu.port}\n`
-  message += `🛰 OLT: ${data.olt.name}\n\n`
+  const onus = result.onus ?? []
 
-  message += '💡 <b>Optical Information</b>\n'
-
-  if (isOnline) {
-    message += `📥 RX POWER: ${data.onu.rxPower ?? '-'}\n`
-    message += `📤 TX POWER: ${data.onu.txPower ?? '-'}\n`
-    message += `🌡 TEMP: ${data.onu.temperature ?? '-'}\n`
-  } else {
-    message += '🔴 ONU OFFLINE\n'
-    message += '📥 RX POWER: -\n'
-    message += '📤 TX POWER: -\n'
-    message += '🌡 TEMP: -\n'
+  if(onus.length === 0){
+    message += '📶 ONU: TIDAK MEMILIKI ONU \n\n'
+    await TelegramService.sendMessage({
+      chatId,
+      text: message,
+      replyToMessageId: messageId
+    })
+    return
   }
 
-  message += `🔄 OFFLINE COUNT: ${data.onu.offlineCount ?? 0}\n\n`
-  message += '⏱ <b>ONU History</b>\n'
-  message += `🟢 FIRST ONLINE:\n${data.onu.firstUptime}\n\n`
-  message += `🔴 LAST OFFLINE:\n${data.onu.lastOfftime}\n`
+  message += `📶 <b>ONU Information (${result.onuCount})</b>\n`
+  message += '━━━━━━━━━━━━━━\n\n'
 
+  for(const [index, onu] of onus.entries()) {
+    const isOnline = onu.status === 'ONLINE'
+    const signal = isOnline ? classifyRxPower(onu.rxPower) : 'OFFLINE'
+
+    const signalIcon = getSignalIcon(signal)
+    
+    message += `📶 <b>ONU #${index + 1}</b>\n`
+    message += `${signalIcon} <b>${onu.name}</b>\n`
+    message += `📊 STATUS: ${onu.status}\n`
+    message += `📈 SIGNAL: ${onu.signalStatus ?? '-'}\n`
+    message += `💻 MODEL: ${onu.model ?? '-'}\n`
+    message += `🔌 PORT: ${onu.port ?? '-'}\n`
+
+    if (onu.olt) {
+      message += `🛰 OLT: ${onu.olt.name}\n`
+    }
+
+    message += '\n💡 <b>Optical Information</b>\n'
+
+    if (isOnline) {
+      message += `📥 RX POWER: ${onu.rxPower ?? '-'}\n`
+      message += `📤 TX POWER: ${onu.txPower ?? '-'}\n`
+      message += `🌡 TEMP: ${onu.temperature ?? '-'}\n`
+    } else {
+      message += '🔴 ONU OFFLINE\n'
+      message += '📥 RX POWER: -\n'
+      message += '📤 TX POWER: -\n'
+      message += '🌡 TEMP: -\n'
+    }
+
+    message += `🔄 OFFLINE COUNT: ${onu.offlineCount ?? 0}\n\n`
+
+    message += '⏱ <b>ONU History</b>\n'
+    message += `🟢 FIRST ONLINE:\n${onu.firstUptime ?? '-'}\n\n`
+    message += `🔴 LAST OFFLINE:\n${onu.lastOfftime ?? '-'}\n`
+
+    message += '\n━━━━━━━━━━━━━━\n\n'
+  }
     await TelegramService.sendMessage({
       chatId,
       text: message,
       replyToMessageId: messageId
     })
 
+}
+
+function escapeHtml(text: string) {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 }
