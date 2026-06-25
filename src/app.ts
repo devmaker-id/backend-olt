@@ -16,6 +16,7 @@ import { endpointRoutes } from './modules/endpoint/endpoint.routes'
 import { modulesTelegramRoutes } from './modules/telegram/telegram.routes'
 import { telegramBotRoutes } from './modules/telegram-bot/telegram-bot.routes'
 import { onuReplacementRoutes } from './modules/onu-replacement/onu-replacement.routes'
+import { syslogEventRoutes } from './modules/syslog-event/syslog-event.routes'
 
 const app = Fastify({
   loggerInstance: logger
@@ -55,17 +56,14 @@ app.register( endpointRoutes, {
 app.register( modulesTelegramRoutes, {
   prefix: '/api/telegram/users'
 })
-app.register(
-  telegramBotRoutes,
-  {
-    prefix: '/api/telegram-bots'
-  }
-)
-app.register(
-  onuReplacementRoutes,
-  {
-    prefix: '/api/onu-replacement'
-  }
-)
+app.register( telegramBotRoutes, {
+  prefix: '/api/telegram-bots'
+})
+app.register( onuReplacementRoutes, {
+  prefix: '/api/onu-replacement'
+})
+app.register(syslogEventRoutes, {
+  prefix: '/api/syslog-event'
+})
 
 export default app
