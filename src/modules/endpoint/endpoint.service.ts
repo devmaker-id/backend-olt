@@ -35,7 +35,6 @@ export async function createEndpoint(
     data
   })
 }
-
 export async function getEndpoints() {
 
   return prisma.endpoint.findMany({
@@ -43,6 +42,32 @@ export async function getEndpoints() {
     orderBy: {
       createdAt: 'desc'
     }
+  })
+}
+export async function getEndpointNotUsed() {
+  return prisma.endpoint.findMany({
+    where: {
+      onus: {
+        none: {}
+      }
+    },
+    orderBy: {
+      createdAt: "desc"
+    },
+    include: ENDPOINT_INCLUDE
+  })
+}
+export async function getEndpointUsed() {
+  return prisma.endpoint.findMany({
+    where: {
+      onus: {
+        some: {}
+      }
+    },
+    orderBy: {
+      createdAt: "desc"
+    },
+    include: ENDPOINT_INCLUDE
   })
 }
 

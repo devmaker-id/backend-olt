@@ -8,13 +8,16 @@ import {
     deleteSylogEvent
 } from './syslog-event.service'
 import { syslogEventParamsId } from './schemas/syslog-event.params'
-import { ok, list } from "../../core/http/response";
+import { ok, list, noContent } from "../../core/http/response";
 
 export async function syslogEventDataController(
     _: FastifyRequest,
     reply: FastifyReply
 ) {
     const syslogEvent = await syslogEventAllData()
+    if(syslogEvent.length === 0){
+        return noContent('SYSLOG_EVENT_NO_DATA')
+    }
     return reply.send(
         list(
             syslogEvent,

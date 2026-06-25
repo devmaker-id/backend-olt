@@ -11,7 +11,9 @@ import {
   getEndpointByInet,
   getEndpointById,
   updateEndpoint,
-  deleteEndpoint
+  deleteEndpoint,
+  getEndpointNotUsed,
+  getEndpointUsed
 } from './endpoint.service'
 
 import { list, ok, create } from '../../core/http/response'
@@ -49,6 +51,33 @@ export async function getEndpointsController(
       'ENDPOINT_NOT_FOUND'
     )
   }
+  return reply.send(
+    list(
+      endpoints,
+      endpoints.length,
+      'ENDPOINTS_FOUND'
+    )
+  )
+}
+
+export async function getEndpointNotUsedController(
+  _: FastifyRequest,
+  reply: FastifyReply
+) {
+  const endpoints = await getEndpointNotUsed()
+  return reply.send(
+    list(
+      endpoints,
+      endpoints.length,
+      'ENDPOINTS_FOUND'
+    )
+  )
+}
+export async function getEndpointUsedController(
+  _: FastifyRequest,
+  reply: FastifyReply
+) {
+  const endpoints = await getEndpointUsed()
   return reply.send(
     list(
       endpoints,

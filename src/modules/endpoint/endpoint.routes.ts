@@ -1,10 +1,5 @@
-import {
-  FastifyInstance
-} from 'fastify'
-
-import {
-  authMiddleware
-} from '../../middleware/auth.middleware'
+import { FastifyInstance } from 'fastify'
+import { authMiddleware } from '../../middleware/auth.middleware'
 
 import {
   createEndpointController,
@@ -12,7 +7,9 @@ import {
   getEndpointByInetController,
   getEndpointByIdController,
   updateEndpointController,
-  deleteEndpointController
+  deleteEndpointController,
+  getEndpointNotUsedController,
+  getEndpointUsedController
 } from './endpoint.controller'
 
 export async function endpointRoutes(
@@ -33,11 +30,20 @@ export async function endpointRoutes(
     '/',
     getEndpointsController
   )
+  app.get(
+    '/not-used',
+    getEndpointNotUsedController
+  )
+  app.get(
+    '/is-used',
+    getEndpointUsedController
+  )
 
   app.get(
     '/:id',
     getEndpointByIdController
   )
+
   app.put(
     '/:id',
     updateEndpointController

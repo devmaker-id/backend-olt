@@ -58,6 +58,6 @@ export function noContent(
     return {
         success: true,
         message,
-        data: null
+        data: []
     }
 }

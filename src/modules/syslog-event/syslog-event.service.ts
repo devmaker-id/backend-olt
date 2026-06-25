@@ -1,11 +1,14 @@
 import {prisma} from "../../config/prisma"
 import {
-    validationExistsData,
     validationReadySylogEvent
 } from './validation/syslog-event.validation'
 
 export async function syslogEventAllData(){
-    const syslogEvents = await validationExistsData()
+    const syslogEvents = await prisma.syslogEventLog.findMany({
+        orderBy: {
+            createdAt: "desc"
+        }
+    })
     return syslogEvents
 }
 export async function syslogEventById(

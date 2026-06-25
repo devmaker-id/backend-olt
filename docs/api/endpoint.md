@@ -176,6 +176,29 @@ GET /api/endpoint
   "message": "ENDPOINT_NOTFOUND"
 }
 ```
+---
+## get used endpoint
+```http
+GET /api/endpoint/is-used
+```
+
+---
+## get NOT endpoint
+```http
+GET /api/endpoint/not-used
+```
+### respon is-used dan not-used
+```json
+{
+  "success": true,
+  "message": "ENDPOINTS_FOUND",
+  "data": [],
+  "meta": {
+    "total": 0
+  }
+}
+```
+
 
 ---
 
