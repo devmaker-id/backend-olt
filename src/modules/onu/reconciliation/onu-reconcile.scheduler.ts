@@ -1,4 +1,5 @@
 import cron from 'node-cron'
+import { env } from '../../../config/env'
 import { prisma } from '../../../config/prisma'
 import { reconcileOltWithSession } from './onu-reconcile.service'
 
@@ -7,7 +8,7 @@ let running = false
 export function startOnuReconcileScheduler() {
 
   cron.schedule(
-    '*/5 * * * *', // saat development jalankan */5(menit)
+    env.schedulerCron,
     async () => {
 
       if (running) {

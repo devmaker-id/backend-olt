@@ -28,6 +28,7 @@ const envSchema = z.object({
     "fatal"
   ]),
   SCHEDULER: booleanString.default('false'),
+  SCHEDULER_CRON: z.string().default('0 */5 * * *'),
 })
 
 const parsed = envSchema.parse(process.env)
@@ -45,5 +46,6 @@ export const env = Object.freeze({
   telegramBotToken: parsed.TELEGRAM_BOT_TOKEN,
   telegramChatId: parsed.TELEGRAM_CHAT_ID,
   logLevel: parsed.LOG_LEVEL,
-  scheduler: parsed.SCHEDULER
+  scheduler: parsed.SCHEDULER,
+  schedulerCron: parsed.SCHEDULER_CRON,
 })
