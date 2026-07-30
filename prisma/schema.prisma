@@ -16,6 +16,7 @@ enum OltPlatform {
   HIOSO
   VSOL
 }
+
 enum OltConnectionType {
   TELNET
   SSH
@@ -70,7 +71,6 @@ enum TelegramRole {
 }
 
 enum SyslogEventType {
-
   ONU_LINKUP
   ONU_LINKDOWN
 
@@ -97,14 +97,14 @@ enum SyslogEventType {
 }
 
 model User {
-  id          String   @id @default(cuid())
-  username    String   @unique
-  password    String
-  role        Role     @default(TEKNISI)
-  email       String
-  telepon     String
-  alamat      String
-  telegramId  String
+  id         String @id @default(cuid())
+  username   String @unique
+  password   String
+  role       Role   @default(TEKNISI)
+  email      String
+  telepon    String
+  alamat     String
+  telegramId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -112,7 +112,7 @@ model User {
 
 model Olt {
   id               String            @id @default(cuid())
-  telegramBotId    String?
+  telegramBotId    String
   name             String
   syslogName       String
   ipAddress        String            @unique
@@ -133,17 +133,17 @@ model Olt {
 }
 
 model Onu {
-  id               String           @id @default(cuid())
-  oltId            String
-  olt              Olt              @relation(fields: [oltId], references: [id], onDelete: Cascade)
-  endpointId       String?
-  endpoint         Endpoint?        @relation(fields: [endpointId], references: [id])
+  id         String    @id @default(cuid())
+  oltId      String
+  olt        Olt       @relation(fields: [oltId], references: [id], onDelete: Cascade)
+  endpointId String?
+  endpoint   Endpoint? @relation(fields: [endpointId], references: [id])
 
-  onuId            String
-  portId           String
+  onuId  String
+  portId String
 
-  serialNumber     String?
-  onuMac           String?
+  serialNumber String?
+  onuMac       String?
 
   onuName          String?
   onuComtName      String?
@@ -187,56 +187,56 @@ model OnuReplacement {
 }
 
 model Endpoint {
-  id           String           @id @default(cuid())
-  type         EndpointType
+  id   String       @id @default(cuid())
+  type EndpointType
 
-  internetNo   String           @unique
-  name         String
-  email        String           @unique
-  telepon      String
-  address      String
+  internetNo String @unique
+  name       String
+  email      String @unique
+  telepon    String
+  address    String
 
-  latitude     Float?
-  longitude    Float?
-  description  String?
+  latitude    Float?
+  longitude   Float?
+  description String?
 
-  packageId    String?
-  package      Package?         @relation(fields: [packageId], references: [id])
+  packageId String?
+  package   Package? @relation(fields: [packageId], references: [id])
 
   onus         Onu[]
   replacements OnuReplacement[]
 
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Package {
-  id           String   @id @default(cuid())
+  id           String      @id @default(cuid())
   type         PackageType
   name         String
   speed        String
   price        Int
   normalDevice String?
-  
-  endpoints    Endpoint[]
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime         @updatedAt
+  endpoints Endpoint[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model UnauthorizedOnu {
-  id           String   @id @default(cuid())
-  oltId        String
-  olt          Olt      @relation(fields: [oltId], references: [id], onDelete: Cascade)
-  onuComtName  String?
-  onuName      String?
-  status       String?
+  id          String  @id @default(cuid())
+  oltId       String
+  olt         Olt     @relation(fields: [oltId], references: [id], onDelete: Cascade)
+  onuComtName String?
+  onuName     String?
+  status      String?
 
   serialNumber String?
   macAddress   String?
 
-  portId       String?
-  onuId        String?
+  portId String?
+  onuId  String?
 
   discoveredAt DateTime @default(now())
   createdAt    DateTime @default(now())
@@ -327,24 +327,24 @@ model OnuEvent {
 }
 
 model SyslogEventLog {
-  id              String          @id @default(cuid())
-  oltId           String?
-  olt             Olt?            @relation(fields: [oltId], references: [id])
-  onuIdRef        String?
-  onu             Onu?            @relation(fields: [onuIdRef], references: [id])
-  type            SyslogEventType
-  sourceIp        String
-  oltName         String?
+  id       String          @id @default(cuid())
+  oltId    String?
+  olt      Olt?            @relation(fields: [oltId], references: [id])
+  onuIdRef String?
+  onu      Onu?            @relation(fields: [onuIdRef], references: [id])
+  type     SyslogEventType
+  sourceIp String
+  oltName  String?
 
-  portId          String?
-  onuId           String?
+  portId String?
+  onuId  String?
 
-  onuMac          String?
-  serialNumber    String?
-  onuName         String?
-  rawLog          String          @db.Text
-  payload         Json?
-  createdAt       DateTime        @default(now())
+  onuMac       String?
+  serialNumber String?
+  onuName      String?
+  rawLog       String   @db.Text
+  payload      Json?
+  createdAt    DateTime @default(now())
 
   @@index([type])
   @@index([createdAt])

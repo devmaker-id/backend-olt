@@ -110,7 +110,6 @@ export async function getTelegramBotById(
 ) {
 
   return prisma.telegramBot.findUnique({
-
     where: {
       id
     },

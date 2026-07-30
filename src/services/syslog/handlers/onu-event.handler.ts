@@ -25,6 +25,7 @@ from '../core/syslog-event'
 
 import { SyslogEventHandler }
 from '../contracts/syslog-event-handler'
+import { getTelegramBotById } from '../../../modules/telegram-bot/telegram-bot.service'
 
 export class OnuEventHandler
 implements SyslogEventHandler {
@@ -62,9 +63,21 @@ implements SyslogEventHandler {
       return
     }
 
-    if (
-      env.syslogStrictMode
-    ) {
+    if(!olt.telegramBotId){
+      console.log(
+        `UNKNOWN TELEGRAM BOT ON OLT ${event.oltName}`
+      )
+      return
+    }
+    const telegramBot = await getTelegramBotById(olt.telegramBotId)
+    if(!telegramBot?.defaultChatId){
+      console.log(
+        `UNKNOW TELEGRAM BOT ID ${olt.telegramBotId}`
+      )
+      return
+    }
+
+    if (env.syslogStrictMode) {
 
       console.log(
         'SYSLOG_STRICT_MODE:',
@@ -188,7 +201,8 @@ implements SyslogEventHandler {
     msg += '⚠️ ONU baru terdeteksi dan belum di-authorize.'
 
     await NotificationProcessor.send(
-      env.telegramChatId,
+      telegramBot.token,
+      telegramBot.defaultChatId,
       msg
     )
 

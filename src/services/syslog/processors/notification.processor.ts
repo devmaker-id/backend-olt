@@ -4,10 +4,12 @@ export class NotificationProcessor {
 
   static async send(
     chatId: string,
-    text: string
+    text: string,
+    token?: string
   ) {
 
     return TelegramService.sendMessage({
+      token,
       chatId,
       text
     })

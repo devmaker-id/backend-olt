@@ -129,7 +129,7 @@ export class TelegramService {
 
   static async sendMessage( message: TelegramMessage ) {
     try {
-      const response = await fetch(`https://api.telegram.org/bot${env.telegramBotToken}/sendMessage`, {
+      const response = await fetch(`https://api.telegram.org/bot${message.token}/sendMessage`, {
         method: 'POST',
         headers: {
           'Content-Type':
