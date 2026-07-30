@@ -24,8 +24,7 @@ export class OnuParser {
 
     return {
 
-      type:
-        status === 'linkup'
+      type: status === 'linkup'
           ? 'ONU_LINKUP'
           : 'ONU_LINKDOWN',
 
@@ -50,7 +49,6 @@ export class OnuParser {
       }
 
     }
-
   }
 
 }

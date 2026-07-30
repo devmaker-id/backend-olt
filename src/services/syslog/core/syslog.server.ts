@@ -46,7 +46,8 @@ export class SyslogServer {
         }
         logger.debug(
           {
-            ip: remote.address
+            ip: remote.address,
+            log
           },
           'Syslog received'
         )

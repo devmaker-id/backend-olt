@@ -5,6 +5,7 @@ import {
 import { z } from 'zod'
 
 export const createOltSchema = z.object({
+    telegramBotId: z.string().min(1),
     name: z.string().min(1),
     syslogName: z.string().min(1),
     ipAddress: z.string().min(1),

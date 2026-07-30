@@ -12,6 +12,7 @@ export class SyslogDispatcher {
     const oltName = OltNameResolver.resolve(
       rawLog
     )
+    
     if(!oltName) {
       return
     }

@@ -112,6 +112,7 @@ model User {
 
 model Olt {
   id               String            @id @default(cuid())
+  telegramBotId    String?
   name             String
   syslogName       String
   ipAddress        String            @unique
@@ -124,6 +125,7 @@ model Olt {
   location         String
   onus             Onu[]
   alarmLogs        AlarmLog[]
+  telegramBot      TelegramBot       @relation(fields: [telegramBotId], references: [id])
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   unauthorizedOnus UnauthorizedOnu[]
@@ -273,6 +275,7 @@ model TelegramBot {
   webhookUrl         String?
   defaultChatId      String?
   description        String?
+  olts               Olt[]
   isActive           Boolean             @default(true)
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
