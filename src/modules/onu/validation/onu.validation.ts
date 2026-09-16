@@ -30,6 +30,9 @@ export async function validDeleteOnu(
         id,
       },
     })
+
+  // console.log(onu?.isActive)
+
   if (!onu) {
     throw new NotFoundError(
       'ONU_NOT_FOUND',
